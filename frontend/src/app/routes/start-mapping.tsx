@@ -53,7 +53,7 @@ import { useDialog } from "@/hooks/use-dialog";
 import { useModelPredictionStore } from "@/store/model-prediction-store";
 import { ModelSelector } from "@/features/start-mapping/components/replicable-models/model-selector";
 import {
-  BASE_MODELS,
+
   DrawingModes,
   TileServiceType,
   ToolTipPlacement,
@@ -62,7 +62,7 @@ import { useTileservice } from "@/hooks/use-tileservice";
 import {
   ALL_MODEL_PREDICTIONS_FILL_LAYER_ID,
   ALL_MODEL_PREDICTIONS_OUTLINE_LAYER_ID,
-  FAIR_BASE_MODELS_PATH,
+
   OPENAERIALMAP_MOSAIC_TILES_URL,
 } from "@/config";
 import { OfflinePredictionRequestDialog } from "@/features/start-mapping/components/dialogs/offline-prediction-request-dialog";
