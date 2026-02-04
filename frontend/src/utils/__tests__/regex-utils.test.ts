@@ -126,6 +126,9 @@ describe("Regex Patterns", () => {
     expect(
       VALID_MODEL_CHECKPOINT_PATH.test("http://example.com/model.pb"),
     ).toBe(false);
+     expect(
+      VALID_MODEL_CHECKPOINT_PATH.test("http://example.com/model.onnx/dddd"),
+    ).toBe(false);
   });
 
   it("OPENAERIALMAP_TILESERVER_URL_REGEX_PATTERN matches valid URLs", () => {

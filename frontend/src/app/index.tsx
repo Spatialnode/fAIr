@@ -9,7 +9,7 @@ import {
 import { TourProvider } from "@reactour/tour";
 import { APP_TOUR_STEPS } from "@/constants/site-tour";
 import { AuthProvider } from "./providers/auth-provider";
-
+import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 export const App = () => {
   const queryClient = new QueryClient({
     queryCache: new QueryCache({
@@ -47,7 +47,9 @@ export const App = () => {
             close: (base) => ({ ...base, right: "auto", left: 10, top: 10 }),
           }}
         >
-          <AppRouter />
+          <NuqsAdapter>
+            <AppRouter />
+          </NuqsAdapter>
         </TourProvider>
       </QueryClientProvider>
     </AuthProvider>

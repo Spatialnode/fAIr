@@ -178,9 +178,10 @@ const CustomModelInput = ({
           isValid.message
         ) : (
           <span className="text-wrap text-xs">
-            The custom model checkpoint path should point to a valid model file.
+            The custom model checkpoint path should point to a valid model file (.onnx or .tflite).
             For example, you can use a URL like:{" "}
             {`https://your-server/checkpoint.tflite`}.
+             Changes will be applied to the map when you click Apply.
           </span>
         )}
       </HelpText>

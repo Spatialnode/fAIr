@@ -17,7 +17,7 @@ export const VALID_CHARACTER_PATTERN = /^[a-zA-Z0-9\s]*$/;
 
 // Matches valid model checkpoint URLs with .onnx or .tflite extensions.
 export const VALID_MODEL_CHECKPOINT_PATH =
-  /^https?:\/\/.*\/[^\/]+\.(onnx|tflite)\/?/;
+  /^https?:\/\/.*\/[^\/]+\.(onnx|tflite)\/?$/;
 
 // Matches valid OpenAerialMap tile server URLs.
 export const OPENAERIALMAP_TILESERVER_URL_REGEX_PATTERN =

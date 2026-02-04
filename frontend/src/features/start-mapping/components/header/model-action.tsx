@@ -1,4 +1,4 @@
-import { handleConflation, showErrorToast, showSuccessToast } from "@/utils";
+import { handleConflation, showErrorToast, showSuccessToast, VALID_MODEL_CHECKPOINT_PATH } from "@/utils";
 import { Map } from "maplibre-gl";
 import { START_MAPPING_PAGE_CONTENT, TOAST_NOTIFICATIONS } from "@/constants";
 import {
@@ -15,6 +15,7 @@ import { SEARCH_PARAMS } from "@/app/routes/start-mapping";
 import { MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION } from "@/config";
 import { useParams } from "react-router-dom";
 import { useMapStore } from "@/store/map-store";
+import { PredictionModel } from "@/enums/start-mapping";
 
 const ModelAction = ({
   map,
@@ -104,9 +105,11 @@ const ModelAction = ({
     (currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION ||
       modelPredictionMutation.isPending ||
       tileServerURL?.length === 0 ||
-      predictionModelCheckpoint?.length === 0 ||
+      predictionModelCheckpoint?.length === 0 || (query[SEARCH_PARAMS.model] === PredictionModel.CUSTOM &&!VALID_MODEL_CHECKPOINT_PATH.test(predictionModelCheckpoint ??""))||
       isOfflineMode) &&
     !hasDrawnAOI;
+  
+    
   return (
     <div className="flex gap-y-3 flex-col-reverse flex-wrap  md:items-center md:flex-row md:justify-between md:gap-x-2 md:flex-nowrap">
       <ToolTip
