@@ -2,10 +2,16 @@ import { CheckIcon } from "@/components/ui/icons";
 import { Link } from "@/components/ui/link";
 import { APPLICATION_ROUTES } from "@/constants";
 import { TTrainingDataset } from "@/types";
+import { MapSwipeLogo } from "@/assets/svgs";
 
+import {
+  getDatasetDummyTags,
+  hasMapSwipeBadge,
+} from "@/features/datasets/utils/dataset-flow-mocks";
+import Badge from "@/components/ui/badge/badge";
 export const DatasetCard = ({
   dataset,
-  showUsername = false,
+  showUsername = true,
   selectedDatasetId,
   onDatasetSelect,
   navigateOnClick = false,
@@ -16,6 +22,8 @@ export const DatasetCard = ({
   onDatasetSelect?: (dataset: TTrainingDataset) => void;
   navigateOnClick?: boolean;
 }) => {
+  const tags = getDatasetDummyTags(dataset.id);
+  const showMapSwipeIndicator = hasMapSwipeBadge(dataset.id);
   const handleClick: React.MouseEventHandler = () => {
     if (navigateOnClick) {
       return;
@@ -44,46 +52,63 @@ export const DatasetCard = ({
       <div
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            onDatasetSelect && onDatasetSelect(dataset);
-          }
-        }}
+        onKeyDown={handleKeyDown}
         aria-pressed={selectedDatasetId === dataset.id}
         aria-label={`Dataset ${dataset.name}`}
-        className={`w-full relative h-48 border border-gray-border  hover:shadow-sm bg-white rounded-lg p-6 flex flex-col justify-between cursor-pointer  transition-colors duration-150 ${selectedDatasetId === dataset.id ? "outline outline-primary outline-offset-2" : "hover:border-primary"}`}
+        className={`relative w-full rounded-md border border-gray-border bg-frosted-blue p-4 transition-colors duration-150 flex min-h-[200px] flex-col justify-between cursor-pointer ${selectedDatasetId === dataset.id ? "outline outline-primary outline-offset-2" : "hover:border-primary"}`}
       >
-        <div className="flex flex-col gap-y-2 min-h-1/2 w-full">
-          {selectedDatasetId === dataset.id && (
-            <div className="w-4 h-4 md:w-6 md:h-6 flex items-center justify-center bg-primary absolute top-2 right-2  rounded-full border border-gray-border">
-              <CheckIcon className="w-3 h-3 md:w-4 md:h-4 text-white" />
-            </div>
-          )}
-
-          <h1 className="text-body-2base md:text-body-1 overflow-hidden text-ellipsis whitespace-normal h-16 line-clamp-2">
-            {dataset.name}
-          </h1>
-          <p className="bg-primary text-white uppercase w-fit px-1 md:px-3 rounded-md text-body-3">
-            ID: {dataset.id}
-          </p>
+        <div className={`flex w-full flex-col gap-y-2 `}>
+          <div>
+            <h1
+              className={`overflow-hidden text-ellipsis whitespace-normal font-semibold text-dark h-12 line-clamp-2 text-body-2base`}
+            >
+              {dataset.name}
+            </h1>
+          </div>
+          <div className="flex items-start justify-between gap-3">
+            <Badge
+              variant="default"
+              className="rounded-[4px] bg-primary text-white font-semibold"
+            >
+              <span className="text-body-3 uppercase">ID: {dataset.id}</span>
+            </Badge>
+            {/* This will be replaced when the mapswipe data is being returned */}
+            {showMapSwipeIndicator && (
+              <img
+                src={MapSwipeLogo}
+                alt="MapSwipe linked"
+                className="h-6 w-6 flex-shrink-0"
+              />
+            )}
+          </div>
         </div>
-        <div className="flex justify-between w-full gap-x-4">
-          <div className="w-1/2">
-            <p className="text-grey text-body-4 md:text-body-3">Used by:</p>
-            <p className="text-dark font-semibold text-body-4 md:text-body-3">
+
+        <div className={`flex w-full gap-x-4 justify-between`}>
+          <div>
+            <p className="text-body-4 text-grey">Used by:</p>
+            <p className="text-body-3 font-semibold text-dark">
               {dataset.models_count} Model{dataset.models_count ? "s" : ""}
             </p>
           </div>
           {showUsername && (
-            <div className="w-1/2">
-              <p className="text-grey text-body-4 md:text-body-3">
-                Created by:
-              </p>
-              <p className="text-dark font-semibold text-body-4 md:text-body-3 truncate">
+            <div>
+              <p className="text-body-4 text-grey">Created by:</p>
+              <p className="text-body-3 font-semibold text-dark truncate">
                 {dataset.user.username}
               </p>
             </div>
           )}
+        </div>
+
+        <div className={`flex flex-wrap gap-2 `}>
+          {tags.map((tag) => (
+            <span
+              key={`${dataset.id}-${tag}`}
+              className="rounded-xl bg-off-white px-2 py-1 text-body-4  text-dark"
+            >
+              {tag}
+            </span>
+          ))}
         </div>
       </div>
     </Link>

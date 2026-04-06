@@ -23,6 +23,7 @@ export const DatasetList = ({
   onDatasetSelect?: (dataset: TTrainingDataset) => void;
   navigateOnClick?: boolean;
 }) => {
+  console.log(datasets);
   /**
    * Pending state.
    */

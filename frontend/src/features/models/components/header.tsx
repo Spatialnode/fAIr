@@ -8,16 +8,20 @@ const PageHeader = ({
   title,
   description,
   isTrainingDataset,
+  route,
+  buttonLabel,
 }: {
   title?: string;
   description?: string;
   disableCreateButton?: boolean;
   isTrainingDataset?: boolean;
+  buttonLabel?: string;
+  route?: string;
 }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(APPLICATION_ROUTES.CREATE_NEW_MODEL);
+    navigate(route ?? APPLICATION_ROUTES.CREATE_NEW_MODEL);
   };
 
   return (
@@ -39,7 +43,7 @@ const PageHeader = ({
               onClick={handleClick}
               variant={ButtonVariant.PRIMARY}
               prefixIcon={AddIcon}
-              label={MODELS_CONTENT.models.modelsList.ctaButton}
+              label={buttonLabel ?? MODELS_CONTENT.models.modelsList.ctaButton}
             />
           </div>
         )}

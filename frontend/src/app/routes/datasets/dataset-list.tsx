@@ -12,8 +12,9 @@ export const DatasetExplorerPage = () => {
           description={
             "A training dataset consists of high-resolution aerial imagery used as the base layer for fine-tuning an AI model."
           }
+          buttonLabel="Create Dataset"
+          route="/datasets/create"
           disableCreateButton
-          isTrainingDataset
         />
         <DatasetExplorer
           disableSelectedDatasetText
