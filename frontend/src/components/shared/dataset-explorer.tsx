@@ -15,6 +15,9 @@ import { useEffect } from "react";
 import { useScrollToElement } from "@/hooks/use-scroll-to-element";
 import { DatasetsMap } from "@/features/datasets/components/datasets-map";
 import { useDatasetsMapData } from "@/features/datasets/hooks/use-datasets";
+import { SEARCH_PARAMS } from "@/utils/search-params";
+import { LayoutToggle } from "./layout-toggle";
+import { LayoutView } from "@/enums/models";
 
 export const DatasetExplorer = ({
   disableSelectedDatasetText,
@@ -29,24 +32,34 @@ export const DatasetExplorer = ({
   disableInstruction?: boolean;
   navigateOnClick?: boolean;
 }) => {
+
   const {
     data,
     isError,
     isPending,
     isPlaceholderData,
     refetch,
-    query,
-    updateQuery,
+    search,
+    ordering,
+    layout,
+    offset,
     mapViewIsActive,
+    datasetIdParam,
+    setSearch,
+    setOrdering,
+    setLayout,
+    setMapView,
+    setDatasetId,
     clearAllFilters,
+    goToNextPage,
+    goToPrevPage,
   } = useDatasetsQueryParams();
-
   const {
     data: mapData,
     isPending: mapDataIsPending,
     isError: mapDataIsError,
   } = useDatasetsMapData();
-
+  const activeLayout = (layout as LayoutView) || LayoutView.GRID;
   const mapViewElementId = "dataset-map-view";
   const { scrollToElement } = useScrollToElement(mapViewElementId);
   /**
@@ -71,22 +84,40 @@ export const DatasetExplorer = ({
       <div className="flex flex-col md:flex-row gap-4 md:gap-y-0 w-full justify-between md:items-center">
         <div className="flex flex-col md:flex-row gap-x-4 gap-y-4 md:gap-y-0 w-full">
           <SearchFilter
-            query={query}
-            updateQuery={updateQuery}
+            query={{ [SEARCH_PARAMS.searchQuery]: search }}
+            updateQuery={(params) =>
+              setSearch(params[SEARCH_PARAMS.searchQuery] as string)
+            }
             placeholder="Search datasets by name or id..."
             className="w-full max-w-xl"
           />
-          <ClearFilters query={query} clearAllFilters={clearAllFilters} />
+          <ClearFilters query={{
+            [SEARCH_PARAMS.searchQuery]: search,
+            [SEARCH_PARAMS.id]: datasetIdParam,
+          }}
+            clearAllFilters={clearAllFilters} />
         </div>
-        <ShowMapToggle query={query} updateQuery={updateQuery} />
+        <div className="flex gap-x-3">
+          <ShowMapToggle query={{ [SEARCH_PARAMS.mapIsActive]: mapViewIsActive }} updateQuery={(params) => setMapView(params[SEARCH_PARAMS.mapIsActive] as boolean)} />
+          <LayoutToggle
+            query={{ [SEARCH_PARAMS.layout]: layout }}
+            updateQuery={(params) =>
+              setLayout(params[SEARCH_PARAMS.layout] as string)
+            }
+
+            disabled={mapViewIsActive}
+          />
+        </div>
       </div>
 
       <div className="flex flex-col gap-y-6 md:gap-y-0 w-full justify-between">
         <p className="text-body-3 font-semibold">{data?.count} datasets</p>
         <div className="flex w-full justify-between md:justify-end items-center md:gap-x-6">
           <OrderingFilter
-            query={query}
-            updateQuery={updateQuery}
+            query={{ [SEARCH_PARAMS.ordering]: ordering }}
+            updateQuery={(params) =>
+              setOrdering(params[SEARCH_PARAMS.ordering] as string)
+            }
             disabled={isError || isPending}
             className="inline-flex"
           />
@@ -97,8 +128,12 @@ export const DatasetExplorer = ({
               hasPrevPage={data?.hasPrev as boolean}
               disableNextPage={!data?.hasNext || isPlaceholderData}
               disablePrevPage={!data?.hasPrev}
-              query={query}
-              updateQuery={updateQuery}
+              query={{ [SEARCH_PARAMS.offset]: offset }}
+              updateQuery={(params) => {
+                const newOffset = params[SEARCH_PARAMS.offset] as number;
+                if (newOffset > offset) goToNextPage();
+                else goToPrevPage();
+              }}
               isPlaceholderData={isPlaceholderData}
               scrollToTopOnPageSwitch
             />
@@ -126,6 +161,8 @@ export const DatasetExplorer = ({
             isPending={isPending}
             refetch={refetch}
             showUsername
+            layout={activeLayout}
+
             selectedDatasetId={
               selectedTrainingDatasetId
                 ? Number(selectedTrainingDatasetId)
@@ -143,15 +180,18 @@ export const DatasetExplorer = ({
             id={mapViewElementId}
           >
             {mapDataIsPending ||
-            mapDataIsError ||
-            mapData.features.length === 0 ? (
+              mapDataIsError ||
+              mapData.features.length === 0 ? (
               <div className="w-full h-full animate-pulse bg-light-gray flex items-center justify-center">
                 <Spinner />
               </div>
             ) : (
               <DatasetsMap
                 mapResults={mapData as FeatureCollection}
-                updateQuery={updateQuery}
+                updateQuery={(params) => {
+                  const id = params[SEARCH_PARAMS.id];
+                  setDatasetId(id ? String(id) : null);
+                }}
               />
             )}
           </div>

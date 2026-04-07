@@ -288,6 +288,18 @@ const router = createBrowserRouter([
       /**
        *  Datasets explorer route starts.
        */
+
+           {
+        path: APPLICATION_ROUTES.DATASET_CREATE,
+        lazy: async () => {
+          const { CreateDatasetPage } = await import(
+            "@/app/routes/datasets/create-dataset"
+          );
+          return {
+            Component: () => <CreateDatasetPage />,
+          };
+        },
+      },
       {
         path: APPLICATION_ROUTES.DATASETS,
         lazy: async () => {

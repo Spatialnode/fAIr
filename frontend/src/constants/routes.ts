@@ -46,6 +46,7 @@ export const APPLICATION_ROUTES = {
   // Model routes end
 
   DATASETS: "/datasets",
+  DATASET_CREATE: "/datasets/create",
   DATASET_DETAILS: "/datasets/:id",
   START_MAPPING_BASE: "/start-mapping/",
   START_MAPPING: "/start-mapping/:modelId",

@@ -1,4 +1,3 @@
-import { CheckIcon } from "@/components/ui/icons";
 import { Link } from "@/components/ui/link";
 import { APPLICATION_ROUTES } from "@/constants";
 import { TTrainingDataset } from "@/types";

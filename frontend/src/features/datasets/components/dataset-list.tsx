@@ -2,7 +2,9 @@ import { DatasetCard } from "./dataset-card";
 import { DatasetListSkeleton } from "./dataset-list-skeleton";
 import { Button } from "@/components/ui/button";
 import { NoTrainingAreaIcon } from "@/components/ui/icons";
+import { LayoutView } from "@/enums";
 import { TTrainingDataset } from "@/types";
+import { DatasetTableLayout } from "@/features/datasets/components/dataset-table";
 
 export const DatasetList = ({
   datasets,
@@ -13,6 +15,7 @@ export const DatasetList = ({
   selectedDatasetId,
   onDatasetSelect,
   navigateOnClick,
+  layout
 }: {
   datasets: TTrainingDataset[];
   isPending: boolean;
@@ -22,8 +25,8 @@ export const DatasetList = ({
   selectedDatasetId?: number;
   onDatasetSelect?: (dataset: TTrainingDataset) => void;
   navigateOnClick?: boolean;
+  layout: LayoutView;
 }) => {
-  console.log(datasets);
   /**
    * Pending state.
    */
@@ -61,6 +64,21 @@ export const DatasetList = ({
   /**
    * Dataset list
    */
+
+  if (layout === LayoutView.LIST) {
+    return (
+      <DatasetTableLayout
+        datasets={datasets}
+        isPending={isPending}
+        isError={isError}
+        refetch={refetch}
+        showUsername={showUsername}
+        selectedDatasetId={selectedDatasetId}
+        onDatasetSelect={onDatasetSelect}
+        navigateOnClick={navigateOnClick}
+      />
+    );
+  }
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(299px,1fr))] gap-6">
       {datasets.map((dataset) => (

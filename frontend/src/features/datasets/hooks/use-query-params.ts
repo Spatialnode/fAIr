@@ -1,116 +1,152 @@
 import useDebounce from "@/hooks/use-debounce";
-import { TQueryParams } from "@/types";
-import { useCallback, useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useCallback, useEffect } from "react";
+import {
+  parseAsBoolean,
+  parseAsInteger,
+  parseAsString,
+  useQueryStates,
+} from "nuqs";
 import { useGetTrainingDatasetsV2 } from "./use-datasets";
 import { ORDERING_FIELDS } from "@/components/shared/filters/ordering-filter";
 import { SEARCH_PARAMS } from "@/utils/search-params";
+import { LayoutView } from "@/enums";
+import { PAGE_LIMIT } from "@/components/shared";
+
+const useDatasetsSearchParams = () => {
+  return useQueryStates({
+    [SEARCH_PARAMS.searchQuery]: parseAsString.withDefault(""),
+    [SEARCH_PARAMS.ordering]: parseAsString.withDefault(
+      ORDERING_FIELDS[1].apiValue as string,
+    ),
+    [SEARCH_PARAMS.offset]: parseAsInteger.withDefault(0),
+    [SEARCH_PARAMS.layout]: parseAsString.withDefault(LayoutView.GRID),
+    [SEARCH_PARAMS.mapIsActive]: parseAsBoolean.withDefault(false),
+    [SEARCH_PARAMS.id]: parseAsString.withDefault(""),
+  });
+};
 
 export const useDatasetsQueryParams = (userId?: number) => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [params, setParams] = useDatasetsSearchParams();
 
-  const defaultQueries = {
-    [SEARCH_PARAMS.offset]: 0,
-    [SEARCH_PARAMS.searchQuery]:
-      searchParams.get(SEARCH_PARAMS.searchQuery) || "",
-    [SEARCH_PARAMS.ordering]:
-      searchParams.get(SEARCH_PARAMS.ordering) ||
-      (ORDERING_FIELDS[1].apiValue as string),
-    [SEARCH_PARAMS.id]: searchParams.get(SEARCH_PARAMS.id) || "",
-    [SEARCH_PARAMS.mapIsActive]:
-      Boolean(searchParams.get(SEARCH_PARAMS.mapIsActive)) || false,
-  };
+  const search = params[SEARCH_PARAMS.searchQuery] as string;
+  const ordering = params[SEARCH_PARAMS.ordering] as string;
+  const offset = params[SEARCH_PARAMS.offset] as number;
+  const layout = params[SEARCH_PARAMS.layout] as string;
+  const mapIsActive = params[SEARCH_PARAMS.mapIsActive] as boolean;
+  const datasetIdParam = params[SEARCH_PARAMS.id] as string;
 
-  const [query, setQuery] = useState<TQueryParams>(defaultQueries);
-
-  const debouncedSearchText = useDebounce(
-    query[SEARCH_PARAMS.searchQuery] as string,
-    300,
-  );
+  const debouncedSearch = useDebounce(search, 300);
 
   const { isPending, isError, data, refetch, isPlaceholderData } =
     useGetTrainingDatasetsV2(
-      debouncedSearchText.length > 0 ? debouncedSearchText : undefined,
-      query[SEARCH_PARAMS.ordering] as string,
+      debouncedSearch.length > 0 ? debouncedSearch : undefined,
+      ordering,
       userId !== undefined ? userId : undefined,
-      query[SEARCH_PARAMS.offset] !== undefined
-        ? (query[SEARCH_PARAMS.offset] as number)
-        : undefined,
-      query[SEARCH_PARAMS.id] as number,
+      offset > 0 ? offset : undefined,
+      datasetIdParam.length > 0 ? parseInt(datasetIdParam) : undefined,
     );
 
-  const updateQuery = useCallback(
-    (newParams: TQueryParams) => {
-      setQuery((prevQuery) => ({
-        ...prevQuery,
-        ...newParams,
-      }));
-      const updatedParams = new URLSearchParams(searchParams);
+  // Reset offset to 0 when searching or when ID filtering is applied from the map.
+  useEffect(() => {
+    if ((search !== "" || datasetIdParam !== "") && offset > 0) {
+      void setParams({ [SEARCH_PARAMS.offset]: 0 });
+    }
+  }, [search, datasetIdParam, offset, setParams]);
 
-      Object.entries(newParams).forEach(([key, value]) => {
-        if (value) {
-          updatedParams.set(key, String(value));
-        } else {
-          updatedParams.delete(key);
-        }
+  // Disable map view when list layout is selected.
+  useEffect(() => {
+    if (layout === LayoutView.LIST && mapIsActive) {
+      void setParams({ [SEARCH_PARAMS.mapIsActive]: false });
+    }
+  }, [layout, mapIsActive, setParams]);
+
+  const setSearch = useCallback(
+    (value: string) => {
+      void setParams({
+        [SEARCH_PARAMS.searchQuery]: value || null,
+        [SEARCH_PARAMS.offset]: 0,
       });
-
-      setSearchParams(updatedParams, { replace: true });
     },
-    [searchParams, setSearchParams],
+    [setParams],
   );
 
-  //reset offset back to 0 when searching or when ID filtering is applied from the map.
-  useEffect(() => {
-    if (
-      (query[SEARCH_PARAMS.searchQuery] !== "" ||
-        query[SEARCH_PARAMS.id] !== "") &&
-      (query[SEARCH_PARAMS.offset] as number) > 0
-    ) {
-      updateQuery({ [SEARCH_PARAMS.offset]: 0 });
-    }
-  }, [
-    [
-      query[SEARCH_PARAMS.searchQuery],
-      query[SEARCH_PARAMS.offset],
-      query[SEARCH_PARAMS.id],
-    ],
-  ]);
+  const setOrdering = useCallback(
+    (value: string) => {
+      void setParams({
+        [SEARCH_PARAMS.ordering]: value,
+        [SEARCH_PARAMS.offset]: 0,
+      });
+    },
+    [setParams],
+  );
 
-  useEffect(() => {
-    const newQuery = {
-      [SEARCH_PARAMS.offset]: defaultQueries[SEARCH_PARAMS.offset],
-      [SEARCH_PARAMS.ordering]: defaultQueries[SEARCH_PARAMS.ordering],
-      [SEARCH_PARAMS.searchQuery]: defaultQueries[SEARCH_PARAMS.searchQuery],
-      [SEARCH_PARAMS.mapIsActive]: defaultQueries[SEARCH_PARAMS.mapIsActive],
-      [SEARCH_PARAMS.id]: defaultQueries[SEARCH_PARAMS.id],
-    };
-    setQuery(newQuery);
-  }, []);
+  const setLayout = useCallback(
+    (value: string) => {
+      void setParams({ [SEARCH_PARAMS.layout]: value });
+    },
+    [setParams],
+  );
+
+  const setMapView = useCallback(
+    (value: boolean) => {
+      void setParams({ [SEARCH_PARAMS.mapIsActive]: value });
+    },
+    [setParams],
+  );
+
+  const setDatasetId = useCallback(
+    (value: string | number | null) => {
+      void setParams({
+        [SEARCH_PARAMS.id]: value ? String(value) : null,
+        [SEARCH_PARAMS.offset]: 0,
+      });
+    },
+    [setParams],
+  );
 
   const clearAllFilters = useCallback(() => {
-    const resetParams = new URLSearchParams();
-    setSearchParams(resetParams);
-    setQuery((prev) => ({
-      // Preserve existing query params
-      ...prev,
-      // Clear only the filter fields
-      [SEARCH_PARAMS.searchQuery]: "",
-      [SEARCH_PARAMS.id]: "",
-    }));
-  }, []);
+    void setParams({
+      [SEARCH_PARAMS.searchQuery]: null,
+      [SEARCH_PARAMS.id]: null,
+      [SEARCH_PARAMS.offset]: 0,
+    });
+  }, [setParams]);
 
-  const mapViewIsActive = Boolean(query[SEARCH_PARAMS.mapIsActive]);
+  const goToNextPage = useCallback(() => {
+    if (data?.hasNext) {
+      void setParams({ [SEARCH_PARAMS.offset]: offset + PAGE_LIMIT });
+    }
+  }, [data?.hasNext, offset, setParams]);
+
+  const goToPrevPage = useCallback(() => {
+    if (data?.hasPrev) {
+      void setParams({
+        [SEARCH_PARAMS.offset]: Math.max(offset - PAGE_LIMIT, 0),
+      });
+    }
+  }, [data?.hasPrev, offset, setParams]);
+
+  const mapViewIsActive = mapIsActive && layout !== LayoutView.LIST;
 
   return {
-    query,
     data,
     isPending,
     isPlaceholderData,
     isError,
-    updateQuery,
     refetch,
+    search,
+    ordering,
+    layout,
+    offset,
     mapViewIsActive,
+    datasetIdParam,
+    setSearch,
+    setOrdering,
+    setLayout,
+    setMapView,
+    setDatasetId,
     clearAllFilters,
+    goToNextPage,
+    goToPrevPage,
   };
 };
