@@ -94,13 +94,13 @@ export const CreateDatasetStepTwo = () => {
     showSuccessToast(TOAST_NOTIFICATIONS.drawingModeActivated);
   };
 
-//   const handleOffsetNudge = (dx: number, dy: number) => {
-//     const nextOffset: [number, number] = [
-//       Number((flow.createdDatasetOffset[0] + dx * OFFSET_STEP).toFixed(2)),
-//       Number((flow.createdDatasetOffset[1] + dy * OFFSET_STEP).toFixed(2)),
-//     ];
-//     void flow.handleDatasetOffsetChange(nextOffset);
-//   };
+  //   const handleOffsetNudge = (dx: number, dy: number) => {
+  //     const nextOffset: [number, number] = [
+  //       Number((flow.createdDatasetOffset[0] + dx * OFFSET_STEP).toFixed(2)),
+  //       Number((flow.createdDatasetOffset[1] + dy * OFFSET_STEP).toFixed(2)),
+  //     ];
+  //     void flow.handleDatasetOffsetChange(nextOffset);
+  //   };
 
   const handleDownloadLabels = async (aoiId: number) => {
     try {
