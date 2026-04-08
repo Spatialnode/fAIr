@@ -24,7 +24,7 @@ export const UserProfileDatasetsPage = () => {
     setOrdering,
     goToNextPage,
     goToPrevPage,
-    layout
+    layout,
   } = useDatasetsQueryParams(user.osm_id);
 
   return (
@@ -57,7 +57,7 @@ export const UserProfileDatasetsPage = () => {
               className="inline-flex"
             />
             <div>
-               <Pagination
+              <Pagination
                 totalLength={data?.count as number}
                 hasNextPage={data?.hasNext as boolean}
                 hasPrevPage={data?.hasPrev as boolean}
@@ -77,7 +77,7 @@ export const UserProfileDatasetsPage = () => {
         </div>
         {/* Dataset List */}
         <DatasetList
-        layout={layout as LayoutView}
+          layout={layout as LayoutView}
           isError={isError}
           datasets={data?.results as TTrainingDataset[]}
           isPending={isPending}

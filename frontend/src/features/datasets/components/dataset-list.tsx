@@ -15,7 +15,7 @@ export const DatasetList = ({
   selectedDatasetId,
   onDatasetSelect,
   navigateOnClick,
-  layout
+  layout,
 }: {
   datasets: TTrainingDataset[];
   isPending: boolean;

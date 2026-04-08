@@ -17,7 +17,7 @@ import {
   useModelsContext,
 } from "@/app/providers/models-provider";
 
-const DirectionalButton = ({
+export const DirectionalButton = ({
   positionClasses,
   icon,
   tooltip,

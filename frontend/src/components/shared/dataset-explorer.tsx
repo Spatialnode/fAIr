@@ -32,7 +32,6 @@ export const DatasetExplorer = ({
   disableInstruction?: boolean;
   navigateOnClick?: boolean;
 }) => {
-
   const {
     data,
     isError,
@@ -91,20 +90,26 @@ export const DatasetExplorer = ({
             placeholder="Search datasets by name or id..."
             className="w-full max-w-xl"
           />
-          <ClearFilters query={{
-            [SEARCH_PARAMS.searchQuery]: search,
-            [SEARCH_PARAMS.id]: datasetIdParam,
-          }}
-            clearAllFilters={clearAllFilters} />
+          <ClearFilters
+            query={{
+              [SEARCH_PARAMS.searchQuery]: search,
+              [SEARCH_PARAMS.id]: datasetIdParam,
+            }}
+            clearAllFilters={clearAllFilters}
+          />
         </div>
         <div className="flex gap-x-3">
-          <ShowMapToggle query={{ [SEARCH_PARAMS.mapIsActive]: mapViewIsActive }} updateQuery={(params) => setMapView(params[SEARCH_PARAMS.mapIsActive] as boolean)} />
+          <ShowMapToggle
+            query={{ [SEARCH_PARAMS.mapIsActive]: mapViewIsActive }}
+            updateQuery={(params) =>
+              setMapView(params[SEARCH_PARAMS.mapIsActive] as boolean)
+            }
+          />
           <LayoutToggle
             query={{ [SEARCH_PARAMS.layout]: layout }}
             updateQuery={(params) =>
               setLayout(params[SEARCH_PARAMS.layout] as string)
             }
-
             disabled={mapViewIsActive}
           />
         </div>
@@ -162,7 +167,6 @@ export const DatasetExplorer = ({
             refetch={refetch}
             showUsername
             layout={activeLayout}
-
             selectedDatasetId={
               selectedTrainingDatasetId
                 ? Number(selectedTrainingDatasetId)
@@ -180,8 +184,8 @@ export const DatasetExplorer = ({
             id={mapViewElementId}
           >
             {mapDataIsPending ||
-              mapDataIsError ||
-              mapData.features.length === 0 ? (
+            mapDataIsError ||
+            mapData.features.length === 0 ? (
               <div className="w-full h-full animate-pulse bg-light-gray flex items-center justify-center">
                 <Spinner />
               </div>

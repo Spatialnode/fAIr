@@ -54,7 +54,7 @@ type LabelState = {
   shouldPoll: boolean;
 };
 
-type TDropdownMenuItems = {
+export type TDropdownMenuItems = {
   tooltip: string;
   isIcon?: boolean;
   imageSrc?: string;
