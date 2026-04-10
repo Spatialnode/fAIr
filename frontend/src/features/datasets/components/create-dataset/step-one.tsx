@@ -24,6 +24,7 @@ import {
   FieldLabel,
   InputClassName,
 } from "@/features/datasets/components/create-dataset/shared";
+import { ToolTip } from "@/components/ui/tooltip";
 
 export const CreateDatasetStepOne = () => {
   const navigate = useNavigate();
@@ -269,15 +270,32 @@ export const CreateDatasetStepOne = () => {
         </div>
         <p className="text-center text-body-2 text-grey">Step 1 of 2</p>
         <div className="flex justify-end">
-          <Button
-            className="!w-fit min-w-40"
-            uppercase={false}
-            disabled={!flow.canContinueStepOne}
-            spinner={flow.continueStepOnePending}
-            onClick={flow.handleContinueToStepTwo}
+          <ToolTip
+            content={
+              !flow.canContinueStepOne ? (
+                <div className="max-w-64 space-y-1 text-body-4">
+                  <p className="font-semibold">Following fields are required:</p>
+                  <ul className="ml-4 list-disc">
+                    {flow.missingStepOneRequiredFields.map((field) => (
+                      <li key={field}>{field}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null
+            }
           >
-            Continue
-          </Button>
+            <span className="inline-flex">
+              <Button
+                className="!w-fit min-w-40"
+                uppercase={false}
+                disabled={!flow.canContinueStepOne}
+                spinner={flow.continueStepOnePending}
+                onClick={flow.handleContinueToStepTwo}
+              >
+                Continue
+              </Button>
+            </span>
+          </ToolTip>
         </div>
       </div>
     </div>

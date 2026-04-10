@@ -73,7 +73,10 @@ export const JOSM_REMOTE_URL: string = parseStringEnv(
   ENVS.JOSM_REMOTE_URL,
   "http://127.0.0.1:8111/",
 );
-
+/**
+ * The Number of cards to show in the dataset card.
+ */
+export const MAX_VISIBLE_TAGS = 2;
 /**
  * The OSM Database status API endpoint.
  */

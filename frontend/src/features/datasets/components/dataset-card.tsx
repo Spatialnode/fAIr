@@ -8,6 +8,7 @@ import {
   hasMapSwipeBadge,
 } from "@/features/datasets/utils/dataset-flow-mocks";
 import Badge from "@/components/ui/badge/badge";
+import { DatasetTags } from "./dataset-tags";
 export const DatasetCard = ({
   dataset,
   showUsername = true,
@@ -22,6 +23,7 @@ export const DatasetCard = ({
   navigateOnClick?: boolean;
 }) => {
   const tags = getDatasetDummyTags(dataset.id);
+
   const showMapSwipeIndicator = hasMapSwipeBadge(dataset.id);
   const handleClick: React.MouseEventHandler = () => {
     if (navigateOnClick) {
@@ -86,7 +88,7 @@ export const DatasetCard = ({
           <div>
             <p className="text-body-4 text-grey">Used by:</p>
             <p className="text-body-3 font-semibold text-dark">
-              {dataset.models_count} Model{dataset.models_count ? "s" : ""}
+              {dataset.models_count} Model{dataset.models_count === 1 ? "" : "s"}
             </p>
           </div>
           {showUsername && (
@@ -98,17 +100,7 @@ export const DatasetCard = ({
             </div>
           )}
         </div>
-
-        <div className={`flex flex-wrap gap-2 `}>
-          {tags.map((tag) => (
-            <span
-              key={`${dataset.id}-${tag}`}
-              className="rounded-xl bg-off-white px-2 py-1 text-body-4  text-dark"
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
+        <DatasetTags datasetId={dataset.id} tags={tags} />
       </div>
     </Link>
   );

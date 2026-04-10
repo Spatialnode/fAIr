@@ -150,3 +150,13 @@ export const getYouTubeEmbedUrl = (url: string) => {
     ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1`
     : BACKUP_VIDEO_URL; // fallback
 };
+
+
+/**
+ * Splits an array into visible and hidden arrays based on a limit.
+ */
+export const splitArray = <T,>(arr: T[], limit: number) => ({
+  visible: arr.slice(0, limit),
+  hidden: arr.slice(limit),
+  hasHidden: arr.length > limit,
+});

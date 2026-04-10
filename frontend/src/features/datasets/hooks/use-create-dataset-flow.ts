@@ -170,7 +170,50 @@ export const useCreateDatasetFlow = () => {
     isOpenAerialMap,
     setTilePreviewLoading,
   ]);
+ const missingStepOneRequiredFields = useMemo(() => {
+    const missingFields: string[] = [];
 
+    if (!metadataForm.hasValidDatasetName) {
+      missingFields.push("Dataset Name");
+    }
+    if (!metadataForm.hasValidDatasetDescription) {
+      missingFields.push("Dataset Description");
+    }
+
+    if (tileserverURL.trim().length === 0) {
+      missingFields.push("Tile Server URL");
+    } else if (!tileServiceTypeValidity.valid) {
+      missingFields.push("Valid Tile Server URL");
+    }
+
+    if (metadataForm.datasetMetadataForm.taskType === "") {
+      missingFields.push("Task Type");
+    }
+    if (metadataForm.datasetMetadataForm.geometryType === "") {
+      missingFields.push("Geometry Type");
+    }
+    if (metadataForm.datasetMetadataForm.featureType === "") {
+      missingFields.push("Feature Type");
+    }
+    if (
+      !metadataForm.datasetMetadataForm.keyValues.some(
+        (value) => value.trim().length > 0,
+      )
+    ) {
+      missingFields.push("Key Value");
+    }
+
+    return missingFields;
+  }, [
+    metadataForm.hasValidDatasetName,
+    metadataForm.hasValidDatasetDescription,
+    metadataForm.datasetMetadataForm.taskType,
+    metadataForm.datasetMetadataForm.geometryType,
+    metadataForm.datasetMetadataForm.featureType,
+    metadataForm.datasetMetadataForm.keyValues,
+    tileServiceTypeValidity.valid,
+    tileserverURL,
+  ]);
   // Fit map to TileJSON bounds
   useEffect(() => {
     if (!tileJSONMetadata?.bounds || !map) return;
@@ -491,7 +534,7 @@ export const useCreateDatasetFlow = () => {
     continueStepOnePending:
       createDatasetMutation.isPending || updateDatasetMutation.isPending,
     handleContinueToStepTwo,
-
+missingStepOneRequiredFields,
     createdDatasetId,
     createdDatasetOffset,
     handleDatasetOffsetChange,

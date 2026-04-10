@@ -12,7 +12,7 @@ import {
   FieldLabel,
   InputClassName,
   ModalShell,
-} from "./shared";
+} from "@/features/datasets/components/create-dataset/shared";
 import "./flow-dialog.css";
 import { useCreateDatasetFlowContext } from "@/features/datasets/contexts/create-dataset-flow-context";
 import { SourceIcon } from "@/components/ui/icons/source-icon";
