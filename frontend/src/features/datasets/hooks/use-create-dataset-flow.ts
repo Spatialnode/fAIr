@@ -170,7 +170,7 @@ export const useCreateDatasetFlow = () => {
     isOpenAerialMap,
     setTilePreviewLoading,
   ]);
- const missingStepOneRequiredFields = useMemo(() => {
+  const missingStepOneRequiredFields = useMemo(() => {
     const missingFields: string[] = [];
 
     if (!metadataForm.hasValidDatasetName) {
@@ -534,7 +534,7 @@ export const useCreateDatasetFlow = () => {
     continueStepOnePending:
       createDatasetMutation.isPending || updateDatasetMutation.isPending,
     handleContinueToStepTwo,
-missingStepOneRequiredFields,
+    missingStepOneRequiredFields,
     createdDatasetId,
     createdDatasetOffset,
     handleDatasetOffsetChange,

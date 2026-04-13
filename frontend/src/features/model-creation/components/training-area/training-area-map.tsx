@@ -49,6 +49,7 @@ const TrainingAreaMap = ({
   trainingAreaIsPending,
   tileServiceBounds,
   trainingDatasetOffset,
+  showDrawControl = true,
 }: {
   tileServiceURL: string;
   data?: PaginatedTrainingArea;
@@ -62,6 +63,7 @@ const TrainingAreaMap = ({
   trainingAreaIsPending: boolean;
   trainingDatasetOffset: { x: number; y: number };
   tileServiceBounds?: LngLatBoundsLike;
+  showDrawControl?: boolean;
 }) => {
   // Training Areas
   const trainingAreasOutlineLayerId = `${MAP_STYLES_PREFIX}-dataset-${trainingDatasetId}-training-area-layer`;
@@ -290,7 +292,7 @@ const TrainingAreaMap = ({
         </MapCursorToolTip>
       )}
       <div className={"absolute top-28 left-3 map-elements-z-index"}>
-        {terraDraw && (
+        {terraDraw && showDrawControl && (
           <DrawControl
             terraDraw={terraDraw}
             drawingMode={DrawingModes.RECTANGLE}

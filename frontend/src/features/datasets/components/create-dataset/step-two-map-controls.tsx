@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { ArrowMoveIcon, FileUploadIcon } from "@/components/ui/icons";
-import { DrawIcon } from "@/components/ui/icons/draw-icon";
+import { ArrowMoveIcon, UploadIcon } from "@/components/ui/icons";
+import { NewDrawIcon } from "@/components/ui/icons/new-draw-icon";
 import { ButtonVariant, DrawingModes } from "@/enums";
 
 type StepTwoMapSideControlsProps = {
@@ -21,32 +21,34 @@ export const StepTwoMapSideControls = ({
   const drawIsActive = drawingMode === DrawingModes.RECTANGLE;
 
   return (
-    <div className="pointer-events-auto absolute left-3 top-24 flex flex-col gap-2">
-      <div className="flex w-10 flex-col overflow-hidden rounded-sm border border-primary shadow-sm">
+    <div className="pointer-events-auto absolute left-3 top-24 flex flex-col gap-3">
+      <div className="flex w-10 gap-2 flex-col overflow-hidden  shadow-sm">
         <button
           type="button"
-          className={`flex h-10 w-10 items-center justify-center ${
-            drawIsActive ? "bg-primary text-white" : "bg-white text-primary"
+          className={`flex size-[36px] items-center justify-center ${
+            drawIsActive ? " bg-white text-primary" : "bg-primary text-white"
           }`}
           onClick={onDrawClick}
           aria-label="Draw AOI"
         >
-          <DrawIcon className="h-4 w-4" />
+          
+          <NewDrawIcon className="h-4 w-4" />
         </button>
 
         <button
           type="button"
-          className="flex h-10 w-10 items-center justify-center border-t border-white/35 bg-primary text-white"
+          className="flex size-[36px] items-center justify-center border-t border-white/35 bg-primary text-white"
           onClick={onUploadClick}
           aria-label="Upload AOI"
         >
-          <FileUploadIcon className="h-4 w-4" />
+                  <UploadIcon className="h-4 w-4" />
+
         </button>
       </div>
 
       <button
         type="button"
-        className={`flex h-10 w-10 items-center justify-center rounded-sm border border-gray-border ${
+        className={`flex size-[36px] items-center justify-center rounded-sm border border-gray-border ${
           offsetPanelOpen ? "bg-primary text-white" : "bg-white text-dark"
         }`}
         onClick={onToggleOffsetPanel}
@@ -70,7 +72,7 @@ export const StepTwoMapBottomControls = ({
   onUploadClick,
 }: StepTwoMapBottomControlsProps) => (
   <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2">
-    <div className="flex items-center gap-2 rounded-xl border border-gray-border bg-white p-1 shadow-sm">
+    <div className="flex items-center gap-2 rounded-xl border border-gray-border bg-white px-3 py-2 ">
       <Button
         className="!w-fit min-w-28"
         uppercase={false}
@@ -78,7 +80,7 @@ export const StepTwoMapBottomControls = ({
       >
         <span className="inline-flex items-center gap-2">
           Draw AOI
-          <DrawIcon className="h-4 w-4 text-white" />
+          <NewDrawIcon className="h-4 w-4 text-white" />
         </span>
       </Button>
       <Button
@@ -90,7 +92,7 @@ export const StepTwoMapBottomControls = ({
       >
         <span className="inline-flex items-center gap-2">
           Upload AOI
-          <FileUploadIcon className="h-4 w-4" />
+            <UploadIcon className="h-4 w-4" />
         </span>
       </Button>
     </div>

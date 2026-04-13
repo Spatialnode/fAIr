@@ -2,7 +2,7 @@ import FileUploadDialog from "@/components/shared/modals/file-upload-dialog";
 import { Button } from "@/components/ui/button";
 import { DropDown } from "@/components/ui/dropdown";
 import { DropdownMenuItem } from "@/components/ui/dropdown/dropdown";
-import { ArrowBackIcon, YouTubePlayIcon } from "@/components/ui/icons";
+import { ArrowBackIcon, InfoIcon, YouTubePlayIcon } from "@/components/ui/icons";
 import { TOAST_NOTIFICATIONS } from "@/constants";
 import { ButtonVariant, DrawingModes } from "@/enums";
 import TrainingAreaMap from "@/features/model-creation/components/training-area/training-area-map";
@@ -16,22 +16,23 @@ import { useCreateDatasetFlowContext } from "@/features/datasets/contexts/create
 import { useStepTwoAoiAnchors } from "@/features/datasets/hooks/use-step-two-aoi-anchors";
 import { useDeleteTrainingArea } from "@/features/model-creation/hooks/use-training-areas";
 import { getTrainingAreaLabels } from "@/features/model-creation/api/get-trainings";
-// import { OFFSET_STEP } from "@/config";
+import { OFFSET_STEP } from "@/config";
 import {
   StepTwoMapBottomControls,
-  //   StepTwoMapSideControls,
+  StepTwoMapSideControls,
 } from "@/features/datasets/components/create-dataset/step-two-map-controls";
-// import { StepTwoOffsetPanel } from "@/features/datasets/components/create-dataset/step-two-offset-panel";
+import { StepTwoOffsetPanel } from "@/features/datasets/components/create-dataset/step-two-offset-panel";
 import {
   StepTwoAoiActionCard,
   StepTwoAoiAnchors,
 } from "@/features/datasets/components/create-dataset/step-two-aoi-actions";
+import { ToolTip } from "@/components/ui/tooltip";
 
 export const CreateDatasetStepTwo = () => {
   const { map, mapContainerRef, drawingMode, setDrawingMode, terraDraw } =
     useMapInstance();
   const flow = useCreateDatasetFlowContext();
-  //   const [offsetPanelOpen, setOffsetPanelOpen] = useState<boolean>(false);
+  const [offsetPanelOpen, setOffsetPanelOpen] = useState<boolean>(false);
   const [selectedAoiId, setSelectedAoiId] = useState<number | null>(null);
 
   const {
@@ -94,13 +95,13 @@ export const CreateDatasetStepTwo = () => {
     showSuccessToast(TOAST_NOTIFICATIONS.drawingModeActivated);
   };
 
-  //   const handleOffsetNudge = (dx: number, dy: number) => {
-  //     const nextOffset: [number, number] = [
-  //       Number((flow.createdDatasetOffset[0] + dx * OFFSET_STEP).toFixed(2)),
-  //       Number((flow.createdDatasetOffset[1] + dy * OFFSET_STEP).toFixed(2)),
-  //     ];
-  //     void flow.handleDatasetOffsetChange(nextOffset);
-  //   };
+  const handleOffsetNudge = (dx: number, dy: number) => {
+    const nextOffset: [number, number] = [
+      Number((flow.createdDatasetOffset[0] + dx * OFFSET_STEP).toFixed(2)),
+      Number((flow.createdDatasetOffset[1] + dy * OFFSET_STEP).toFixed(2)),
+    ];
+    void flow.handleDatasetOffsetChange(nextOffset);
+  };
 
   const handleDownloadLabels = async (aoiId: number) => {
     try {
@@ -127,7 +128,7 @@ export const CreateDatasetStepTwo = () => {
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-5">
-            <h1 className="text-title-1 font-bold text-primary md:text-size-title-2">
+            <h1 className="text-title-1 font-bold text-primary md:text-title-2">
               Create Training Area &amp; Map Data
             </h1>
             <p className="text-body-2 font-medium text-dark">
@@ -142,14 +143,15 @@ export const CreateDatasetStepTwo = () => {
             </button>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="text-body-3 text-dark">Labels Source</span>
+       <div className="flex flex-wrap items-center gap-3">
+        <div className="flex items-center gap-2">
+              <span className="text-body-3 text-dark">Labels Source</span>
             <div className="">
               <DropDown
-                className="dataset-step-two-label-dropdown"
+                className=" w-48"
                 distance={8}
-                disableCheveronIcon={false}
                 menuItems={labelSourceItems}
+                disableCheveronIcon
                 handleMenuSelection={(event) => {
                   const selected = event?.detail?.item?.value as
                     | LabelSource
@@ -158,7 +160,7 @@ export const CreateDatasetStepTwo = () => {
                   flow.handleLabelSourceChange(selected);
                 }}
                 triggerComponent={
-                  <div className="flex h-10 w-full items-center rounded-md border border-gray-border bg-[#f4f5f7] px-3 text-body-4">
+                  <div className="flex h-10 w-full items-center rounded-md border border-gray-border bg-off-white px-3 text-body-4">
                     <span
                       className={
                         flow.labelSource === "" ? "text-grey" : "text-dark"
@@ -170,9 +172,16 @@ export const CreateDatasetStepTwo = () => {
                 }
               />
             </div>
+            <ToolTip content="Choose where labels should come from for this dataset (OSM, MapSwipe, Tasking Manager, or Custom).">
+              <span className="inline-flex items-center text-grey">
+                <InfoIcon className="h-4 w-4" />
+              </span>
+            </ToolTip>
+        </div>
             <Button
-              className="!w-fit min-w-32"
+              className=" !w-fit !rounded-md !text-xs min-w-32"
               uppercase={false}
+              size={'medium'}
               spinner={flow.actionPending}
               disabled={flow.actionDisabled}
               onClick={flow.prepareModalForLabelSource}
@@ -190,6 +199,7 @@ export const CreateDatasetStepTwo = () => {
               trainingDatasetId={flow.createdDatasetId}
               offset={flow.trainingAreasOffset}
               map={map}
+              showDrawControl={false}
               mapContainerRef={mapContainerRef}
               terraDraw={terraDraw}
               setDrawingMode={setDrawingMode}
@@ -203,21 +213,21 @@ export const CreateDatasetStepTwo = () => {
             />
           </div>
 
-          <div className="pointer-events-none absolute inset-0 z-20">
-            {/* <StepTwoMapSideControls
+          <div className="pointer-events-none absolute top-4 z-20">
+            <StepTwoMapSideControls
               drawingMode={drawingMode}
               offsetPanelOpen={offsetPanelOpen}
               onDrawClick={handleDrawAoi}
               onUploadClick={openAoiUploadDialog}
               onToggleOffsetPanel={() => setOffsetPanelOpen((prev) => !prev)}
-            /> */}
+            />
 
-            {/* {offsetPanelOpen ? (
+            {offsetPanelOpen ? (
               <StepTwoOffsetPanel
                 offset={flow.createdDatasetOffset}
                 onNudge={handleOffsetNudge}
               />
-            ) : null} */}
+            ) : null}
 
             <StepTwoAoiAnchors
               anchors={aoiAnchors}

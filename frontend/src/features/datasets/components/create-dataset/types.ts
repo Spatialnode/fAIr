@@ -9,10 +9,12 @@ export type DatasetFlowModal =
   | null
   | "osm"
   | "mapswipe"
+  | "create-mapswipe"
   | "tasking-manager"
   | "custom"
   | "build-confirm"
   | "build-success";
+
 
 export type DatasetMetadataForm = {
   name: string;

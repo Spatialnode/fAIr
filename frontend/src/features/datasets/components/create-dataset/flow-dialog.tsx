@@ -3,7 +3,6 @@ import { Dialog } from "@/components/ui/dialog";
 import { Select } from "@/components/ui/form";
 import { CheckIcon, InfoIcon } from "@/components/ui/icons";
 import { APPLICATION_ROUTES } from "@/constants";
-import { TabGroup } from "@/components/ui/tab-group";
 import { ButtonVariant, SHOELACE_SIZES } from "@/enums";
 import { useNavigate } from "react-router-dom";
 import { FEATURE_TYPES } from "./constants";
@@ -16,6 +15,8 @@ import {
 import "./flow-dialog.css";
 import { useCreateDatasetFlowContext } from "@/features/datasets/contexts/create-dataset-flow-context";
 import { SourceIcon } from "@/components/ui/icons/source-icon";
+import { CreateDatasetMapSwipeFlow } from "@/features/datasets/components/create-dataset/modals/mapswipe-data-source";
+import { MapswipeLocateProjectModal } from "@/features/datasets/components/create-dataset/modals/create-new-mapswipe-project";
 
 export const CreateDatasetFlowDialog = () => {
   const flow = useCreateDatasetFlowContext();
@@ -48,7 +49,7 @@ export const CreateDatasetFlowDialog = () => {
       isOpened={flow.flowModal !== null}
       closeDialog={closeFlowModal}
       noHeader
-      size={SHOELACE_SIZES.SMALL}
+      size={flow.flowModal === "create-mapswipe" ? SHOELACE_SIZES.MEDIUM_LARGE : SHOELACE_SIZES.SMALL}
       preventClose={flow.flowModal === "build-success"}
     >
       {flow.flowModal === "osm" && (
@@ -57,12 +58,14 @@ export const CreateDatasetFlowDialog = () => {
           className="dataset-flow-osm-modal"
           closeButtonClassName="dataset-flow-osm-close"
         >
-          <SourceIcon />
-          <h3 className="mx-auto mb-8 max-w-xs text-center text-title-3 font-medium leading-snug text-dark">
+         <div className="justify-center space-y-6 items-center flex flex-col">
+           <SourceIcon />
+          <h3 className=" text-center text-sm font-medium leading-snug text-dark">
             Select the feature you want to get the data from OSM
           </h3>
+         </div>
 
-          <div className="space-y-5">
+          <div className="space-y-5 mt-5">
             <div>
               <FieldLabel label="Feature Type" showInfoIcon={false} />
               <Select
@@ -78,13 +81,13 @@ export const CreateDatasetFlowDialog = () => {
 
             <div>
               <FieldLabel label="Key Values" showInfoIcon={false} />
-              <p className="mb-3 text-body-4 text-grey">
+              <p className="mb-3 text-xs text-grey">
                 Here are some standard key values for rooftop - value 1, value
                 2, value 3, value 4, value 5...
               </p>
               <div className="space-y-2">
                 {flow.osmModalValues.map((value, index) => (
-                  <div key={`osm-modal-value-${index}`} className="flex gap-3">
+                  <div key={`osm-modal-value-${index}`} className="flex h-10 rounded-md gap-3">
                     <input
                       className={InputClassName}
                       placeholder="Enter key value"
@@ -100,7 +103,7 @@ export const CreateDatasetFlowDialog = () => {
                     />
                     <button
                       type="button"
-                      className="h-12 w-12 rounded-md border border-gray-border bg-[#e4e4e4] text-title-3 text-grey"
+                      className="h-10 w-10  items-center justify-center rounded-md border border-gray-border bg-off-white text-title-3 text-grey"
                       onClick={() =>
                         removeIndexedArrayValue(
                           flow.osmModalValues,
@@ -114,15 +117,17 @@ export const CreateDatasetFlowDialog = () => {
                   </div>
                 ))}
               </div>
-              <button
+             <div className="flex justify-center items-center ">
+               <button
                 type="button"
-                className="mt-2 text-body-3 font-medium text-primary"
+                className="mt-3 text-body-3 text-primary"
                 onClick={() =>
                   flow.setOsmModalValues([...flow.osmModalValues, ""])
                 }
               >
                 + Add key value
               </button>
+             </div>
             </div>
           </div>
 
@@ -137,96 +142,32 @@ export const CreateDatasetFlowDialog = () => {
         </ModalShell>
       )}
 
-      {flow.flowModal === "mapswipe" && (
-        <ModalShell onClose={closeFlowModal}>
-          <div className="justify-center items-center flex">
-            <SourceIcon />
-          </div>
-
-          <h3 className="mx-auto mb-6 max-w-xs text-center text-title-3 font-semibold text-dark">
-            Get Labels from MapSwipe project
-          </h3>
-
-          <div className="mb-5 flex justify-center">
-            <TabGroup
-              tabs={["Existing Project", "New Project"]}
-              activeTab={flow.mapSwipeProjectType}
-              setActiveTab={(tab) =>
-                flow.setMapSwipeProjectType(
-                  tab as "Existing Project" | "New Project",
-                )
-              }
-              className="rounded-full border border-gray-border bg-white"
-            />
-          </div>
-
-          {flow.mapSwipeProjectType === "New Project" ? (
-            <p className="mx-auto mb-5 max-w-xs text-center text-body-2 italic text-grey">
-              To create a new MapSwipe project, one or more training area must
-              be drawn.
-            </p>
-          ) : (
-            <div>
-              <FieldLabel label="Project ID" />
-              <div className="space-y-2">
-                {flow.mapSwipeProjectIds.map((value, index) => (
-                  <div key={`mapswipe-id-${index}`} className="flex gap-3">
-                    <input
-                      className={InputClassName}
-                      placeholder="Enter project ID"
-                      value={value}
-                      onChange={(event) =>
-                        updateIndexedArrayValue(
-                          flow.mapSwipeProjectIds,
-                          flow.setMapSwipeProjectIds,
-                          index,
-                          event.target.value,
-                        )
-                      }
-                    />
-                    <button
-                      type="button"
-                      className="h-12 w-12 rounded border border-gray-border bg-secondary text-title-3 text-grey"
-                      onClick={() =>
-                        removeIndexedArrayValue(
-                          flow.mapSwipeProjectIds,
-                          flow.setMapSwipeProjectIds,
-                          index,
-                        )
-                      }
-                    >
-                      -
-                    </button>
-                  </div>
-                ))}
-              </div>
-
-              <button
-                type="button"
-                className="mt-3 text-body-3 font-medium text-primary"
-                onClick={() =>
-                  flow.setMapSwipeProjectIds([...flow.mapSwipeProjectIds, ""])
-                }
-              >
-                + Add another ID
-              </button>
-            </div>
-          )}
-
-          <Button
-            className="mt-7"
-            uppercase={false}
-            disabled={
-              flow.mapSwipeProjectType === "Existing Project" &&
-              flow.validMapSwipeIds.length === 0
-            }
-            onClick={flow.handleConfirmMapSwipeFlow}
-          >
-            Confirm
-          </Button>
-        </ModalShell>
+  
+ {flow.flowModal === "mapswipe" && (
+        <CreateDatasetMapSwipeFlow
+          closeFlowModal={closeFlowModal}
+          mapSwipeProjectType={flow.mapSwipeProjectType}
+          setMapSwipeProjectType={flow.setMapSwipeProjectType}
+          mapSwipeProjectIds={flow.mapSwipeProjectIds}
+          setMapSwipeProjectIds={flow.setMapSwipeProjectIds}
+          validMapSwipeIds={flow.validMapSwipeIds}
+          handleConfirmMapSwipeFlow={flow.handleConfirmMapSwipeFlow}
+          openNewProjectModal={() => flow.setFlowModal("create-mapswipe")}
+        />
       )}
-
+      
+      {flow.flowModal === "create-mapswipe" && (
+        <MapswipeLocateProjectModal
+          onClose={closeFlowModal}
+          onBack={() => flow.setFlowModal("mapswipe")}
+          onCreate={flow.handleConfirmMapSwipeFlow}
+          datasetName={flow.datasetMetadataForm.name}
+          datasetDescription={flow.datasetMetadataForm.description}
+          featureType={flow.datasetMetadataForm.featureType}
+          keyValues={flow.datasetMetadataForm.keyValues}
+          tileserverURL={flow.tileserverURL}
+        />
+      )}
       {flow.flowModal === "tasking-manager" && (
         <ModalShell onClose={closeFlowModal}>
           <div className="justify-center items-center flex">

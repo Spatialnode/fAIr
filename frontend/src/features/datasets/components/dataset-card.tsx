@@ -88,7 +88,8 @@ export const DatasetCard = ({
           <div>
             <p className="text-body-4 text-grey">Used by:</p>
             <p className="text-body-3 font-semibold text-dark">
-              {dataset.models_count} Model{dataset.models_count === 1 ? "" : "s"}
+              {dataset.models_count} Model
+              {dataset.models_count === 1 ? "" : "s"}
             </p>
           </div>
           {showUsername && (

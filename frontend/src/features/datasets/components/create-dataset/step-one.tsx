@@ -121,6 +121,8 @@ export const CreateDatasetStepOne = () => {
             label="Task Type"
             defaultValue={flow.datasetMetadataForm.taskType}
             placeholder="Select task type"
+            labelWithTooltip
+            toolTipContent="Choose the model task this dataset supports, such as classification, segmentation, or detection."
             options={createSelectOptions(TASK_TYPES)}
             handleChange={(value) =>
               flow.updateDatasetMetadataField("taskType", String(value))
@@ -132,6 +134,8 @@ export const CreateDatasetStepOne = () => {
             defaultValue={flow.datasetMetadataForm.geometryType}
             placeholder="Select geometry type"
             options={createSelectOptions(GEOMETRY_TYPES)}
+            toolTipContent="Choose the annotation geometry used in this dataset, such as polygons or rectangles."
+            labelWithTooltip
             handleChange={(value) =>
               flow.updateDatasetMetadataField("geometryType", String(value))
             }
@@ -142,13 +146,17 @@ export const CreateDatasetStepOne = () => {
             defaultValue={flow.datasetMetadataForm.featureType}
             placeholder="Select feature type"
             options={createSelectOptions(FEATURE_TYPES)}
+            labelWithTooltip
+            toolTipContent="Select the primary feature category this dataset focuses on."
             handleChange={(value) =>
               flow.updateDatasetMetadataField("featureType", String(value))
             }
           />
 
           <div>
-            <FieldLabel label="Key Value" />
+            <FieldLabel label="Key Value"
+              toolTipContent="Define label key values used to fetch or organize mapped features in this dataset."
+            />
             <div className="space-y-2">
               {flow.datasetMetadataForm.keyValues.map((value, index) => (
                 <div key={`dataset-key-value-${index}`} className="flex gap-3">
@@ -181,7 +189,10 @@ export const CreateDatasetStepOne = () => {
           </div>
 
           <div>
-            <FieldLabel label="Tags" />
+            <FieldLabel label="Tags"
+              toolTipContent="Add searchable keywords to make this dataset easier to discover and filter."
+
+            />
             <div
               className={`${InputClassName} min-h-12 py-2`}
               onClick={() => tagsInputRef.current?.focus()}
@@ -274,7 +285,9 @@ export const CreateDatasetStepOne = () => {
             content={
               !flow.canContinueStepOne ? (
                 <div className="max-w-64 space-y-1 text-body-4">
-                  <p className="font-semibold">Following fields are required:</p>
+                  <p className="font-semibold">
+                    Following fields are required:
+                  </p>
                   <ul className="ml-4 list-disc">
                     {flow.missingStepOneRequiredFields.map((field) => (
                       <li key={field}>{field}</li>
