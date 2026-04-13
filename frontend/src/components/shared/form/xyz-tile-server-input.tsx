@@ -13,22 +13,22 @@ const TILE_SERVICE_TYPES: {
   suffix: string;
   value: TileServiceType;
 }[] = [
-    {
-      name: "XYZ Tile Server",
-      suffix: "Standard web mapping tiles.",
-      value: TileServiceType.XYZ,
-    },
-    {
-      name: "TMS Tile Server",
-      suffix: "TileMapService, inverted Y axis.",
-      value: TileServiceType.TMS,
-    },
-    {
-      name: "TileJSON",
-      suffix: "Provides metadata including bounds and zoom levels.",
-      value: TileServiceType.TILEJSON,
-    },
-  ];
+  {
+    name: "XYZ Tile Server",
+    suffix: "Standard web mapping tiles.",
+    value: TileServiceType.XYZ,
+  },
+  {
+    name: "TMS Tile Server",
+    suffix: "TileMapService, inverted Y axis.",
+    value: TileServiceType.TMS,
+  },
+  {
+    name: "TileJSON",
+    suffix: "Provides metadata including bounds and zoom levels.",
+    value: TileServiceType.TILEJSON,
+  },
+];
 
 export const XYZTileServerInput = ({
   tileServerURL,

@@ -31,7 +31,6 @@ export const StepTwoMapSideControls = ({
           onClick={onDrawClick}
           aria-label="Draw AOI"
         >
-          
           <NewDrawIcon className="h-4 w-4" />
         </button>
 
@@ -41,8 +40,7 @@ export const StepTwoMapSideControls = ({
           onClick={onUploadClick}
           aria-label="Upload AOI"
         >
-                  <UploadIcon className="h-4 w-4" />
-
+          <UploadIcon className="h-4 w-4" />
         </button>
       </div>
 
@@ -92,7 +90,7 @@ export const StepTwoMapBottomControls = ({
       >
         <span className="inline-flex items-center gap-2">
           Upload AOI
-            <UploadIcon className="h-4 w-4" />
+          <UploadIcon className="h-4 w-4" />
         </span>
       </Button>
     </div>

@@ -2,7 +2,11 @@ import FileUploadDialog from "@/components/shared/modals/file-upload-dialog";
 import { Button } from "@/components/ui/button";
 import { DropDown } from "@/components/ui/dropdown";
 import { DropdownMenuItem } from "@/components/ui/dropdown/dropdown";
-import { ArrowBackIcon, InfoIcon, YouTubePlayIcon } from "@/components/ui/icons";
+import {
+  ArrowBackIcon,
+  InfoIcon,
+  YouTubePlayIcon,
+} from "@/components/ui/icons";
 import { TOAST_NOTIFICATIONS } from "@/constants";
 import { ButtonVariant, DrawingModes } from "@/enums";
 import TrainingAreaMap from "@/features/model-creation/components/training-area/training-area-map";
@@ -143,45 +147,45 @@ export const CreateDatasetStepTwo = () => {
             </button>
           </div>
 
-       <div className="flex flex-wrap items-center gap-3">
-        <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2">
               <span className="text-body-3 text-dark">Labels Source</span>
-            <div className="">
-              <DropDown
-                className=" w-48"
-                distance={8}
-                menuItems={labelSourceItems}
-                disableCheveronIcon
-                handleMenuSelection={(event) => {
-                  const selected = event?.detail?.item?.value as
-                    | LabelSource
-                    | undefined;
-                  if (!selected) return;
-                  flow.handleLabelSourceChange(selected);
-                }}
-                triggerComponent={
-                  <div className="flex h-10 w-full items-center rounded-md border border-gray-border bg-off-white px-3 text-body-4">
-                    <span
-                      className={
-                        flow.labelSource === "" ? "text-grey" : "text-dark"
-                      }
-                    >
-                      {flow.labelSource || "Select label source"}
-                    </span>
-                  </div>
-                }
-              />
+              <div className="">
+                <DropDown
+                  className=" w-48"
+                  distance={8}
+                  menuItems={labelSourceItems}
+                  disableCheveronIcon
+                  handleMenuSelection={(event) => {
+                    const selected = event?.detail?.item?.value as
+                      | LabelSource
+                      | undefined;
+                    if (!selected) return;
+                    flow.handleLabelSourceChange(selected);
+                  }}
+                  triggerComponent={
+                    <div className="flex h-10 w-full items-center rounded-md border border-gray-border bg-off-white px-3 text-body-4">
+                      <span
+                        className={
+                          flow.labelSource === "" ? "text-grey" : "text-dark"
+                        }
+                      >
+                        {flow.labelSource || "Select label source"}
+                      </span>
+                    </div>
+                  }
+                />
+              </div>
+              <ToolTip content="Choose where labels should come from for this dataset (OSM, MapSwipe, Tasking Manager, or Custom).">
+                <span className="inline-flex items-center text-grey">
+                  <InfoIcon className="h-4 w-4" />
+                </span>
+              </ToolTip>
             </div>
-            <ToolTip content="Choose where labels should come from for this dataset (OSM, MapSwipe, Tasking Manager, or Custom).">
-              <span className="inline-flex items-center text-grey">
-                <InfoIcon className="h-4 w-4" />
-              </span>
-            </ToolTip>
-        </div>
             <Button
               className=" !w-fit !rounded-md !text-xs min-w-32"
               uppercase={false}
-              size={'medium'}
+              size={"medium"}
               spinner={flow.actionPending}
               disabled={flow.actionDisabled}
               onClick={flow.prepareModalForLabelSource}

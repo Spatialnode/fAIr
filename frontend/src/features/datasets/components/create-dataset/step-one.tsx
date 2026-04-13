@@ -154,7 +154,8 @@ export const CreateDatasetStepOne = () => {
           />
 
           <div>
-            <FieldLabel label="Key Value"
+            <FieldLabel
+              label="Key Value"
               toolTipContent="Define label key values used to fetch or organize mapped features in this dataset."
             />
             <div className="space-y-2">
@@ -189,9 +190,9 @@ export const CreateDatasetStepOne = () => {
           </div>
 
           <div>
-            <FieldLabel label="Tags"
+            <FieldLabel
+              label="Tags"
               toolTipContent="Add searchable keywords to make this dataset easier to discover and filter."
-
             />
             <div
               className={`${InputClassName} min-h-12 py-2`}

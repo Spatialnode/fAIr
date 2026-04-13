@@ -15,7 +15,6 @@ export type DatasetFlowModal =
   | "build-confirm"
   | "build-success";
 
-
 export type DatasetMetadataForm = {
   name: string;
   description: string;

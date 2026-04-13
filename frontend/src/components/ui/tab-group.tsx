@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 
-
 type TabGroupVariant = "pill" | "boxed";
 const containerStyles = {
   pill: "flex gap-x-4 border border-gray-border bg-gray-100 overflow-x-auto font-medium w-fit rounded-[4px] p-0.5",
-  boxed: "flex gap-x-2 border border-gray-border bg-gray-100 overflow-x-auto font-medium w-fit rounded-[4px] p-0.5",
+  boxed:
+    "flex gap-x-2 border border-gray-border bg-gray-100 overflow-x-auto font-medium w-fit rounded-[4px] p-0.5",
 };
 
 const tabStyles = {
@@ -64,17 +64,16 @@ export const TabGroup = ({
   const styles = tabStyles[variant];
 
   return (
-    <div
-      className={`${containerClass} ${className}`}
-      role="tablist"
-    >
+    <div className={`${containerClass} ${className}`} role="tablist">
       {tabs.map((tab, index) => {
         const isActive = activeTab === tab;
 
         return (
           <button
             key={tab}
-          ref={(el) => {tabRefs.current[index] = el;           }}
+            ref={(el) => {
+              tabRefs.current[index] = el;
+            }}
             className={`${styles.base} ${
               isActive ? styles.active : styles.inactive
             }`}

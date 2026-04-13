@@ -49,7 +49,11 @@ export const CreateDatasetFlowDialog = () => {
       isOpened={flow.flowModal !== null}
       closeDialog={closeFlowModal}
       noHeader
-      size={flow.flowModal === "create-mapswipe" ? SHOELACE_SIZES.MEDIUM_LARGE : SHOELACE_SIZES.SMALL}
+      size={
+        flow.flowModal === "create-mapswipe"
+          ? SHOELACE_SIZES.MEDIUM_LARGE
+          : SHOELACE_SIZES.SMALL
+      }
       preventClose={flow.flowModal === "build-success"}
     >
       {flow.flowModal === "osm" && (
@@ -58,12 +62,12 @@ export const CreateDatasetFlowDialog = () => {
           className="dataset-flow-osm-modal"
           closeButtonClassName="dataset-flow-osm-close"
         >
-         <div className="justify-center space-y-6 items-center flex flex-col">
-           <SourceIcon />
-          <h3 className=" text-center text-sm font-medium leading-snug text-dark">
-            Select the feature you want to get the data from OSM
-          </h3>
-         </div>
+          <div className="justify-center space-y-6 items-center flex flex-col">
+            <SourceIcon />
+            <h3 className=" text-center text-sm font-medium leading-snug text-dark">
+              Select the feature you want to get the data from OSM
+            </h3>
+          </div>
 
           <div className="space-y-5 mt-5">
             <div>
@@ -87,7 +91,10 @@ export const CreateDatasetFlowDialog = () => {
               </p>
               <div className="space-y-2">
                 {flow.osmModalValues.map((value, index) => (
-                  <div key={`osm-modal-value-${index}`} className="flex h-10 rounded-md gap-3">
+                  <div
+                    key={`osm-modal-value-${index}`}
+                    className="flex h-10 rounded-md gap-3"
+                  >
                     <input
                       className={InputClassName}
                       placeholder="Enter key value"
@@ -117,17 +124,17 @@ export const CreateDatasetFlowDialog = () => {
                   </div>
                 ))}
               </div>
-             <div className="flex justify-center items-center ">
-               <button
-                type="button"
-                className="mt-3 text-body-3 text-primary"
-                onClick={() =>
-                  flow.setOsmModalValues([...flow.osmModalValues, ""])
-                }
-              >
-                + Add key value
-              </button>
-             </div>
+              <div className="flex justify-center items-center ">
+                <button
+                  type="button"
+                  className="mt-3 text-body-3 text-primary"
+                  onClick={() =>
+                    flow.setOsmModalValues([...flow.osmModalValues, ""])
+                  }
+                >
+                  + Add key value
+                </button>
+              </div>
             </div>
           </div>
 
@@ -142,8 +149,7 @@ export const CreateDatasetFlowDialog = () => {
         </ModalShell>
       )}
 
-  
- {flow.flowModal === "mapswipe" && (
+      {flow.flowModal === "mapswipe" && (
         <CreateDatasetMapSwipeFlow
           closeFlowModal={closeFlowModal}
           mapSwipeProjectType={flow.mapSwipeProjectType}
@@ -155,7 +161,7 @@ export const CreateDatasetFlowDialog = () => {
           openNewProjectModal={() => flow.setFlowModal("create-mapswipe")}
         />
       )}
-      
+
       {flow.flowModal === "create-mapswipe" && (
         <MapswipeLocateProjectModal
           onClose={closeFlowModal}
