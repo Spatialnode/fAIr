@@ -67,7 +67,7 @@ class AuthService {
       const response = await apiClient.get(API_ENDPOINTS.USER);
       return response.data;
     } catch (error) {
-      showErrorToast(undefined, "Failed to fetch user data");
+      // showErrorToast(undefined, "Failed to fetch user data");
       throw new Error("Unable to retrieve user data.");
     }
   }

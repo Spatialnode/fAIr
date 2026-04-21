@@ -55,7 +55,7 @@ const Dialog: React.FC<DialogProps> = ({
           closeDialog();
         }
       }}
-      className={`sl-dialog ${labelColor} ${borderRadius} ${noPadding ? " no-padding" : ""}`}
+      className={`sl-dialog hide-scrollbar ${labelColor} ${borderRadius} ${noPadding ? " no-padding" : ""}`}
       style={{
         //@ts-expect-error bad type definition
 

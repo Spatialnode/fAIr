@@ -10,11 +10,11 @@ type DatasetTagsProps = {
 export const DatasetTags = ({
   datasetId,
   tags,
-  visibleLimit = 2,
+  visibleLimit = 3,
 }: DatasetTagsProps) => {
   const sanitizedTags = tags.filter(
     (tag): tag is string =>
-      Boolean(tag?.trim()) && tag.trim().toLowerCase() !== "ero",
+      Boolean(tag?.trim()) && tag.trim().toLowerCase() !== "null"
   );
 
   if (sanitizedTags.length === 0) return null;

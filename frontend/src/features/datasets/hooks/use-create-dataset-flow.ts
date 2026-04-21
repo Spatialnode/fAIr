@@ -2,7 +2,7 @@ import { TileServiceType } from "@/enums";
 import { useMapInstance } from "@/hooks/use-map-instance";
 import { useTileservice } from "@/hooks/use-tileservice";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   createTrainingArea,
   createTrainingDataset,
@@ -12,52 +12,123 @@ import {
 import { getTrainingAreas } from "@/features/model-creation/api/get-trainings";
 import { getTrainingAreasQueryOptions } from "@/features/model-creation/api/factory";
 import {
+  getTileServerTypeFromURL,
   showErrorToast,
   showSuccessToast,
   snapGeoJSONPolygonToClosestTile,
 } from "@/utils";
 import {
+  DATASET_DESCRIPTION_MAX_LENGTH,
+  DATASET_DESCRIPTION_MIN_LENGTH,
+  DATASET_NAME_MAX_LENGTH,
+  DATASET_NAME_MIN_LENGTH,
   PREVIEW_TMS_LAYER_ID,
   PREVIEW_TMS_SOURCE_ID,
 } from "@/features/datasets/components/create-dataset/constants";
 import {
   DatasetFlowModal,
+  DatasetMetadataForm,
   LabelSource,
   MapOverlayState,
 } from "@/features/datasets/components/create-dataset/types";
 import { geojsonToWKT } from "@terraformer/wkt";
 import { Polygon } from "geojson";
 import { useDatasetMetadataForm } from "./use-dataset-metadata-form";
+import {
+  getDatasetDetailDisplay,
+  getDatasetFlowInitialState,
+} from "@/features/datasets/utils/dataset-flow-mocks";
+import { DATASET_DRAFT_STATUS } from "@/features/datasets/utils/dataset-routing";
+import { TTrainingDataset } from "@/types";
 
-export const useCreateDatasetFlow = () => {
-  const [step, setStep] = useState<1 | 2>(1);
+type UseCreateDatasetFlowOptions = {
+  mode: "create" | "edit";
+  step: 1 | 2;
+  existingDataset?: TTrainingDataset;
+  prefilledMetadata?: DatasetMetadataForm;
+  onStepChange: (step: 1 | 2) => void;
+  onDatasetCreated: (datasetId: number, metadata: DatasetMetadataForm) => void;
+};
 
-  const metadataForm = useDatasetMetadataForm();
+const normalizeDatasetOffset = (offset?: number[]) => {
+  if (Array.isArray(offset) && offset.length === 2) {
+    const [x, y] = offset;
+    return [Number(x) || 0, Number(y) || 0] as [number, number];
+  }
+
+  return [0, 0] as [number, number];
+};
+
+export const getTextFieldValidity = (
+  value: string,
+  minLength: number,
+  maxLength: number,
+) => ({
+  valid: value.length >= minLength && value.length <= maxLength,
+  message:
+    value.length >= minLength && value.length <= maxLength
+      ? ""
+      : `Must be between ${minLength} and ${maxLength} characters.`,
+});
+
+export const useCreateDatasetFlow = ({
+  mode,
+  step,
+  existingDataset,
+  prefilledMetadata,
+  onStepChange,
+  onDatasetCreated,
+}: UseCreateDatasetFlowOptions) => {
   const queryClient = useQueryClient();
+  const hydratedDatasetIdRef = useRef<number | null>(null);
+  const initialFlowState = useMemo(() => {
+    const baseState = getDatasetFlowInitialState(existingDataset);
 
-  const [createdDatasetId, setCreatedDatasetId] = useState<number | null>(null);
+    if (prefilledMetadata) {
+      return {
+        ...baseState,
+        metadataForm: prefilledMetadata,
+      };
+    }
+
+    return baseState;
+  }, [existingDataset, prefilledMetadata]);
+  const metadataForm = useDatasetMetadataForm(initialFlowState.metadataForm);
+
+  const [createdDatasetId, setCreatedDatasetId] = useState<number | null>(
+    existingDataset?.id ?? null,
+  );
   const [createdDatasetOffset, setCreatedDatasetOffset] = useState<
     [number, number]
-  >([0, 0]);
+  >(initialFlowState.offset);
   const [trainingAreasOffset, setTrainingAreasOffset] = useState<number>(0);
-
-  const [labelSource, setLabelSource] = useState<LabelSource>("");
+  const [labelSource, setLabelSource] = useState<LabelSource>(
+    initialFlowState.labelSource,
+  );
   const [flowModal, setFlowModal] = useState<DatasetFlowModal>(null);
 
   const [osmModalFeatureType, setOsmModalFeatureType] = useState("Rooftops");
   const [osmModalValues, setOsmModalValues] = useState<string[]>(["Zinc"]);
-  const [osmFetched, setOsmFetched] = useState(false);
+  const [osmFetched, setOsmFetched] = useState(
+    initialFlowState.labelSource === "OSM",
+  );
 
   const [mapSwipeProjectType, setMapSwipeProjectType] = useState<
     "Existing Project" | "New Project"
   >("Existing Project");
   const [mapSwipeProjectIds, setMapSwipeProjectIds] = useState<string[]>([""]);
-  const [mapSwipeFetched, setMapSwipeFetched] = useState(false);
+  const [mapSwipeFetched, setMapSwipeFetched] = useState(
+    initialFlowState.labelSource === "MapSwipe",
+  );
 
   const [taskingProjectIds, setTaskingProjectIds] = useState<string[]>([""]);
-  const [taskingUploaded, setTaskingUploaded] = useState(false);
+  const [taskingUploaded, setTaskingUploaded] = useState(
+    initialFlowState.labelSource === "Tasking Manager",
+  );
 
-  const [customUploaded, setCustomUploaded] = useState(false);
+  const [customUploaded, setCustomUploaded] = useState(
+    initialFlowState.labelSource === "Custom",
+  );
   const [tilePreviewError, setTilePreviewError] = useState("");
 
   const { mapContainerRef, map } = useMapInstance();
@@ -73,7 +144,12 @@ export const useCreateDatasetFlow = () => {
     sourceURL,
     loading: tilePreviewLoading,
     setLoading: setTilePreviewLoading,
-  } = useTileservice(TileServiceType.TMS, "");
+  } = useTileservice(
+    existingDataset
+      ? getTileServerTypeFromURL(existingDataset.source_imagery)
+      : TileServiceType.TMS,
+    existingDataset?.source_imagery ?? "",
+  );
 
   const createDatasetMutation = useMutation({
     mutationFn: createTrainingDataset,
@@ -109,10 +185,41 @@ export const useCreateDatasetFlow = () => {
 
   const hasDrawnAOI = (trainingAreasData?.count ?? 0) > 0;
 
-  // Tile preview layer management
   useEffect(() => {
-    if (step !== 1 || !tileServiceTypeValidity.valid || !map || !sourceURL)
+    if (!existingDataset) return;
+    if (hydratedDatasetIdRef.current === existingDataset.id) return;
+
+    const hydratedFlowState = getDatasetFlowInitialState(existingDataset);
+    const metadataToHydrate = prefilledMetadata ?? hydratedFlowState.metadataForm;
+    metadataForm.resetDatasetMetadataForm(metadataToHydrate);
+    metadataForm.setDatasetNameValidity(
+      getTextFieldValidity(
+        metadataToHydrate.name,
+        DATASET_NAME_MIN_LENGTH,
+        DATASET_NAME_MAX_LENGTH,
+      ),
+    );
+    metadataForm.setDatasetDescriptionValidity(
+      getTextFieldValidity(
+        metadataToHydrate.description,
+        DATASET_DESCRIPTION_MIN_LENGTH,
+        DATASET_DESCRIPTION_MAX_LENGTH,
+      ),
+    );
+    setCreatedDatasetId(existingDataset.id);
+    setCreatedDatasetOffset(hydratedFlowState.offset);
+    setLabelSource(hydratedFlowState.labelSource);
+    setOsmFetched(hydratedFlowState.labelSource === "OSM");
+    setMapSwipeFetched(hydratedFlowState.labelSource === "MapSwipe");
+    setTaskingUploaded(hydratedFlowState.labelSource === "Tasking Manager");
+    setCustomUploaded(hydratedFlowState.labelSource === "Custom");
+    hydratedDatasetIdRef.current = existingDataset.id;
+  }, [existingDataset, metadataForm, prefilledMetadata]);
+
+  useEffect(() => {
+    if (step !== 1 || !tileServiceTypeValidity.valid || !map || !sourceURL) {
       return;
+    }
 
     const source = map.getSource(PREVIEW_TMS_SOURCE_ID);
     if (source) {
@@ -170,6 +277,12 @@ export const useCreateDatasetFlow = () => {
     isOpenAerialMap,
     setTilePreviewLoading,
   ]);
+
+  useEffect(() => {
+    if (!tileJSONMetadata?.bounds || !map) return;
+    map.fitBounds(tileJSONMetadata.bounds);
+  }, [map, tileJSONMetadata]);
+
   const missingStepOneRequiredFields = useMemo(() => {
     const missingFields: string[] = [];
 
@@ -214,21 +327,6 @@ export const useCreateDatasetFlow = () => {
     tileServiceTypeValidity.valid,
     tileserverURL,
   ]);
-  // Fit map to TileJSON bounds
-  useEffect(() => {
-    if (!tileJSONMetadata?.bounds || !map) return;
-    map.fitBounds(tileJSONMetadata.bounds);
-  }, [map, tileJSONMetadata]);
-
-  // Lock body scroll when step 2 is active
-  useEffect(() => {
-    if (step !== 2) return;
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, [step]);
 
   const canContinueStepOne =
     metadataForm.hasValidDatasetName &&
@@ -244,8 +342,8 @@ export const useCreateDatasetFlow = () => {
 
   const actionButtonLabel =
     labelSource === "Tasking Manager" || labelSource === "Custom"
-      ? "Upload Data"
-      : "Fetch Data";
+      ? "Upload Label"
+      : "Fetch Labels";
 
   const actionDisabled = labelSource === "" || createdDatasetId === null;
 
@@ -278,14 +376,6 @@ export const useCreateDatasetFlow = () => {
 
   const mapSwipeIdsForPanel = validMapSwipeIds;
 
-  const normalizeDatasetOffset = (offset?: number[]) => {
-    if (Array.isArray(offset) && offset.length === 2) {
-      const [x, y] = offset;
-      return [Number(x) || 0, Number(y) || 0] as [number, number];
-    }
-    return [0, 0] as [number, number];
-  };
-
   const ensureDatasetSaved = async () => {
     if (createdDatasetId !== null) {
       const updatedDataset = await updateDatasetMutation.mutateAsync({
@@ -300,6 +390,7 @@ export const useCreateDatasetFlow = () => {
     const dataset = await createDatasetMutation.mutateAsync({
       name: metadataForm.datasetMetadataForm.name,
       source_imagery: tileserverURL,
+      status: DATASET_DRAFT_STATUS,
     });
 
     setCreatedDatasetId(dataset.id);
@@ -310,8 +401,15 @@ export const useCreateDatasetFlow = () => {
 
   const handleContinueToStepTwo = async () => {
     try {
-      await ensureDatasetSaved();
-      setStep(2);
+      const isNewDataset = createdDatasetId === null;
+      const datasetId = await ensureDatasetSaved();
+
+      if (isNewDataset) {
+        onDatasetCreated(datasetId, metadataForm.datasetMetadataForm);
+        return;
+      }
+
+      onStepChange(2);
     } catch (error) {
       showErrorToast(error);
     }
@@ -514,8 +612,10 @@ export const useCreateDatasetFlow = () => {
   }, []);
 
   return {
+    mode,
     step,
-    setStep,
+    setStep: onStepChange,
+    goToStep: onStepChange,
     map,
     mapContainerRef,
 
@@ -587,5 +687,8 @@ export const useCreateDatasetFlow = () => {
     handleConfirmCustomFlow,
     handleOpenBuildConfirm,
     handleConfirmBuildDataset,
+    datasetDetail: existingDataset
+      ? getDatasetDetailDisplay(existingDataset)
+      : null,
   };
 };

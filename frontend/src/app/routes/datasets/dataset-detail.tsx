@@ -1,22 +1,23 @@
 import { useAuth } from "@/app/providers/auth-provider";
 import { Head } from "@/components/seo";
 import { ModelExplorer } from "@/components/shared/model-explorer";
-import { BackButton, Button, ButtonWithIcon } from "@/components/ui/button";
-import { CopyButton } from "@/components/ui/copy-button";
+import { Button } from "@/components/ui/button";
 import { Divider } from "@/components/ui/divider";
-import { DropDown } from "@/components/ui/dropdown";
-import { DatabaseIcon, PenIcon } from "@/components/ui/icons";
-import { APPLICATION_ROUTES, DatasetURLParams } from "@/constants";
-import { ButtonVariant } from "@/enums";
-import { DatasetAreaButton } from "@/features/datasets/components/dataset-area-button";
+import { APPLICATION_ROUTES } from "@/constants";
+import {
+  DatasetDetailAuthenticatedActions,
+  DatasetDetailOverview,
+  DatasetDetailPublicActions,
+} from "@/features/datasets/components/dataset-detail-overview";
 import { DatasetDetailSkeleton } from "@/features/datasets/components/dataset-detail-skeleton";
-import { DatasetEditDialog } from "@/features/datasets/components/dialogs/dataset-details-edit-dialog";
-import { DatasetAOIEditDrawer } from "@/features/datasets/components/drawers/dataset-aoi-edit-drawer";
-import { DatasetAreaDrawer } from "@/features/datasets/components/drawers/dataset-area-drawer";
+import { DatasetDetailAuthenticatedDialogs } from "@/features/datasets/components/dialogs/dataset-detail-authenticated-dialogs";
+import { DatasetDetailPublicDialogs } from "@/features/datasets/components/dialogs/dataset-detail-public-dialogs";
 import { useGetTrainingDataset } from "@/features/datasets/hooks/use-datasets";
+import {
+  getDatasetDetailDisplay,
+  getDatasetDummyFileVersions,
+} from "@/features/datasets/utils/dataset-flow-mocks";
 import { useDialog } from "@/hooks/use-dialog";
-import { useDropdownMenu } from "@/hooks/use-dropdown-menu";
-import { formatDate, truncateString } from "@/utils";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -29,19 +30,45 @@ export const TrainingDatasetsDetailPage = () => {
   );
 
   const { isAuthenticated, user } = useAuth();
-  const { dropdownRef, onDropdownHide } = useDropdownMenu();
-  const { isOpened, openDialog, closeDialog } = useDialog();
   const {
     isOpened: isDatasetAreaDrawerOpened,
     openDialog: openDatasetAreaDrawer,
     closeDialog: closeDatasetAreaDrawer,
   } = useDialog();
-  const {
-    isOpened: AOIEditDrawerIsOpened,
-    openDialog: openAOIEditDrawer,
-    closeDialog: closeAOIEditDrawer,
-  } = useDialog();
   const navigate = useNavigate();
+  const {
+    isOpened: isPublishDialogOpened,
+    openDialog: openPublishDialog,
+    closeDialog: closePublishDialog,
+  } = useDialog();
+
+  const {
+    isOpened: isCloneDatasetOpened,
+    openDialog: openCloneDatasetDialog,
+    closeDialog: closeCloneDatasetDialog,
+  } = useDialog();
+  const {
+    isOpened: isDatasetEditDialogOpened,
+    openDialog: openDatasetEditDialog,
+    closeDialog: closeDatasetEditDialog,
+  } = useDialog();
+  const {
+    isOpened: isDatasetFilesDialogOpened,
+    openDialog: openDatasetFilesDialog,
+    closeDialog: closeDatasetFilesDialog,
+  } = useDialog();
+  const {
+    isOpened: isDatasetAoiEditDrawerOpened,
+    openDialog: openDatasetAoiEditDrawer,
+    closeDialog: closeDatasetAoiEditDrawer,
+  } = useDialog();
+
+  const handlePublishDataset = () => {
+    // Implement publish dataset logic here, e.g., call the API to publish the dataset
+  };
+  const handleCloneDataset = () => {
+    // Implement clone dataset logic here, e.g., call the API to clone the dataset
+  };
   /**
    * Redirect to 404 page if dataset is not found.
    */
@@ -72,111 +99,71 @@ export const TrainingDatasetsDetailPage = () => {
       </div>
     );
   }
+
+  const datasetDetail = getDatasetDetailDisplay(data);
+  const datasetFileVersions = getDatasetDummyFileVersions(data);
+  const publicActions: DatasetDetailPublicActions = {
+    openDatasetArea: openDatasetAreaDrawer,
+    openDatasetFiles: openDatasetFilesDialog,
+  };
+  const authenticatedActions: DatasetDetailAuthenticatedActions = {
+    openDatasetEdit: openDatasetEditDialog,
+    openDatasetAoiEdit: openDatasetAoiEditDrawer,
+    openCloneDataset: openCloneDatasetDialog,
+    openPublishDataset: openPublishDialog,
+  };
+  const publicDialogs = {
+    datasetFiles: {
+      isOpened: isDatasetFilesDialogOpened,
+      closeDialog: closeDatasetFilesDialog,
+    },
+    datasetArea: {
+      isOpened: isDatasetAreaDrawerOpened,
+      closeDialog: closeDatasetAreaDrawer,
+    },
+  };
+  const authenticatedDialogs = {
+    datasetEdit: {
+      isOpened: isDatasetEditDialogOpened,
+      closeDialog: closeDatasetEditDialog,
+    },
+    datasetAoiEdit: {
+      isOpened: isDatasetAoiEditDrawerOpened,
+      closeDialog: closeDatasetAoiEditDrawer,
+    },
+    publish: {
+      isOpen: isPublishDialogOpened,
+      onClose: closePublishDialog,
+    },
+    clone: {
+      isOpen: isCloneDatasetOpened,
+      onClose: closeCloneDatasetDialog,
+    },
+  };
   const showEditOptions = isAuthenticated && user?.osm_id === data.user.osm_id;
   return (
     <>
       <Head title={`${data.name} Dataset`} />
-      {showEditOptions && (
-        <>
-          <DatasetEditDialog
-            data={data}
-            isOpened={isOpened}
-            closeDialog={closeDialog}
-          />
-          <DatasetAOIEditDrawer
-            isOpened={AOIEditDrawerIsOpened}
-            closeDialog={closeAOIEditDrawer}
-            trainingDataset={data}
-          />
-        </>
-      )}
-      <DatasetAreaDrawer
-        isOpened={isDatasetAreaDrawerOpened}
-        closeDialog={closeDatasetAreaDrawer}
-        trainingDataset={data}
+      <DatasetDetailPublicDialogs
+        data={data}
+        fileVersions={datasetFileVersions}
+        dialogs={publicDialogs}
       />
-      <BackButton className="my-6" />
-      <p className="text-grey text-body-2base">Dataset ID: {data.id}</p>
+      {showEditOptions ? (
+        <DatasetDetailAuthenticatedDialogs
+          data={data}
+          dialogs={authenticatedDialogs}
+          onPublishDataset={handlePublishDataset}
+          onCloneDataset={handleCloneDataset}
+        />
+      ) : null}
       <div className="flex flex-col gap-y-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start my-4 w-full ">
-          <div className="flex flex-col gap-y-8 col-span-4 ">
-            <h1
-              className="font-semibold text-dark text-title-2 md:text-large-title leading-tight"
-              title={data.name}
-            >
-              {truncateString(data.name, 40)}
-            </h1>
-            <div className="flex flex-col md:flex-row gap-4">
-              <p className="text-dark text-body-2 text-nowrap">
-                <span className="text-grey">Used by:</span> {data.models_count}{" "}
-                {data.models_count > 1 ? "models" : "model"}
-              </p>
-              <p className="text-dark text-body-2 text-nowrap">
-                <span className="text-grey">Created by:</span>{" "}
-                {data.user.username}
-              </p>
-              <p className="text-dark text-body-2">
-                <span className="text-grey">Last Modified:</span>{" "}
-                {formatDate(data.last_modified)}
-              </p>
-            </div>
-            <div className="flex items-center text-body-2 text-dark">
-              <span className="text-grey mr-3">Source Imagery:</span>
-              <CopyButton text={data.source_imagery} />
-            </div>
-          </div>
-          <div className="flex flex-col col-span-1 w-fit  lg:w-full gap-y-8 lg:justify-between h-full lg:items-end">
-            <ButtonWithIcon
-              label="Use Dataset"
-              variant={ButtonVariant.PRIMARY}
-              size="medium"
-              prefixIcon={DatabaseIcon}
-              onClick={() => {
-                navigate(
-                  `${APPLICATION_ROUTES.CREATE_NEW_MODEL}/?${DatasetURLParams.DATASET_ID}=${data.id}&${DatasetURLParams.DATASET_NAME}=${data.name}&${DatasetURLParams.DATASET_SOURCE_IMAGERY}=${data.source_imagery}`,
-                );
-              }}
-              className="!w-fit"
-            />
-            <DatasetAreaButton
-              onClick={openDatasetAreaDrawer}
-              disabled={false}
-            />
-            {/* Edit Dropdown  */}
-            <div className="flex justify-start lg:justify-end items-start">
-              {showEditOptions && (
-                <DropDown
-                  ref={dropdownRef}
-                  className="bg-white"
-                  triggerComponent={
-                    <button className="flex items-center space-x-2 text-nowrap text-body-3 md:text-body-2 hover:text-dark">
-                      <PenIcon className="icon" />
-                      <span>Edit Dataset</span>
-                    </button>
-                  }
-                  menuItems={[
-                    {
-                      name: "Edit Details",
-                      value: "Edit Details",
-                      onClick: () => {
-                        openDialog();
-                        onDropdownHide();
-                      },
-                    },
-                    {
-                      name: "Edit Area of Interest",
-                      value: "Edit Area of Interest",
-                      onClick: () => {
-                        openAOIEditDrawer();
-                        onDropdownHide();
-                      },
-                    },
-                  ]}
-                ></DropDown>
-              )}
-            </div>
-          </div>
-        </div>
+        <DatasetDetailOverview
+          data={data}
+          datasetDetail={datasetDetail}
+          publicActions={publicActions}
+          authenticatedActions={showEditOptions ? authenticatedActions : undefined}
+        />
         <Divider />
         <div>
           <ModelExplorer

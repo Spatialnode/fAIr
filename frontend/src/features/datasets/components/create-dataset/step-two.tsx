@@ -32,10 +32,18 @@ import {
 } from "@/features/datasets/components/create-dataset/step-two-aoi-actions";
 import { ToolTip } from "@/components/ui/tooltip";
 
-export const CreateDatasetStepTwo = () => {
+type CreateDatasetStepTwoProps = {
+  variant?: "page" | "overlay";
+};
+
+export const CreateDatasetStepTwo = ({
+  variant = "page",
+}: CreateDatasetStepTwoProps) => {
   const { map, mapContainerRef, drawingMode, setDrawingMode, terraDraw } =
     useMapInstance();
   const flow = useCreateDatasetFlowContext();
+  const isEditMode = flow.mode === "edit";
+  const isOverlayVariant = variant === "overlay";
   const [offsetPanelOpen, setOffsetPanelOpen] = useState<boolean>(false);
   const [selectedAoiId, setSelectedAoiId] = useState<number | null>(null);
 
@@ -129,11 +137,13 @@ export const CreateDatasetStepTwo = () => {
         disabled={flow.createAoiPending}
       />
 
-      <div className="space-y-4">
+      <div className={`space-y-4 ${isOverlayVariant ? "flex h-full flex-col" : ""}`}>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-5">
             <h1 className="text-title-1 font-bold text-primary md:text-title-2">
-              Create Training Area &amp; Map Data
+              {isEditMode
+                ? "Edit Training Area"
+                : "Create Training Area & Map Data"}
             </h1>
             <p className="text-body-2 font-medium text-dark">
               Dataset ID: {flow.createdDatasetId}
@@ -195,8 +205,16 @@ export const CreateDatasetStepTwo = () => {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded border border-gray-border bg-white p-2">
-          <div className="h-[700px] overflow-hidden rounded bg-off-white">
+        <div
+          className={`relative overflow-hidden rounded border border-gray-border bg-white p-2 ${
+            isOverlayVariant ? "flex-1 min-h-0" : ""
+          }`}
+        >
+          <div
+            className={`overflow-hidden rounded bg-off-white ${
+              isOverlayVariant ? "h-full min-h-[560px]" : "h-[700px]"
+            }`}
+          >
             <TrainingAreaMap
               tileServiceURL={flow.tileserverURL}
               data={flow.trainingAreasData}
@@ -264,22 +282,32 @@ export const CreateDatasetStepTwo = () => {
           />
         </div>
 
-        <div className="grid grid-cols-3 items-center gap-4 border-t border-gray-border py-4">
-          <div>
-            <Button
-              variant={ButtonVariant.DEFAULT}
-              className="!w-fit min-w-32"
-              uppercase={false}
-              onClick={() => flow.setStep(1)}
-            >
-              <span className="inline-flex items-center gap-2">
-                <ArrowBackIcon className="h-5 w-5" />
-                Back
-              </span>
-            </Button>
-          </div>
-          <p className="text-center text-body-2 text-grey">Step 2 of 2</p>
-          <div className="flex justify-end">
+        <div
+          className={
+            isOverlayVariant
+              ? "flex justify-end pt-2"
+              : "grid grid-cols-3 items-center gap-4 border-t border-gray-border py-4"
+          }
+        >
+          {!isOverlayVariant ? (
+            <>
+              <div>
+                <Button
+                  variant={ButtonVariant.DEFAULT}
+                  className="!w-fit min-w-32"
+                  uppercase={false}
+                  onClick={() => flow.goToStep(1)}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <ArrowBackIcon className="h-5 w-5" />
+                    Back
+                  </span>
+                </Button>
+              </div>
+              <p className="text-center text-body-2 text-grey">Step 2 of 2</p>
+            </>
+          ) : null}
+          <div className={isOverlayVariant ? "" : "flex justify-end"}>
             <Button
               className="!w-fit min-w-40"
               uppercase={false}

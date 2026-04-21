@@ -5,9 +5,11 @@ import {
   DatasetValidityState,
 } from "@/features/datasets/components/create-dataset/types";
 
-export const useDatasetMetadataForm = () => {
+export const useDatasetMetadataForm = (
+  initialValue: DatasetMetadataForm = INITIAL_DATASET_METADATA_FORM,
+) => {
   const [datasetMetadataForm, setDatasetMetadataForm] =
-    useState<DatasetMetadataForm>(INITIAL_DATASET_METADATA_FORM);
+    useState<DatasetMetadataForm>(initialValue);
   const [datasetNameValidity, setDatasetNameValidity] =
     useState<DatasetValidityState>({
       valid: false,
@@ -58,6 +60,13 @@ export const useDatasetMetadataForm = () => {
     }));
   }, []);
 
+  const resetDatasetMetadataForm = useCallback(
+    (nextValue: DatasetMetadataForm) => {
+      setDatasetMetadataForm(nextValue);
+    },
+    [],
+  );
+
   const handleTagKeyDown = useCallback(
     (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key !== "Enter" && event.key !== ",") return;
@@ -94,6 +103,7 @@ export const useDatasetMetadataForm = () => {
     handleKeyValueUpdate,
     handleKeyValueDelete,
     addKeyValue,
+    resetDatasetMetadataForm,
     handleTagKeyDown,
     datasetNameValidity,
     setDatasetNameValidity,

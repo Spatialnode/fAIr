@@ -57,7 +57,7 @@ export const MapswipeLocateProjectModal = ({
   });
 
   return (
-    <ModalShell onClose={onClose}>
+    <ModalShell  onClose={onClose}>
       <div className="max-h-[78vh] overflow-y-auto pr-1">
         <h3 className="mb-2 text-title-2 font-semibold text-dark">
           MapSwipe Locate Project(s)

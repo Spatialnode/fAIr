@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { MapComponent } from "@/components/map";
 import { XYZTileServerInput } from "@/components/shared/form/xyz-tile-server-input";
 import { Button } from "@/components/ui/button";
-import { Input, Select, TextArea } from "@/components/ui/form";
+import { FormLabel, Input, Select, TextArea } from "@/components/ui/form";
 import { ArrowBackIcon, MapIcon } from "@/components/ui/icons";
 import { Spinner } from "@/components/ui/spinner";
 import { APPLICATION_ROUTES, MODELS_CONTENT } from "@/constants";
@@ -21,7 +21,6 @@ import {
 import { useCreateDatasetFlowContext } from "@/features/datasets/contexts/create-dataset-flow-context";
 import {
   createSelectOptions,
-  FieldLabel,
   InputClassName,
 } from "@/features/datasets/components/create-dataset/shared";
 import { ToolTip } from "@/components/ui/tooltip";
@@ -30,32 +29,39 @@ export const CreateDatasetStepOne = () => {
   const navigate = useNavigate();
   const tagsInputRef = useRef<HTMLInputElement>(null);
   const flow = useCreateDatasetFlowContext();
+  const isEditMode = flow.mode === "edit";
+  const backRoute =
+    isEditMode && flow.createdDatasetId
+      ? `${APPLICATION_ROUTES.DATASETS}/${flow.createdDatasetId}`
+      : APPLICATION_ROUTES.DATASETS;
+  const heading = isEditMode
+    ? "Edit Training Dataset"
+    : "Create Training Dataset";
+  const description = isEditMode
+    ? "Update the dataset details and continue to the training area step to manage AOIs and labels."
+    : MODELS_CONTENT.modelCreation.trainingDataset.pageDescription;
+  const sectionTitle = isEditMode
+    ? "Update Dataset Details"
+    : "Create New Training Dataset";
 
   return (
     <div className="space-y-8">
       <button
         type="button"
         className="inline-flex items-center gap-x-2 text-body-2base text-dark"
-        onClick={() => navigate(APPLICATION_ROUTES.DATASETS)}
+        onClick={() => navigate(backRoute)}
       >
         <ArrowBackIcon className="h-7 w-7" />
         Back
       </button>
 
       <div className="space-y-3">
-        <StepHeading
-          heading="Create Training Dataset"
-          description={
-            MODELS_CONTENT.modelCreation.trainingDataset.pageDescription
-          }
-        />
+        <StepHeading heading={heading} description={description} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-5">
-          <h2 className="text-title-3 font-semibold text-dark">
-            Create New Training Dataset
-          </h2>
+          <h2 className="text-title-3 font-semibold text-dark">{sectionTitle}</h2>
 
           <Input
             value={flow.datasetMetadataForm.name}
@@ -154,7 +160,8 @@ export const CreateDatasetStepOne = () => {
           />
 
           <div>
-            <FieldLabel
+            <FormLabel
+            withTooltip
               label="Key Value"
               toolTipContent="Define label key values used to fetch or organize mapped features in this dataset."
             />
@@ -190,7 +197,8 @@ export const CreateDatasetStepOne = () => {
           </div>
 
           <div>
-            <FieldLabel
+            <FormLabel
+            withTooltip
               label="Tags"
               toolTipContent="Add searchable keywords to make this dataset easier to discover and filter."
             />
@@ -268,14 +276,14 @@ export const CreateDatasetStepOne = () => {
 
       <div className="grid grid-cols-3 items-center gap-4 border-t border-gray-border py-6">
         <div>
-          <Button
-            variant={ButtonVariant.DEFAULT}
-            className="!w-fit min-w-32"
-            uppercase={false}
-            onClick={() => navigate(APPLICATION_ROUTES.DATASETS)}
-          >
-            <span className="inline-flex items-center gap-2">
-              <ArrowBackIcon className="h-5 w-5" />
+            <Button
+              variant={ButtonVariant.DEFAULT}
+              className="!w-fit min-w-32"
+              uppercase={false}
+              onClick={() => navigate(backRoute)}
+            >
+              <span className="inline-flex items-center gap-2">
+                <ArrowBackIcon className="h-5 w-5" />
               Back
             </span>
           </Button>
@@ -306,7 +314,7 @@ export const CreateDatasetStepOne = () => {
                 spinner={flow.continueStepOnePending}
                 onClick={flow.handleContinueToStepTwo}
               >
-                Continue
+                {isEditMode ? "Save and Continue" : "Continue"}
               </Button>
             </span>
           </ToolTip>
