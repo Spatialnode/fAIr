@@ -5,10 +5,7 @@ type DatasetDetailItemProps = {
   value: ReactNode;
 };
 
-export const DatasetDetailItem = ({
-  label,
-  value,
-}: DatasetDetailItemProps) => (
+export const DatasetDetailItem = ({ label, value }: DatasetDetailItemProps) => (
   <p className="text-body-2base ">
     <span className="text-grey">{label}:</span>{" "}
     <span className="font-medium text-dark">{value}</span>

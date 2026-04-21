@@ -17,7 +17,7 @@ import {
   FEATURE_TYPES,
   GEOMETRY_TYPES,
   TASK_TYPES,
-} from "@/features/datasets/components/create-dataset/constants";
+} from "@/features/datasets/utils/constants";
 import { useCreateDatasetFlowContext } from "@/features/datasets/contexts/create-dataset-flow-context";
 import {
   createSelectOptions,
@@ -61,7 +61,9 @@ export const CreateDatasetStepOne = () => {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <div className="space-y-5">
-          <h2 className="text-title-3 font-semibold text-dark">{sectionTitle}</h2>
+          <h2 className="text-title-3 font-semibold text-dark">
+            {sectionTitle}
+          </h2>
 
           <Input
             value={flow.datasetMetadataForm.name}
@@ -161,7 +163,7 @@ export const CreateDatasetStepOne = () => {
 
           <div>
             <FormLabel
-            withTooltip
+              withTooltip
               label="Key Value"
               toolTipContent="Define label key values used to fetch or organize mapped features in this dataset."
             />
@@ -198,7 +200,7 @@ export const CreateDatasetStepOne = () => {
 
           <div>
             <FormLabel
-            withTooltip
+              withTooltip
               label="Tags"
               toolTipContent="Add searchable keywords to make this dataset easier to discover and filter."
             />
@@ -276,14 +278,14 @@ export const CreateDatasetStepOne = () => {
 
       <div className="grid grid-cols-3 items-center gap-4 border-t border-gray-border py-6">
         <div>
-            <Button
-              variant={ButtonVariant.DEFAULT}
-              className="!w-fit min-w-32"
-              uppercase={false}
-              onClick={() => navigate(backRoute)}
-            >
-              <span className="inline-flex items-center gap-2">
-                <ArrowBackIcon className="h-5 w-5" />
+          <Button
+            variant={ButtonVariant.DEFAULT}
+            className="!w-fit min-w-32"
+            uppercase={false}
+            onClick={() => navigate(backRoute)}
+          >
+            <span className="inline-flex items-center gap-2">
+              <ArrowBackIcon className="h-5 w-5" />
               Back
             </span>
           </Button>

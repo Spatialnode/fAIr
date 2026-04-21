@@ -1,9 +1,9 @@
 import { useCallback, useState } from "react";
-import { INITIAL_DATASET_METADATA_FORM } from "@/features/datasets/components/create-dataset/constants";
+import { INITIAL_DATASET_METADATA_FORM } from "@/features/datasets/utils/constants";
 import {
   DatasetMetadataForm,
   DatasetValidityState,
-} from "@/features/datasets/components/create-dataset/types";
+} from "@/features/datasets/types/types";
 
 export const useDatasetMetadataForm = (
   initialValue: DatasetMetadataForm = INITIAL_DATASET_METADATA_FORM,

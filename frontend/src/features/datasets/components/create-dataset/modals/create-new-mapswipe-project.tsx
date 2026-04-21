@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { DeleteIcon, InfoIcon } from "@/components/ui/icons";
-import { ButtonVariant } from "@/enums";
+import { FormLabel, Input, Select, TextArea } from "@/components/ui/form";
+import { ButtonVariant, INPUT_TYPES } from "@/enums";
 import {
   MAPSWIPE_LOCATE_PROJECT_DATASET_LINK,
   MAPSWIPE_LOCATE_PROJECT_DEFAULT_TUTORIAL,
@@ -9,9 +9,12 @@ import {
   useMapswipeLocateProjectFormModel,
 } from "@/features/datasets/hooks/use-create-mapswipe-form";
 import {
-  InputClassName,
   ModalShell,
+  InputClassName,
 } from "@/features/datasets/components/create-dataset/shared";
+import { ImageUploadField } from "@/components/shared/form/image-upload-field";
+import { DATASET_CONTENT } from "@/constants/ui-contents/dataset-contents";
+
 type MapswipeLocateProjectModalProps = {
   onClose: () => void;
   onBack: () => void;
@@ -22,13 +25,19 @@ type MapswipeLocateProjectModalProps = {
   keyValues: string[];
   tileserverURL: string;
 };
+const disabledFieldClassName =
+  "disabled:!bg-light-gray disabled:!border-gray-border disabled:!border disabled:!text-dark";
+const selectFieldClassName = "mapswipe-select-field";
+const selectOptions = (options: string[]) =>
+  options.map((option) => ({ name: option, value: option }));
 
-const LabelWithInfo = ({ label }: { label: string }) => (
-  <label className="mb-1 inline-flex items-center gap-1 text-body-4 font-medium text-dark">
-    {label}
-    <InfoIcon className="h-3.5 w-3.5 text-grey" />
-  </label>
-);
+const MapswipeFieldLabel = ({
+  label,
+  tooltipContent,
+}: {
+  label: string;
+  tooltipContent: string;
+}) => <FormLabel label={label} withTooltip toolTipContent={tooltipContent} />;
 
 export const MapswipeLocateProjectModal = ({
   onClose,
@@ -40,13 +49,14 @@ export const MapswipeLocateProjectModal = ({
   keyValues,
   tileserverURL,
 }: MapswipeLocateProjectModalProps) => {
+  const content = DATASET_CONTENT.createDataset.mapswipeProject;
+  const formContent = content.form;
+
   const {
-    fileInputRef,
     form,
     canCreate,
     exportMetaValues,
     updateField,
-    handleValueChange,
     handleCoverImageChange,
     handleClearCoverImage,
   } = useMapswipeLocateProjectFormModel({
@@ -57,227 +67,272 @@ export const MapswipeLocateProjectModal = ({
   });
 
   return (
-    <ModalShell  onClose={onClose}>
-      <div className="max-h-[78vh] overflow-y-auto pr-1">
-        <h3 className="mb-2 text-title-2 font-semibold text-dark">
-          MapSwipe Locate Project(s)
+    <ModalShell onClose={onClose}>
+      <div className="hide-scrollbar  max-h-[80vh] overflow-y-auto pr-1">
+        <h3 className="mb-4 text-2xl font-semibold text-dark">
+          {content.title}
         </h3>
-        <p className="mb-5 text-body-4 text-grey">
-          fAIr will use the following details to create one or more MapSwipe
-          Locate Project(s). The number of MapSwipe Projects depends on the
-          entered features, e.g. we are building a dataset to identify different
-          "rooftops" like "zinc" and "wood", fAIr will create 2 MapSwipe Locate
-          Projects for same AOIs so swiper can support us identify those
-          features and get the dataset ready for fAIr to use to create/fine-tune
-          a GeoAI model.
+        <p className="mb-10 text-base leading-8 text-grey">
+          {content.description}
         </p>
 
-        <div className="space-y-4">
-          <div className="grid gap-3 md:grid-cols-2">
+        <div className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <LabelWithInfo label="Project Topic" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.projectTopic.label}
+                labelWithTooltip
+                toolTipContent={formContent.projectTopic.toolTip}
+                showBorder
                 value={form.projectTopic}
-                onChange={handleValueChange("projectTopic")}
+                handleInput={(event) =>
+                  updateField("projectTopic", event.target.value)
+                }
               />
             </div>
             <div>
-              <LabelWithInfo label="Project Region" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.projectRegion.label}
+                labelWithTooltip
+                toolTipContent={formContent.projectRegion.toolTip}
+                showBorder
                 value={form.projectRegion}
-                onChange={handleValueChange("projectRegion")}
+                handleInput={(event) =>
+                  updateField("projectRegion", event.target.value)
+                }
               />
             </div>
           </div>
 
           <div>
-            <LabelWithInfo label="Project Description" />
-            <textarea
-              className={`${InputClassName} min-h-[90px] resize-none`}
+            <TextArea
+              label={formContent.projectDescription.label}
+              labelWithTooltip
+              toolTipContent={formContent.projectDescription.toolTip}
               value={form.projectDescription}
-              onChange={handleValueChange("projectDescription")}
+              handleChange={(event) =>
+                updateField("projectDescription", event.target.value)
+              }
             />
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <LabelWithInfo label="Instruction" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.instruction.label}
+                labelWithTooltip
+                toolTipContent={formContent.instruction.toolTip}
+                showBorder
                 value={form.instruction}
-                onChange={handleValueChange("instruction")}
+                handleInput={(event) =>
+                  updateField("instruction", event.target.value)
+                }
               />
             </div>
             <div>
-              <LabelWithInfo label="Look for (legacy)" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.lookFor.label}
+                labelWithTooltip
+                toolTipContent={formContent.lookFor.toolTip}
+                showBorder
                 value={form.lookFor}
-                onChange={handleValueChange("lookFor")}
+                handleInput={(event) =>
+                  updateField("lookFor", event.target.value)
+                }
               />
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <LabelWithInfo label="Requesting Organisation" />
-              <input className={`${InputClassName} bg-off-white`} disabled />
+              <Input
+                label={formContent.requestingOrganisation.label}
+                labelWithTooltip
+                toolTipContent={formContent.requestingOrganisation.toolTip}
+                className={disabledFieldClassName}
+                value={content.staticValues.requestingOrganisation}
+                handleInput={() => undefined}
+                disabled
+              />
             </div>
             <div>
-              <LabelWithInfo label="Visibility" />
-              <input
-                className={`${InputClassName} bg-off-white`}
-                value="Public"
+              <Input
+                label={formContent.visibility.label}
+                labelWithTooltip
+                toolTipContent={formContent.visibility.toolTip}
+                className={disabledFieldClassName}
+                value={content.staticValues.visibility}
+                handleInput={() => undefined}
                 disabled
               />
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <LabelWithInfo label="Tutorial" />
-              <select
-                className={InputClassName}
-                value={form.tutorial}
-                onChange={handleValueChange("tutorial")}
-              >
-                <option>{MAPSWIPE_LOCATE_PROJECT_DEFAULT_TUTORIAL}</option>
-              </select>
+              <Select
+                label={formContent.tutorial.label}
+                labelWithTooltip
+                toolTipContent={formContent.tutorial.toolTip}
+                className={selectFieldClassName}
+                defaultValue={form.tutorial}
+                handleChange={(value) => updateField("tutorial", String(value))}
+                options={selectOptions([
+                  MAPSWIPE_LOCATE_PROJECT_DEFAULT_TUTORIAL,
+                ])}
+              />
             </div>
             <div>
-              <LabelWithInfo label="Additional information resource (URL)" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.additionalInformationResource.label}
+                labelWithTooltip
+                toolTipContent={
+                  formContent.additionalInformationResource.toolTip
+                }
+                showBorder
                 value={MAPSWIPE_LOCATE_PROJECT_DATASET_LINK}
+                handleInput={() => undefined}
                 disabled
               />
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <LabelWithInfo label="Input Geometries File (Direct Link)" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.inputGeometriesFile.label}
+                labelWithTooltip
+                toolTipContent={formContent.inputGeometriesFile.toolTip}
+                className={disabledFieldClassName}
                 value={MAPSWIPE_LOCATE_PROJECT_DATASET_LINK}
+                handleInput={() => undefined}
                 disabled
               />
             </div>
             <div>
-              <LabelWithInfo label="Custom Imagery Server URL" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.customImageryServerUrl.label}
+                labelWithTooltip
+                toolTipContent={formContent.customImageryServerUrl.toolTip}
+                className={disabledFieldClassName}
                 value={tileserverURL}
+                handleInput={() => undefined}
                 disabled
               />
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <LabelWithInfo label="Imagery Credits" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.imageryCredits.label}
+                labelWithTooltip
+                toolTipContent={formContent.imageryCredits.toolTip}
+                showBorder
+                type={INPUT_TYPES.NUMBER}
                 value={form.imageryCredits}
-                onChange={handleValueChange("imageryCredits")}
+                handleInput={(event) =>
+                  updateField("imageryCredits", event.target.value)
+                }
               />
             </div>
             <div>
-              <LabelWithInfo label="Min Zoom" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.minZoom.label}
+                labelWithTooltip
+                toolTipContent={formContent.minZoom.toolTip}
+                showBorder
+                type={INPUT_TYPES.NUMBER}
                 value={form.minZoom}
-                onChange={handleValueChange("minZoom")}
+                handleInput={(event) =>
+                  updateField("minZoom", event.target.value)
+                }
               />
             </div>
           </div>
 
-          <div>
-            <LabelWithInfo label="Project Cover Image" />
-            <div className="flex items-center gap-3 rounded border border-gray-border p-2">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleCoverImageChange}
-              />
-              <button
-                type="button"
-                className="rounded bg-light-gray px-3 py-2 text-body-4 text-dark"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                Select an image
-              </button>
-              {form.coverImageName ? (
-                <>
-                  <span className="truncate text-body-4 text-dark">
-                    {form.coverImageName}
-                  </span>
-                  <button
-                    type="button"
-                    className="text-primary"
-                    onClick={handleClearCoverImage}
-                    aria-label="Remove selected image"
-                  >
-                    <DeleteIcon className="h-4 w-4" />
-                  </button>
-                </>
-              ) : null}
-            </div>
-          </div>
+          <ImageUploadField
+            label={formContent.projectCoverImage.label}
+            tooltipContent={formContent.projectCoverImage.toolTip}
+            fileName={form.coverImageName}
+            onFileSelect={handleCoverImageChange}
+            onClear={handleClearCoverImage}
+          />
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <LabelWithInfo label="Verification Number" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.verificationNumber.label}
+                labelWithTooltip
+                toolTipContent={formContent.verificationNumber.toolTip}
+                showBorder
+                type={INPUT_TYPES.NUMBER}
                 value={form.verificationNumber}
-                onChange={handleValueChange("verificationNumber")}
+                handleInput={(event) =>
+                  updateField("verificationNumber", event.target.value)
+                }
               />
             </div>
             <div>
-              <LabelWithInfo label="Group Size" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.groupSize.label}
+                labelWithTooltip
+                toolTipContent={formContent.groupSize.toolTip}
+                showBorder
+                type={INPUT_TYPES.NUMBER}
                 value={form.groupSize}
-                onChange={handleValueChange("groupSize")}
+                handleInput={(event) =>
+                  updateField("groupSize", event.target.value)
+                }
               />
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <LabelWithInfo label="Max tasks per user" />
-              <input
-                className={InputClassName}
+              <Input
+                label={formContent.maxTasksPerUser.label}
+                labelWithTooltip
+                toolTipContent={formContent.maxTasksPerUser.toolTip}
+                showBorder
+                type={INPUT_TYPES.NUMBER}
                 value={form.maxTasksPerUser}
-                onChange={handleValueChange("maxTasksPerUser")}
+                handleInput={(event) =>
+                  updateField("maxTasksPerUser", event.target.value)
+                }
               />
             </div>
             <div>
-              <LabelWithInfo label="Zoom Level" />
-              <select
-                className={InputClassName}
-                value={form.zoomLevel}
-                onChange={handleValueChange("zoomLevel")}
-              >
-                <option>{MAPSWIPE_LOCATE_PROJECT_DEFAULT_ZOOM_LEVEL}</option>
-              </select>
+              <Select
+                label={formContent.zoomLevel.label}
+                labelWithTooltip
+                toolTipContent={formContent.zoomLevel.toolTip}
+                className={selectFieldClassName}
+                defaultValue={form.zoomLevel}
+                handleChange={(value) =>
+                  updateField("zoomLevel", String(value))
+                }
+                options={selectOptions([
+                  MAPSWIPE_LOCATE_PROJECT_DEFAULT_ZOOM_LEVEL,
+                ])}
+              />
             </div>
           </div>
 
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <LabelWithInfo label="Sub grid" />
-              <p className="mb-1 text-body-4 text-grey">Sub grid size</p>
-              <div className="flex items-center gap-5">
+              <MapswipeFieldLabel
+                label={formContent.subGrid.label}
+                tooltipContent={formContent.subGrid.toolTip}
+              />
+              <p className="mb-3 text-body-4 text-grey">
+                {formContent.subGrid.description}
+              </p>
+              <div className="flex items-center gap-6">
                 {MAPSWIPE_LOCATE_PROJECT_SUB_GRID_OPTIONS.map((value) => (
                   <label
                     key={value}
-                    className="inline-flex items-center gap-1 text-body-4 text-dark"
+                    className="inline-flex items-center gap-2 text-body-4 text-dark"
                   >
                     <input
                       type="radio"
@@ -292,10 +347,16 @@ export const MapswipeLocateProjectModal = ({
             </div>
 
             <div>
-              <LabelWithInfo label="Export Meta" />
+              <MapswipeFieldLabel
+                label={formContent.exportMeta.label}
+                tooltipContent={formContent.exportMeta.toolTip}
+              />
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <p className="mb-1 text-body-4 text-grey">Key</p>
+                  <MapswipeFieldLabel
+                    label={formContent.exportMetaKey.label}
+                    tooltipContent={formContent.exportMetaKey.toolTip}
+                  />
                   <input
                     className={InputClassName}
                     value={featureType || "Rooftops"}
@@ -303,7 +364,10 @@ export const MapswipeLocateProjectModal = ({
                   />
                 </div>
                 <div>
-                  <p className="mb-1 text-body-4 text-grey">Value</p>
+                  <MapswipeFieldLabel
+                    label={formContent.exportMetaValue.label}
+                    tooltipContent={formContent.exportMetaValue.toolTip}
+                  />
                   <div className="space-y-2">
                     {exportMetaValues.map((value, index) => (
                       <input
@@ -319,16 +383,16 @@ export const MapswipeLocateProjectModal = ({
             </div>
           </div>
 
-          <div className="grid gap-3 pt-2 md:grid-cols-2">
+          <div className="grid gap-6 pt-6 md:grid-cols-2">
             <Button
               variant={ButtonVariant.DARK}
-              uppercase={false}
               onClick={onBack}
+              className="!h-12"
             >
-              Cancel
+              {content.buttons.cancel}
             </Button>
-            <Button uppercase={false} disabled={!canCreate} onClick={onCreate}>
-              Create
+            <Button disabled={!canCreate} onClick={onCreate} className="!h-12">
+              {content.buttons.create}
             </Button>
           </div>
         </div>

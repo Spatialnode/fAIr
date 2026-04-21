@@ -1,28 +1,8 @@
-import { ChangeEvent, useCallback, useMemo, useRef, useState } from "react";
-
-export type MapswipeLocateProjectForm = {
-  projectTopic: string;
-  projectRegion: string;
-  projectDescription: string;
-  instruction: string;
-  lookFor: string;
-  tutorial: string;
-  imageryCredits: string;
-  minZoom: string;
-  verificationNumber: string;
-  groupSize: string;
-  maxTasksPerUser: string;
-  zoomLevel: string;
-  subGridSize: string;
-  coverImageName: string;
-};
-
-type UseMapswipeLocateProjectFormModelArgs = {
-  datasetName: string;
-  datasetDescription: string;
-  featureType: string;
-  keyValues: string[];
-};
+import { ChangeEvent, useCallback, useMemo, useState } from "react";
+import {
+  MapswipeLocateProjectForm,
+  UseMapswipeLocateProjectFormModelArgs,
+} from "@/features/datasets/types/types";
 
 export const MAPSWIPE_LOCATE_PROJECT_DATASET_LINK =
   "https://fair.hotosm.org/profile/datasets";
@@ -65,8 +45,6 @@ export const useMapswipeLocateProjectFormModel = ({
   featureType,
   keyValues,
 }: UseMapswipeLocateProjectFormModelArgs) => {
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
   const [form, setForm] = useState<MapswipeLocateProjectForm>(() =>
     getInitialFormState(datasetName, datasetDescription, featureType),
   );
@@ -91,8 +69,7 @@ export const useMapswipeLocateProjectFormModel = ({
   );
 
   const handleCoverImageChange = useCallback(
-    (event: ChangeEvent<HTMLInputElement>) => {
-      const file = event.target.files?.[0];
+    (file: File | null) => {
       updateField("coverImageName", file?.name || "");
     },
     [updateField],
@@ -100,9 +77,6 @@ export const useMapswipeLocateProjectFormModel = ({
 
   const handleClearCoverImage = useCallback(() => {
     updateField("coverImageName", "");
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
   }, [updateField]);
 
   const exportMetaValues = useMemo(() => {
@@ -130,7 +104,6 @@ export const useMapswipeLocateProjectFormModel = ({
   );
 
   return {
-    fileInputRef,
     form,
     canCreate,
     exportMetaValues,

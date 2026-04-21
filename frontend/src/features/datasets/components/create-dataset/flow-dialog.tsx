@@ -1,14 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
-import { Select } from "@/components/ui/form";
+import { FormLabel, Select } from "@/components/ui/form";
 import { CheckIcon, InfoIcon } from "@/components/ui/icons";
 import { APPLICATION_ROUTES } from "@/constants";
 import { ButtonVariant, SHOELACE_SIZES } from "@/enums";
 import { useNavigate } from "react-router-dom";
-import { FEATURE_TYPES } from "./constants";
+import { FEATURE_TYPES } from "../../utils/constants";
 import {
   createSelectOptions,
-  FieldLabel,
   InputClassName,
   ModalShell,
 } from "@/features/datasets/components/create-dataset/shared";
@@ -51,7 +50,7 @@ export const CreateDatasetFlowDialog = () => {
       noHeader
       size={
         flow.flowModal === "create-mapswipe"
-          ? SHOELACE_SIZES.MEDIUM_LARGE
+          ? SHOELACE_SIZES.WIDE
           : SHOELACE_SIZES.SMALL
       }
       preventClose={flow.flowModal === "build-success"}
@@ -71,7 +70,11 @@ export const CreateDatasetFlowDialog = () => {
 
           <div className="space-y-5 mt-5">
             <div>
-              <FieldLabel label="Feature Type" showInfoIcon={false} />
+              <FormLabel
+                label="Feature Type"
+                withTooltip={false}
+                toolTipContent=""
+              />
               <Select
                 defaultValue={flow.osmModalFeatureType}
                 placeholder="Select feature"
@@ -84,7 +87,11 @@ export const CreateDatasetFlowDialog = () => {
             </div>
 
             <div>
-              <FieldLabel label="Key Values" showInfoIcon={false} />
+              <FormLabel
+                withTooltip={false}
+                toolTipContent=""
+                label="Key Values"
+              />
               <p className="mb-3 text-xs text-grey">
                 Here are some standard key values for rooftop - value 1, value
                 2, value 3, value 4, value 5...
@@ -184,7 +191,11 @@ export const CreateDatasetFlowDialog = () => {
           </h3>
 
           <div>
-            <FieldLabel label="Project ID" />
+            <FormLabel
+              withTooltip={false}
+              toolTipContent=""
+              label="Project ID"
+            />
             <div className="space-y-2">
               {flow.taskingProjectIds.map((value, index) => (
                 <div key={`tasking-id-${index}`} className="flex gap-3">

@@ -62,6 +62,7 @@ export enum SHOELACE_SIZES {
   MEDIUM = "medium",
   MEDIUM_LARGE = "medium-large",
   LARGE = "large",
+  WIDE = "wide",
   EXTRA_LARGE = "extra-large",
 }
 

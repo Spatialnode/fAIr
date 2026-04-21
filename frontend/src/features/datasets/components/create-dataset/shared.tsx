@@ -1,26 +1,4 @@
-import { CloseIcon, InfoIcon } from "@/components/ui/icons";
-import { ToolTip } from "@/components/ui/tooltip";
-
-export const FieldLabel = ({
-  label,
-  showInfoIcon = true,
-  toolTipContent,
-}: {
-  label: string;
-  showInfoIcon?: boolean;
-  toolTipContent?: string;
-}) => (
-  <label className="mb-2 inline-flex items-center gap-x-2 text-body-3 font-semibold text-dark">
-    {label}
-    {showInfoIcon ? (
-      toolTipContent ? (
-        <ToolTip content={toolTipContent}>
-          <InfoIcon className="h-4 w-4 text-grey" />
-        </ToolTip>
-      ) : null
-    ) : null}
-  </label>
-);
+import { CloseIcon } from "@/components/ui/icons";
 
 export const InputClassName =
   "w-full rounded border border-gray-border bg-white px-4 py-3 text-body-2base text-dark outline-none transition-colors focus:border-primary";
@@ -38,7 +16,7 @@ export const ModalShell = ({
   className?: string;
   closeButtonClassName?: string;
 }) => (
-  <div className={`relative p-5 ${className}`}>
+  <div className={`relative p-5  ${className}`}>
     {showClose ? (
       <button
         type="button"

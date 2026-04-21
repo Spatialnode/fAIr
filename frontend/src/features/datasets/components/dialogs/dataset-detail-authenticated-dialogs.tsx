@@ -55,7 +55,9 @@ export const DatasetDetailAuthenticatedDialogs = ({
         isOpen={dialogs.clone.isOpen}
         onClose={dialogs.clone.onClose}
         onConfirm={onCloneDataset}
-        message={"Clone dataset? This will create a copy of this dataset and its settings as a new dataset. Changes to the clone won’t affect the original."}
+        message={
+          "Clone dataset? This will create a copy of this dataset and its settings as a new dataset. Changes to the clone won’t affect the original."
+        }
         icon={<ConfirmationIcon />}
       />
     </>

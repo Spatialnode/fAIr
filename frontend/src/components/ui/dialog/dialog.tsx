@@ -28,11 +28,14 @@ const Dialog: React.FC<DialogProps> = ({
   noPadding = false,
 }) => {
   // Prevent the dialog from closing when the user clicks on the overlay
-  function handleRequestClose(event: any) {
-    if (event.detail.source === "overlay") {
+  const handleRequestClose = (event: any) => {
+    if (preventClose && event.detail.source === "overlay") {
       event.preventDefault();
+      return;
     }
-  }
+
+    closeDialog();
+  };
 
   const { isLaptop, isSmallViewport } = useScreenSize();
 
@@ -49,6 +52,7 @@ const Dialog: React.FC<DialogProps> = ({
       label={label}
       noHeader={noHeader}
       open={isOpened}
+      hoist
       onSlRequestClose={preventClose ? handleRequestClose : () => null}
       onSlAfterHide={(event: CustomEvent) => {
         if (event.target === event.currentTarget) {
@@ -66,9 +70,11 @@ const Dialog: React.FC<DialogProps> = ({
               ? "50vw"
               : size_ === SHOELACE_SIZES.MEDIUM_LARGE
                 ? "40vw"
-                : size_ === SHOELACE_SIZES.EXTRA_LARGE
-                  ? "100vw"
-                  : "75vw",
+                : size_ === SHOELACE_SIZES.WIDE
+                  ? "64vw"
+                  : size_ === SHOELACE_SIZES.EXTRA_LARGE
+                    ? "100vw"
+                    : "75vw",
       }}
     >
       {children}

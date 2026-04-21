@@ -202,7 +202,6 @@ export const DatasetDetailOverview = ({
                 <span>{datasetDetail.labelsSource}</span>
               </div>
             )}
-         
 
             <button
               onClick={publicActions.openDatasetFiles}

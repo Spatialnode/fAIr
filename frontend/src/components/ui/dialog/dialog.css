@@ -11,6 +11,9 @@ sl-dialog.rounded::part(panel) {
   border-radius: 20px;
 }
 
+.sl-dialog {
+  z-index: 1000000300;
+}
 sl-dialog.primary::part(title) {
   color: var(--hot-fair-color-primary);
 }

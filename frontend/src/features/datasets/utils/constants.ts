@@ -1,7 +1,7 @@
 import {
   LabelSource,
   DatasetMetadataForm,
-} from "@/features/datasets/components/create-dataset/types";
+} from "@/features/datasets/types/types";
 
 export const TASK_TYPES = ["Classification", "Segmentation", "Detection"];
 export const GEOMETRY_TYPES = ["Polygon", "Rectangle"];

@@ -17,5 +17,3 @@ export const ConfirmationIcon: React.FC<IconProps> = (props) => (
     ></path>
   </svg>
 );
-
-

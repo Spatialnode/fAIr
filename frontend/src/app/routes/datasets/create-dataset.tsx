@@ -3,15 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { APPLICATION_ROUTES } from "@/constants";
 import { CreateDatasetFlowDialog } from "@/features/datasets/components/create-dataset";
-import { CreateDatasetStepOne } from "@/features/datasets/components/create-dataset/step-one";
-import { CreateDatasetStepTwo } from "@/features/datasets/components/create-dataset/step-two";
-import { DatasetMetadataForm } from "@/features/datasets/components/create-dataset/types";
-import {
-  CreateDatasetFlowProvider,
-} from "@/features/datasets/contexts/create-dataset-flow-context";
+import { CreateDatasetStepOne } from "@/features/datasets/components/create-dataset/create-datasetstep-one";
+import { CreateDatasetStepTwo } from "@/features/datasets/components/create-dataset/create-dataset-step-two";
+import { DatasetMetadataForm } from "@/features/datasets/types/types";
+import { CreateDatasetFlowProvider } from "@/features/datasets/contexts/create-dataset-flow-context";
 import { useGetTrainingDataset } from "@/features/datasets/hooks/use-datasets";
 import { getDatasetEditRoute } from "@/features/datasets/utils/dataset-routing";
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  useLocation,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 
 const CreateDatasetPageContent = () => {
   const location = useLocation();
@@ -90,7 +93,9 @@ const CreateDatasetPageContent = () => {
     >
       <>
         <Head
-          title={isEditMode ? "Edit Training Dataset" : "Create Training Dataset"}
+          title={
+            isEditMode ? "Edit Training Dataset" : "Create Training Dataset"
+          }
         />
         <section className="my-10 min-h-screen">
           {step === 2 ? <CreateDatasetStepTwo /> : <CreateDatasetStepOne />}

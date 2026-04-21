@@ -5,7 +5,11 @@ import { DropdownPlacement } from "@/enums";
 import { TMapSwipeDummyProject } from "@/features/datasets/utils/dataset-flow-mocks";
 import { DatasetDetailItem } from "@/features/datasets/components/dataset-detail-item";
 
-export const DatasetMapSwipeProjectsDropdown = ({mapswipeProjects}: { mapswipeProjects: TMapSwipeDummyProject[] }) => {
+export const DatasetMapSwipeProjectsDropdown = ({
+  mapswipeProjects,
+}: {
+  mapswipeProjects: TMapSwipeDummyProject[];
+}) => {
   return (
     <DropDown
       disableCheveronIcon
@@ -14,10 +18,7 @@ export const DatasetMapSwipeProjectsDropdown = ({mapswipeProjects}: { mapswipePr
       distance={8}
       triggerComponent={
         <div className="group/trigger flex items-center gap-x-2 text-body-2 text-dark transition-colors hover:text-primary">
-          <DatasetDetailItem
-            label="Label Source"
-            value="MapSwipe"
-          />
+          <DatasetDetailItem label="Label Source" value="MapSwipe" />
 
           <MapswipeResultDropdownIcon />
         </div>

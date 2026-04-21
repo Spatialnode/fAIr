@@ -1,5 +1,5 @@
 import { useCreateDatasetFlow } from "@/features/datasets/hooks/use-create-dataset-flow";
-import { DatasetMetadataForm } from "@/features/datasets/components/create-dataset/types";
+import { DatasetMetadataForm } from "@/features/datasets/types/types";
 import { TTrainingDataset } from "@/types";
 import React, { createContext, useContext } from "react";
 
@@ -15,10 +15,7 @@ export const CreateDatasetFlowProvider: React.FC<{
   existingDataset?: TTrainingDataset;
   prefilledMetadata?: DatasetMetadataForm;
   onStepChange: (step: 1 | 2) => void;
-  onDatasetCreated: (
-    datasetId: number,
-    metadata: DatasetMetadataForm,
-  ) => void;
+  onDatasetCreated: (datasetId: number, metadata: DatasetMetadataForm) => void;
 }> = ({
   children,
   mode,

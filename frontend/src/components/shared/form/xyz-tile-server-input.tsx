@@ -90,10 +90,10 @@ export const XYZTileServerInput = ({
         handleInput={(e) => setTileServerURL(e.target.value)}
         type={INPUT_TYPES.URL}
         validationStateUpdateCallback={validationStateUpdateCallback}
-        isValid={tileServerURL.length > 0 && isValid.valid}
+        isValid={tileServerURL?.length > 0 && isValid.valid}
         size={size}
       />
-      {tileServerURL.length > 0 && !isValid.valid && (
+      {tileServerURL?.length > 0 && !isValid.valid && (
         <HelpText>
           <span className="text-primary">{isValid.message}</span>
         </HelpText>

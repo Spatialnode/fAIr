@@ -12,7 +12,7 @@ import {
   FEATURE_TYPES,
   GEOMETRY_TYPES,
   TASK_TYPES,
-} from "@/features/datasets/components/create-dataset/constants";
+} from "@/features/datasets/utils/constants";
 import {
   createSelectOptions,
   InputClassName,
@@ -22,7 +22,7 @@ import { getDatasetFlowInitialState } from "@/features/datasets/utils/dataset-fl
 import { updateTrainingDataset } from "@/features/model-creation/api/create-trainings";
 import { showErrorToast, showSuccessToast } from "@/utils";
 import { TTrainingDataset } from "@/types";
-import { getTextFieldValidity } from "@/features/datasets/hooks/use-create-dataset-flow";
+import { getTextFieldValidity } from "@/features/datasets/utils/validation";
 
 type DatasetEditDialogProps = {
   isOpened: boolean;

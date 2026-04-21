@@ -44,16 +44,16 @@ export const DatasetFilesDialog: React.FC<DatasetFilesDialogProps> = ({
         className="relative p-10 flex flex-col"
         onClick={(event) => event.stopPropagation()}
       >
-       <div className="justify-end w-full flex items-end">
-         <button
-          type="button"
-          onClick={closeDialog}
-          className="p-1 rounded-full bg-off-white"
-          aria-label="Close dataset files modal"
-        >
-          <CloseIcon className="h-4 w-4" />
-        </button>
-       </div>
+        <div className="justify-end w-full flex items-end">
+          <button
+            type="button"
+            onClick={closeDialog}
+            className="p-1 rounded-full bg-off-white"
+            aria-label="Close dataset files modal"
+          >
+            <CloseIcon className="h-4 w-4" />
+          </button>
+        </div>
 
         <div className="max-h-[92vh] ">
           <div className="space-y-6">

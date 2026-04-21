@@ -14,8 +14,8 @@ import { useDialog } from "@/hooks/use-dialog";
 import { useMapInstance } from "@/hooks/use-map-instance";
 import { geoJSONDowloader, showErrorToast, showSuccessToast } from "@/utils";
 import { useEffect, useMemo, useState } from "react";
-import { LABEL_SOURCES } from "./constants";
-import { LabelSource } from "@/features/datasets/components/create-dataset/types";
+import { LABEL_SOURCES } from "../../utils/constants";
+import { LabelSource } from "@/features/datasets/types/types";
 import { useCreateDatasetFlowContext } from "@/features/datasets/contexts/create-dataset-flow-context";
 import { useStepTwoAoiAnchors } from "@/features/datasets/hooks/use-step-two-aoi-anchors";
 import { useDeleteTrainingArea } from "@/features/model-creation/hooks/use-training-areas";
@@ -137,7 +137,9 @@ export const CreateDatasetStepTwo = ({
         disabled={flow.createAoiPending}
       />
 
-      <div className={`space-y-4 ${isOverlayVariant ? "flex h-full flex-col" : ""}`}>
+      <div
+        className={`space-y-4 ${isOverlayVariant ? "flex h-full flex-col" : ""}`}
+      >
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-5">
             <h1 className="text-title-1 font-bold text-primary md:text-title-2">

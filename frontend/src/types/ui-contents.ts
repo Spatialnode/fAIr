@@ -810,3 +810,213 @@ export type TUserProfilePageContent = {
 };
 
 // User profile types ends.
+
+//Dataset page types starts.
+
+export type TDatasetContent = {
+  createDataset: {
+    metadataStep: {
+      buttons: {
+        back: string;
+        addKeyValue: string;
+      };
+      headings: {
+        create: string;
+        edit: string;
+      };
+      descriptions: {
+        create: string;
+        edit: string;
+      };
+      sectionTitles: {
+        create: string;
+        edit: string;
+      };
+      form: {
+        datasetName: {
+          label: string;
+          helpText: string;
+          placeholder: string;
+          toolTip: string;
+        };
+        datasetDescription: {
+          label: string;
+          placeholder: string;
+          toolTip: string;
+        };
+        taskType: {
+          label: string;
+          placeholder: string;
+          toolTip: string;
+        };
+        geometryType: {
+          label: string;
+          placeholder: string;
+          toolTip: string;
+        };
+        featureType: {
+          label: string;
+          placeholder: string;
+          toolTip: string;
+        };
+        keyValues: {
+          label: string;
+          placeholder: string;
+          toolTip: string;
+        };
+        tags: {
+          label: string;
+          placeholder: string;
+          toolTip: string;
+          helpText: string;
+        };
+      };
+      mapPreview: {
+        invalidTileService: string;
+      };
+    };
+    mapswipeProject: {
+      title: string;
+      description: string;
+      buttons: {
+        cancel: string;
+        create: string;
+      };
+      staticValues: {
+        requestingOrganisation: string;
+        visibility: string;
+      };
+      form: {
+        projectTopic: {
+          label: string;
+          toolTip: string;
+        };
+        projectRegion: {
+          label: string;
+          toolTip: string;
+        };
+        projectDescription: {
+          label: string;
+          toolTip: string;
+        };
+        instruction: {
+          label: string;
+          toolTip: string;
+        };
+        lookFor: {
+          label: string;
+          toolTip: string;
+        };
+        requestingOrganisation: {
+          label: string;
+          toolTip: string;
+        };
+        visibility: {
+          label: string;
+          toolTip: string;
+        };
+        tutorial: {
+          label: string;
+          toolTip: string;
+        };
+        additionalInformationResource: {
+          label: string;
+          toolTip: string;
+        };
+        inputGeometriesFile: {
+          label: string;
+          toolTip: string;
+        };
+        customImageryServerUrl: {
+          label: string;
+          toolTip: string;
+        };
+        imageryCredits: {
+          label: string;
+          toolTip: string;
+        };
+        minZoom: {
+          label: string;
+          toolTip: string;
+        };
+        projectCoverImage: {
+          label: string;
+          toolTip: string;
+        };
+        verificationNumber: {
+          label: string;
+          toolTip: string;
+        };
+        groupSize: {
+          label: string;
+          toolTip: string;
+        };
+        maxTasksPerUser: {
+          label: string;
+          toolTip: string;
+        };
+        zoomLevel: {
+          label: string;
+          toolTip: string;
+        };
+        subGrid: {
+          label: string;
+          description: string;
+          toolTip: string;
+        };
+        exportMeta: {
+          label: string;
+          toolTip: string;
+        };
+        exportMetaKey: {
+          label: string;
+          toolTip: string;
+        };
+        exportMetaValue: {
+          label: string;
+          toolTip: string;
+        };
+      };
+    };
+  };
+  detailPage: {
+    labels: {
+      datasetId: string;
+      description: string;
+      taskType: string;
+      geometryType: string;
+      featureType: string;
+      keyValues: string;
+      notAvailable: string;
+      usedBy: string;
+      modelsSingular: string;
+      modelsPlural: string;
+      createdBy: string;
+      lastModified: string;
+      version: string;
+      inProgress: string;
+      sourceImagery: string;
+      labelSource: string;
+      datasetFiles: string;
+    };
+    buttons: {
+      useDataset: string;
+      settings: string;
+    };
+    settingsMenu: {
+      editDetails: string;
+      editTrainingArea: string;
+      cloneDataset: string;
+      publish: string;
+    };
+    sections: {
+      modelsUsingDataset: string;
+    };
+    errors: {
+      loadingPrefix: string;
+      retry: string;
+    };
+  };
+};
+
+//Dataset page types ends.

@@ -1,8 +1,8 @@
-import { INITIAL_DATASET_METADATA_FORM } from "@/features/datasets/components/create-dataset/constants";
+import { INITIAL_DATASET_METADATA_FORM } from "@/features/datasets/utils/constants";
 import {
   DatasetMetadataForm,
   LabelSource,
-} from "@/features/datasets/components/create-dataset/types";
+} from "@/features/datasets/types/types";
 import { TBadgeVariants, TTrainingDataset } from "@/types";
 
 export const DATASET_TAG_GROUPS = [
@@ -141,7 +141,7 @@ export const getDatasetDetailDisplay = (
       ? "blue"
       : isPublished
         ? "green"
-      : isInProgress
+        : isInProgress
           ? "yellow"
           : "blue",
   };
@@ -151,9 +151,14 @@ export const getDatasetDummyFileVersions = (
   dataset: Pick<TTrainingDataset, "id" | "status">,
 ): TDatasetDummyFileVersion[] => {
   const datasetDetail = getDatasetDetailDisplay(dataset);
-  const versionCandidates = [datasetDetail.version, datasetDetail.versionSecondary]
+  const versionCandidates = [
+    datasetDetail.version,
+    datasetDetail.versionSecondary,
+  ]
     .filter(Boolean)
-    .map((value) => Math.max(1, Math.round(Number.parseFloat(value as string) || 1)));
+    .map((value) =>
+      Math.max(1, Math.round(Number.parseFloat(value as string) || 1)),
+    );
 
   const latestVersion = Math.max(...versionCandidates, 1);
 

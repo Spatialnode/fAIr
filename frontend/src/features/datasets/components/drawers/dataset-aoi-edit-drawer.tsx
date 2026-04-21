@@ -1,7 +1,7 @@
 import { Drawer } from "vaul";
 import { CloseIcon } from "@/components/ui/icons";
 import { CreateDatasetFlowDialog } from "@/features/datasets/components/create-dataset";
-import { CreateDatasetStepTwo } from "@/features/datasets/components/create-dataset/step-two";
+import { CreateDatasetStepTwo } from "@/features/datasets/components/create-dataset/create-dataset-step-two";
 import { CreateDatasetFlowProvider } from "@/features/datasets/contexts/create-dataset-flow-context";
 import { getDatasetFlowInitialState } from "@/features/datasets/utils/dataset-flow-mocks";
 import { DialogProps, TTrainingDataset } from "@/types";
@@ -16,15 +16,20 @@ export const DatasetAOIEditDrawer: React.FC<TrainingAreaDrawerProps> = ({
   trainingDataset,
 }) => {
   return (
-    <Drawer.Root dismissible fixed open={isOpened} onOpenChange={(open) => !open && closeDialog()}>
+    <Drawer.Root
+      dismissible
+      fixed
+      open={isOpened}
+      onOpenChange={(open) => !open && closeDialog()}
+    >
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-[1000000200] bg-black/80" />
-        <Drawer.Content  className="fixed inset-0 z-[1000000200] pt-20 outline-none">
+        <Drawer.Content className="fixed inset-0 z-[1000000200] pt-20 outline-none">
           <Drawer.Title className="hidden">Edit Training Area</Drawer.Title>
           <Drawer.Description className="hidden">
             Edit the training area for this dataset.
           </Drawer.Description>
-          
+
           <button
             type="button"
             onClick={closeDialog}
