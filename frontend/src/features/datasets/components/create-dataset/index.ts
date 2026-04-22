@@ -1,3 +1,3 @@
-export { CreateDatasetStepOne } from "./create-datasetstep-one";
+export { CreateDatasetStepOne } from "./create-dataset-step-one";
 export { CreateDatasetStepTwo } from "./create-dataset-step-two";
-export { CreateDatasetFlowDialog } from "./flow-dialog";
+export { CreateDatasetFlowDialog } from "../dialogs/flow-dialog";

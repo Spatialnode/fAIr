@@ -181,7 +181,11 @@ export const CreateDatasetStepOne = () => {
                   />
                   <button
                     type="button"
-                    className="h-12 w-12 rounded border border-gray-border bg-secondary text-title-3 text-grey"
+                    className={
+                      flow.datasetMetadataForm.keyValues.length === 1
+                        ? "h-12 w-12 rounded border border-gray-border bg-off-white text-title-3 text-grey"
+                        : "h-12 w-12 rounded border border-gray-border bg-secondary text-title-3 text-grey"
+                    }
                     onClick={() => flow.handleKeyValueDelete(index)}
                   >
                     -

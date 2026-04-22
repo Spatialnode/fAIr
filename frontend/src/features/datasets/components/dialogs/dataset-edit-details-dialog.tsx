@@ -226,7 +226,12 @@ export const DatasetEditDialog: React.FC<DatasetEditDialogProps> = ({
                       />
                       <button
                         type="button"
-                        className="h-12 w-12 rounded-md bg-[#FFF1F1] text-title-3 text-primary transition-opacity hover:opacity-80"
+                        className={
+                          metadataForm.datasetMetadataForm.keyValues.length ===
+                          1
+                            ? "h-12 w-12 rounded border border-gray-border bg-off-white text-title-3 text-grey"
+                            : "h-12 w-12 rounded border border-gray-border bg-secondary text-title-3 text-grey"
+                        }
                         onClick={() => metadataForm.handleKeyValueDelete(index)}
                       >
                         -

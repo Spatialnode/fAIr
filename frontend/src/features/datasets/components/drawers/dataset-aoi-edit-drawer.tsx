@@ -23,8 +23,8 @@ export const DatasetAOIEditDrawer: React.FC<TrainingAreaDrawerProps> = ({
       onOpenChange={(open) => !open && closeDialog()}
     >
       <Drawer.Portal>
-        <Drawer.Overlay className="fixed inset-0 z-[1000000200] bg-black/80" />
-        <Drawer.Content className="fixed inset-0 z-[1000000200] pt-20 outline-none">
+        <Drawer.Overlay className="fixed inset-0 z-[10000] bg-black/80" />
+        <Drawer.Content className="fixed inset-0 z-[100000] pt-20 outline-none">
           <Drawer.Title className="hidden">Edit Training Area</Drawer.Title>
           <Drawer.Description className="hidden">
             Edit the training area for this dataset.

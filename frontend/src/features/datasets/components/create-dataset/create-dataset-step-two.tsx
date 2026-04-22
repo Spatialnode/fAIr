@@ -4,6 +4,7 @@ import { DropDown } from "@/components/ui/dropdown";
 import { DropdownMenuItem } from "@/components/ui/dropdown/dropdown";
 import {
   ArrowBackIcon,
+  ChevronDownIcon,
   InfoIcon,
   YouTubePlayIcon,
 } from "@/components/ui/icons";
@@ -12,7 +13,12 @@ import { ButtonVariant, DrawingModes } from "@/enums";
 import TrainingAreaMap from "@/features/model-creation/components/training-area/training-area-map";
 import { useDialog } from "@/hooks/use-dialog";
 import { useMapInstance } from "@/hooks/use-map-instance";
-import { geoJSONDowloader, showErrorToast, showSuccessToast } from "@/utils";
+import {
+  cn,
+  geoJSONDowloader,
+  showErrorToast,
+  showSuccessToast,
+} from "@/utils";
 import { useEffect, useMemo, useState } from "react";
 import { LABEL_SOURCES } from "../../utils/constants";
 import { LabelSource } from "@/features/datasets/types/types";
@@ -128,15 +134,6 @@ export const CreateDatasetStepTwo = ({
 
   return (
     <>
-      <FileUploadDialog
-        isOpened={isAoiUploadDialogOpened}
-        closeDialog={closeAoiUploadDialog}
-        label={"Upload Training Area(s)"}
-        fileUploadHandler={flow.handleUploadAoi}
-        successToast={TOAST_NOTIFICATIONS.trainingAreasFileUploadSuccess}
-        disabled={flow.createAoiPending}
-      />
-
       <div
         className={`space-y-4 ${isOverlayVariant ? "flex h-full flex-col" : ""}`}
       >
@@ -176,7 +173,7 @@ export const CreateDatasetStepTwo = ({
                     flow.handleLabelSourceChange(selected);
                   }}
                   triggerComponent={
-                    <div className="flex h-10 w-full items-center rounded-md border border-gray-border bg-off-white px-3 text-body-4">
+                    <div className="flex h-10 w-full justify-between items-center rounded-md border border-gray-border bg-off-white px-3 text-body-4">
                       <span
                         className={
                           flow.labelSource === "" ? "text-grey" : "text-dark"
@@ -184,6 +181,10 @@ export const CreateDatasetStepTwo = ({
                       >
                         {flow.labelSource || "Select label source"}
                       </span>
+
+                      <ChevronDownIcon
+                        className={cn("w-3 h-3 text-dark  ml-2 transition-all")}
+                      />
                     </div>
                   }
                 />
@@ -321,6 +322,15 @@ export const CreateDatasetStepTwo = ({
           </div>
         </div>
       </div>
+
+      <FileUploadDialog
+        isOpened={isAoiUploadDialogOpened}
+        closeDialog={closeAoiUploadDialog}
+        label={"Upload Training Area(s)"}
+        fileUploadHandler={flow.handleUploadAoi}
+        successToast={TOAST_NOTIFICATIONS.trainingAreasFileUploadSuccess}
+        disabled={flow.createAoiPending}
+      />
     </>
   );
 };

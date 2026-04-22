@@ -12,6 +12,7 @@ type ConfirmationModalProps = {
   isConfirming?: boolean;
   confirmLabel?: string;
   cancelLabel?: string;
+  heading?: string;
 };
 
 export const ConfirmationModal = ({
@@ -23,6 +24,7 @@ export const ConfirmationModal = ({
   isConfirming = false,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
+  heading,
 }: ConfirmationModalProps) => {
   const { isMobile } = useScreenSize();
 
@@ -38,6 +40,9 @@ export const ConfirmationModal = ({
     >
       <div className="flex flex-col items-center gap-y-4 py-8 px-4">
         {icon}
+        {heading && (
+          <h2 className="text-base font-semibold text-dark">{heading}</h2>
+        )}
         <p className="text-sm text-dark text-center">{message}</p>
         <div className="flex gap-x-3 w-full mt-2">
           <Button

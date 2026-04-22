@@ -60,20 +60,3 @@ export type UseMapswipeLocateProjectFormModelArgs = {
   featureType: string;
   keyValues: string[];
 };
-
-// export type MapswipeLocateProjectForm = {
-//   projectTopic: string;
-//   projectRegion: string;
-//   projectDescription: string;
-//   instruction: string;
-//   lookFor: string;
-//   tutorial: string;
-//   imageryCredits: string;
-//   minZoom: string;
-//   verificationNumber: string;
-//   groupSize: string;
-//   maxTasksPerUser: string;
-//   zoomLevel: string;
-//   subGridSize: string;
-//   coverImageName: string;
-// };

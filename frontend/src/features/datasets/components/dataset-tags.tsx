@@ -13,8 +13,7 @@ export const DatasetTags = ({
   visibleLimit = 3,
 }: DatasetTagsProps) => {
   const sanitizedTags = tags.filter(
-    (tag): tag is string =>
-      Boolean(tag?.trim()) && tag.trim().toLowerCase() !== "null",
+    (tag): tag is string => tag.trim().toLowerCase() !== "null",
   );
 
   if (sanitizedTags.length === 0) return null;

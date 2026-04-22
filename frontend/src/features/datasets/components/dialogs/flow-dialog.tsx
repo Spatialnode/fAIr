@@ -14,8 +14,8 @@ import {
 import "./flow-dialog.css";
 import { useCreateDatasetFlowContext } from "@/features/datasets/contexts/create-dataset-flow-context";
 import { SourceIcon } from "@/components/ui/icons/source-icon";
-import { CreateDatasetMapSwipeFlow } from "@/features/datasets/components/create-dataset/modals/mapswipe-data-source";
-import { MapswipeLocateProjectModal } from "@/features/datasets/components/create-dataset/modals/create-new-mapswipe-project";
+import { MapswipeLocateProjectModal } from "@/features/datasets/components/modals/create-new-mapswipe-project";
+import { CreateDatasetMapSwipeFlow } from "@/features/datasets/components/modals/mapswipe-data-source";
 
 export const CreateDatasetFlowDialog = () => {
   const flow = useCreateDatasetFlowContext();
@@ -117,7 +117,11 @@ export const CreateDatasetFlowDialog = () => {
                     />
                     <button
                       type="button"
-                      className="h-10 w-10  items-center justify-center rounded-md border border-gray-border bg-off-white text-title-3 text-grey"
+                      className={
+                        flow.osmModalValues.length === 1
+                          ? "h-12 w-12 rounded border border-gray-border bg-off-white text-title-3 text-grey"
+                          : "h-12 w-12 rounded border border-gray-border bg-secondary text-title-3 text-grey"
+                      }
                       onClick={() =>
                         removeIndexedArrayValue(
                           flow.osmModalValues,

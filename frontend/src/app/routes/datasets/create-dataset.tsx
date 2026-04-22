@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { APPLICATION_ROUTES } from "@/constants";
 import { CreateDatasetFlowDialog } from "@/features/datasets/components/create-dataset";
-import { CreateDatasetStepOne } from "@/features/datasets/components/create-dataset/create-datasetstep-one";
+import { CreateDatasetStepOne } from "@/features/datasets/components/create-dataset/create-dataset-step-one";
 import { CreateDatasetStepTwo } from "@/features/datasets/components/create-dataset/create-dataset-step-two";
 import { DatasetMetadataForm } from "@/features/datasets/types/types";
 import { CreateDatasetFlowProvider } from "@/features/datasets/contexts/create-dataset-flow-context";
@@ -36,8 +36,6 @@ const CreateDatasetPageContent = () => {
   } = useGetTrainingDataset(datasetId ?? 0, isEditMode);
 
   const handleStepChange = (nextStep: 1 | 2) => {
-    if (!isEditMode) return;
-
     const nextSearchParams = new URLSearchParams(searchParams);
     if (nextStep === 2) {
       nextSearchParams.set("step", "2");

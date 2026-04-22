@@ -27,13 +27,14 @@ const Dialog: React.FC<DialogProps> = ({
   noHeader = false,
   noPadding = false,
 }) => {
-  // Prevent the dialog from closing when the user clicks on the overlay
+  // Handle close requests explicitly to keep the dialog fully controlled.
   const handleRequestClose = (event: any) => {
     if (preventClose && event.detail.source === "overlay") {
       event.preventDefault();
       return;
     }
 
+    event.preventDefault();
     closeDialog();
   };
 
@@ -53,12 +54,7 @@ const Dialog: React.FC<DialogProps> = ({
       noHeader={noHeader}
       open={isOpened}
       hoist
-      onSlRequestClose={preventClose ? handleRequestClose : () => null}
-      onSlAfterHide={(event: CustomEvent) => {
-        if (event.target === event.currentTarget) {
-          closeDialog();
-        }
-      }}
+      onSlRequestClose={handleRequestClose}
       className={`sl-dialog hide-scrollbar ${labelColor} ${borderRadius} ${noPadding ? " no-padding" : ""}`}
       style={{
         //@ts-expect-error bad type definition

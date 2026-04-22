@@ -219,6 +219,13 @@ export const useCreateDatasetFlow = ({
   // ── Step transition handler ────────────────────────────────────────
 
   const handleContinueToStepTwo = async () => {
+    // Temporary bypass: skip dataset create/update API calls in create mode
+    // so we can still access step two while authentication is unavailable.
+    if (mode === "create") {
+      onStepChange(2);
+      return;
+    }
+
     try {
       const isNewDataset = trainingAreas.createdDatasetId === null;
       const datasetId = await trainingAreas.ensureDatasetSaved(

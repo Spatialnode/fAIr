@@ -1,5 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { DeleteIcon, FileIcon, UploadIcon } from "@/components/ui/icons";
+import {
+  CloseIcon,
+  DeleteIcon,
+  FileIcon,
+  UploadIcon,
+} from "@/components/ui/icons";
 import { Dialog } from "@/components/ui/dialog";
 import { DialogProps, Feature, FeatureCollection } from "@/types";
 import { FileWithPath, useDropzone } from "react-dropzone";
@@ -23,6 +28,7 @@ import {
   truncateString,
   validateGeoJSONArea,
 } from "@/utils";
+import { ButtonVariant } from "@/enums";
 
 type FileUploadDialogProps = DialogProps & {
   label: string;
@@ -282,77 +288,109 @@ const FileUploadDialog: React.FC<FileUploadDialogProps> = ({
     <Dialog
       isOpened={isOpened}
       closeDialog={resetState}
-      label={label}
+      noHeader
+      noPadding
       preventClose={disabled || uploadInProgress}
     >
-      <div className="flex flex-col gap-y-4">
-        <div
-          className="h-80 border-2 border-gray border-dashed w-full flex items-center justify-center flex-col gap-y-4 text-grey rounded-lg"
-          {...getRootProps()}
+      <div
+        className="relative max-h-[92vh] w-full overflow-hidden rounded-[28px] bg-white shadow-2xl"
+        onClick={(event) => event.stopPropagation()}
+      >
+        <button
+          type="button"
+          onClick={resetState}
+          disabled={disabled || uploadInProgress}
+          className="absolute right-4 top-4 z-10 rounded-full bg-[#F2F4F7] p-2 text-grey transition-colors hover:text-dark disabled:cursor-not-allowed disabled:opacity-60"
+          aria-label="Close upload training area dialog"
         >
-          <UploadIcon className="icon-lg w-10 h-10 " />
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <p className="text-body-4 md:text-body-3 text-center">
-              Drop the files here ...
-            </p>
-          ) : (
-            <>
-              <p className="text-body-4 md:text-body-3 text-center">
-                {
-                  MODELS_CONTENT.modelCreation.trainingArea.fileUploadDialog
-                    .mainInstruction
-                }
-              </p>
-              <small className="text-body-4 md:text-body-3 text-center">
-                {
-                  MODELS_CONTENT.modelCreation.trainingArea.fileUploadDialog
-                    .fleSizeInstruction
-                }
-              </small>
+          <CloseIcon className="h-4 w-4" />
+        </button>
 
-              {!disableFileSizeValidation && (
-                <small className="text-body-4 md:text-body-3 text-center">
-                  {`Max file size: ${formatAreaInAppropriateUnit(
-                    MAX_TRAINING_AREA_UPLOAD_FILE_SIZE,
-                  )}.`}
-                </small>
-              )}
+        <div className="max-h-[92vh] overflow-y-auto px-4 pb-6 pt-6 md:px-6">
+          <div className="flex flex-col gap-y-4">
+            <div className="pr-12">
+              <h2 className="text-title-3 font-semibold text-dark">{label}</h2>
+            </div>
 
-              {!disableFileSizeValidation && (
-                <small className="text-body-4 md:text-body-3 text-center">
-                  {`Area should be > ${formatAreaInAppropriateUnit(MIN_TRAINING_AREA_SIZE)} and < ${formatAreaInAppropriateUnit(MAX_TRAINING_AREA_SIZE)}.`}
-                </small>
+            <div
+              className="h-80 border-2 border-gray border-dashed w-full flex items-center justify-center flex-col gap-y-4 text-grey rounded-lg"
+              {...getRootProps()}
+            >
+              <UploadIcon className="icon-lg w-10 h-10 " />
+              <input {...getInputProps()} />
+              {isDragActive ? (
+                <p className="text-body-4 md:text-body-3 text-center">
+                  Drop the files here ...
+                </p>
+              ) : (
+                <>
+                  <p className="text-body-4 md:text-body-3 text-center">
+                    {
+                      MODELS_CONTENT.modelCreation.trainingArea.fileUploadDialog
+                        .mainInstruction
+                    }
+                  </p>
+                  <small className="text-body-4 md:text-body-3 text-center">
+                    {
+                      MODELS_CONTENT.modelCreation.trainingArea.fileUploadDialog
+                        .fleSizeInstruction
+                    }
+                  </small>
+
+                  {!disableFileSizeValidation && (
+                    <small className="text-body-4 md:text-body-3 text-center">
+                      {`Max file size: ${formatAreaInAppropriateUnit(
+                        MAX_TRAINING_AREA_UPLOAD_FILE_SIZE,
+                      )}.`}
+                    </small>
+                  )}
+
+                  {!disableFileSizeValidation && (
+                    <small className="text-body-4 md:text-body-3 text-center">
+                      {`Area should be > ${formatAreaInAppropriateUnit(MIN_TRAINING_AREA_SIZE)} and < ${formatAreaInAppropriateUnit(MAX_TRAINING_AREA_SIZE)}.`}
+                    </small>
+                  )}
+                  {additionalInstruction && (
+                    <small className="text-body-4 md:text-body-3 text-center italic text-primary">
+                      {additionalInstruction}
+                    </small>
+                  )}
+                </>
               )}
-              {additionalInstruction && (
-                <small className="text-body-4 md:text-body-3 text-center italic text-primary">
-                  {additionalInstruction}
-                </small>
-              )}
-            </>
-          )}
-        </div>
-        <small>{acceptedFiles.length} file(s) selected</small>
-        <ul className="flex flex-col gap-y-2 overflow-y-auto max-h-40">
-          {files}
-        </ul>
-        <div className="self-end">
-          <Button
-            disabled={
-              acceptedFiles.length === 0 || disabled || uploadInProgress
-            }
-            onClick={handleUpload}
-            className="flex items-center gap-x-2"
-          >
-            {uploadInProgress ? (
-              <>
-                Uploading
-                <Spinner />
-              </>
-            ) : (
-              buttonText
-            )}
-          </Button>
+            </div>
+
+            <small>{acceptedFiles.length} file(s) selected</small>
+            <ul className="flex flex-col gap-y-2 overflow-y-auto max-h-40">
+              {files}
+            </ul>
+
+            <div className="flex justify-end gap-3">
+              <Button
+                variant={ButtonVariant.DEFAULT}
+                className="!w-fit"
+                disabled={disabled || uploadInProgress}
+                onClick={resetState}
+              >
+                Cancel
+              </Button>
+              <Button
+                disabled={
+                  acceptedFiles.length === 0 || disabled || uploadInProgress
+                }
+                onClick={handleUpload}
+                className="!w-fit flex items-center gap-x-2"
+              >
+                {uploadInProgress ? (
+                  <>
+                    Uploading
+                    <Spinner />
+                  </>
+                ) : (
+                  buttonText
+                )}
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </Dialog>

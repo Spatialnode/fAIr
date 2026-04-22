@@ -150,13 +150,13 @@ export const TrainingDatasetsDetailPage = () => {
         dialogs={publicDialogs}
       />
       {showEditOptions ? (
-      <DatasetDetailAuthenticatedDialogs
-        data={data}
-        dialogs={authenticatedDialogs}
-        onPublishDataset={handlePublishDataset}
-        onCloneDataset={handleCloneDataset}
-      />
-     ) : null}
+        <DatasetDetailAuthenticatedDialogs
+          data={data}
+          dialogs={authenticatedDialogs}
+          onPublishDataset={handlePublishDataset}
+          onCloneDataset={handleCloneDataset}
+        />
+      ) : null}
       <div className="flex flex-col gap-y-8">
         <DatasetDetailOverview
           data={data}

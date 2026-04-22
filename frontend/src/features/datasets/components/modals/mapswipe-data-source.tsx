@@ -7,8 +7,11 @@ import { useQueries } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { TabGroup } from "@/components/ui/tab-group";
 import { useDialog } from "@/hooks/use-dialog";
-import { InputClassName, ModalShell } from "../shared";
 import { SourceIcon } from "@/components/ui/icons/source-icon";
+import {
+  ModalShell,
+  InputClassName,
+} from "@/features/datasets/components/create-dataset/shared";
 
 const READY_STATUSES = new Set([
   MapSwipeProcessingStatus.PUBLISHED,
@@ -131,7 +134,11 @@ export const CreateDatasetMapSwipeFlow = ({
                   />
                   <button
                     type="button"
-                    className="h-12 w-12 rounded border border-gray-border bg-secondary text-title-3 text-grey"
+                    className={
+                      mapSwipeProjectIds.length === 1
+                        ? "h-12 w-12 rounded border border-gray-border bg-off-white text-title-3 text-grey"
+                        : "h-12 w-12 rounded border border-gray-border bg-secondary text-title-3 text-grey"
+                    }
                     onClick={() => removeIndexedArrayValue(index)}
                   >
                     -

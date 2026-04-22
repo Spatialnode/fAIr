@@ -1,8 +1,8 @@
 import { ConfirmationModal } from "@/components/shared";
 import { ConfirmationIcon } from "@/components/ui/icons/confirmation-icon";
-import { DatasetEditDialog } from "@/features/datasets/components/dialogs/dataset-details-edit-dialog";
 import { DatasetAOIEditDrawer } from "@/features/datasets/components/drawers/dataset-aoi-edit-drawer";
 import { TTrainingDataset } from "@/types";
+import { DatasetEditDialog } from "@/features/datasets/components/dialogs/dataset-edit-details-dialog";
 
 type DialogState = {
   isOpened: boolean;
@@ -55,8 +55,9 @@ export const DatasetDetailAuthenticatedDialogs = ({
         isOpen={dialogs.clone.isOpen}
         onClose={dialogs.clone.onClose}
         onConfirm={onCloneDataset}
+        heading="Clone dataset?"
         message={
-          "Clone dataset? This will create a copy of this dataset and its settings as a new dataset. Changes to the clone won’t affect the original."
+          "This will create a copy of this dataset and its settings as a new dataset. Changes to the clone won’t affect the original."
         }
         icon={<ConfirmationIcon />}
       />
