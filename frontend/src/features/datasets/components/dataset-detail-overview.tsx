@@ -163,26 +163,12 @@ export const DatasetDetailOverview = ({
               label="Last Modified"
               value={formatDate(data.last_modified)}
             />
-            <p className="text-body-2 text-dark">
-              <span className="text-grey">Version:</span>{" "}
-              <span className="font-semibold">{datasetDetail.version}</span>
-              {datasetDetail.versionSecondary && (
-                <>
-                  {"  "}
-                  <span className="font-semibold">
-                    {datasetDetail.versionSecondary}
-                  </span>
-                </>
-              )}
-              {datasetDetail.isInProgress && (
-                <Badge
-                  variant="yellow"
-                  className="!ml-2 !inline-flex !h-5 !rounded-full !px-2 !py-0.5 !text-[10px]"
-                >
-                  In progress
-                </Badge>
-              )}
-            </p>
+            <DatasetDetailItem label="Version" value={datasetDetail.version}>
+              <div className="flex items-center gap-x-2">
+                <span className="text-grey">6.0</span>
+                <Badge variant="yellow">In progress</Badge>
+              </div>
+            </DatasetDetailItem>
           </div>
           <div className="grid grid-cols-1 gap-x-10 gap-y-4 md:grid-cols-2 xl:grid-cols-4">
             <div className="flex items-center gap-x-4 text-body-2 text-dark">
