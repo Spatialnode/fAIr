@@ -290,18 +290,29 @@ const router = createBrowserRouter([
       /**
        * Start mapping route starts.
        */
-      {
+      // {
+      //   path: APPLICATION_ROUTES.START_MAPPING,
+      //   lazy: async () => {
+      //     const { StartMappingPage } = await import(
+      //       "@/app/routes/start-mapping"
+      //     );
+      //     return {
+      //       Component: () => (
+      //         <ProtectedRoute>
+      //           <StartMappingPage />
+      //         </ProtectedRoute>
+      //       ),
+      //     };
+      //   },
+      // },
+        {
         path: APPLICATION_ROUTES.START_MAPPING,
         lazy: async () => {
           const { StartMappingPage } = await import(
             "@/app/routes/start-mapping"
           );
           return {
-            Component: () => (
-              <ProtectedRoute>
-                <StartMappingPage />
-              </ProtectedRoute>
-            ),
+            Component: () => <StartMappingPage />,
           };
         },
       },

@@ -12,12 +12,14 @@ export const Avatar = ({
   size: string;
   className?: string;
 }) => {
+  const safeLabel = label?.trim() || "User";
+
   return (
     <SlAvatar
       image={imageUrl}
-      label={label}
+      label={safeLabel}
       loading="lazy"
-      initials={label.charAt(0)}
+      initials={safeLabel.charAt(0).toUpperCase()}
       className={className}
       style={{ "--size": size } as TCSSWithVars}
     />

@@ -12,7 +12,7 @@ import {
 } from "@/features/start-mapping/components";
 import { DrawControl, MapComponent, MapCursorToolTip } from "@/components/map";
 import { RefObject, useEffect, useMemo } from "react";
-
+import { DraggableBoundaryBox } from "@/features/start-mapping/components/map/draggable-boundary-box";
 import { TileJSON, TModelPredictionFeature } from "@/types";
 import {
   MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION,
@@ -214,6 +214,8 @@ export const StartMappingMapComponent = ({
         />
       )}
       {memoizedToolTip}
+      <DraggableBoundaryBox mapContainerRef={mapContainerRef} />
+
       <div
         className={
           "absolute top-40 left-3 map-elements-z-index hidden md:block"
