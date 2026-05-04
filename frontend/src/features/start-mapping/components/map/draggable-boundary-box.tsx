@@ -32,7 +32,10 @@ const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
 const getBoundarySize = (containerWidth: number, containerHeight: number) => {
-  const maxWidth = Math.max(MIN_BOUNDARY_WIDTH, containerWidth - BOUNDARY_MARGIN);
+  const maxWidth = Math.max(
+    MIN_BOUNDARY_WIDTH,
+    containerWidth - BOUNDARY_MARGIN,
+  );
   const maxHeight = Math.max(
     MIN_BOUNDARY_HEIGHT,
     containerHeight - BUTTON_OFFSET_Y - BOUNDARY_MARGIN,
@@ -181,7 +184,9 @@ export const DraggableBoundaryBox = ({
     );
 
     const targetButton =
-      buttons.find((button) => !button.disabled && button.offsetParent !== null) ||
+      buttons.find(
+        (button) => !button.disabled && button.offsetParent !== null,
+      ) ||
       buttons.find((button) => !button.disabled) ||
       null;
 
