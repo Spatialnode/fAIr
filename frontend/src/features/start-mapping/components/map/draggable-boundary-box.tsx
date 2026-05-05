@@ -285,7 +285,9 @@ export const DraggableBoundaryBox = ({
 
     const targetButton =
       targetOnlineButton ||
-      buttons.find((button) => !button.disabled && button.offsetParent !== null) ||
+      buttons.find(
+        (button) => !button.disabled && button.offsetParent !== null,
+      ) ||
       buttons.find((button) => !button.disabled) ||
       null;
 

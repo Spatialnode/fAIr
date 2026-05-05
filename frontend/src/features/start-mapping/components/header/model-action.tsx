@@ -70,7 +70,9 @@ const ModelAction = ({
         orthogonalize: query[SEARCH_PARAMS.orthogonalize] as boolean,
         confidence: query[SEARCH_PARAMS.confidenceLevel] as number,
         checkpoint: predictionModelCheckpoint,
-        ortho_max_angle_change_deg: query[SEARCH_PARAMS.maxAngleChange] as number,
+        ortho_max_angle_change_deg: query[
+          SEARCH_PARAMS.maxAngleChange
+        ] as number,
         model_id: modelId as string,
         ortho_skew_tolerance_deg: query[SEARCH_PARAMS.skewTolerance] as number,
         source: tileServerURL ?? (modelInfo?.dataset?.source_imagery as string),
