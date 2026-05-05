@@ -117,6 +117,8 @@ const ModelAction = ({
         }
       >
         <button
+          type="button"
+          data-start-mapping-generate-button="true"
           disabled={disablePredictionButton}
           onClick={
             hasDrawnAOI ? openOfflinePredictionRequestDialog : handlePrediction

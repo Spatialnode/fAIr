@@ -22,16 +22,34 @@ type Position = {
   y: number;
 };
 
-type DragState = {
-  isDragging: boolean;
-  offsetX: number;
-  offsetY: number;
+type BoundaryRect = Position & {
+  width: number;
+  height: number;
 };
+
+type ResizeEdge = "top" | "right" | "bottom" | "left";
+
+type InteractionState =
+  | {
+      mode: "idle";
+    }
+  | {
+      mode: "drag";
+      offsetX: number;
+      offsetY: number;
+    }
+  | {
+      mode: "resize";
+      edge: ResizeEdge;
+      startClientX: number;
+      startClientY: number;
+      startRect: BoundaryRect;
+    };
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
 
-const getBoundarySize = (containerWidth: number, containerHeight: number) => {
+const getBoundaryLimits = (containerWidth: number, containerHeight: number) => {
   const maxWidth = Math.max(
     MIN_BOUNDARY_WIDTH,
     containerWidth - BOUNDARY_MARGIN,
@@ -41,10 +59,7 @@ const getBoundarySize = (containerWidth: number, containerHeight: number) => {
     containerHeight - BUTTON_OFFSET_Y - BOUNDARY_MARGIN,
   );
 
-  return {
-    width: Math.min(BOUNDARY_WIDTH, maxWidth),
-    height: Math.min(BOUNDARY_HEIGHT, maxHeight),
-  };
+  return { maxWidth, maxHeight };
 };
 
 export const DraggableBoundaryBox = ({
@@ -52,33 +67,31 @@ export const DraggableBoundaryBox = ({
 }: {
   mapContainerRef: RefObject<HTMLDivElement | null>;
 }) => {
-  const [position, setPosition] = useState<Position>({ x: 48, y: 90 });
-  const [dragState, setDragState] = useState<DragState>({
-    isDragging: false,
-    offsetX: 0,
-    offsetY: 0,
+  const [boundaryRect, setBoundaryRect] = useState<BoundaryRect>({
+    x: 48,
+    y: 90,
+    width: BOUNDARY_WIDTH,
+    height: BOUNDARY_HEIGHT,
+  });
+  const [interactionState, setInteractionState] = useState<InteractionState>({
+    mode: "idle",
   });
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const handleRef = useRef<HTMLButtonElement | null>(null);
 
-  const boundarySize = useMemo(
-    () => getBoundarySize(containerSize.width, containerSize.height),
-    [containerSize.height, containerSize.width],
-  );
+  const clampRectToContainer = useCallback(
+    (nextRect: BoundaryRect, width: number, height: number): BoundaryRect => {
+      const { maxWidth, maxHeight } = getBoundaryLimits(width, height);
+      const nextWidth = clamp(nextRect.width, MIN_BOUNDARY_WIDTH, maxWidth);
+      const nextHeight = clamp(nextRect.height, MIN_BOUNDARY_HEIGHT, maxHeight);
+      const maxX = Math.max(0, width - nextWidth);
+      const maxY = Math.max(0, height - nextHeight - BUTTON_OFFSET_Y);
 
-  const clampPosition = useCallback(
-    (
-      nextPosition: Position,
-      width: number,
-      height: number,
-      boundaryWidth: number,
-      boundaryHeight: number,
-    ): Position => {
-      const maxX = Math.max(0, width - boundaryWidth);
-      const maxY = Math.max(0, height - boundaryHeight - BUTTON_OFFSET_Y);
       return {
-        x: clamp(nextPosition.x, 0, maxX),
-        y: clamp(nextPosition.y, 0, maxY),
+        x: clamp(nextRect.x, 0, maxX),
+        y: clamp(nextRect.y, 0, maxY),
+        width: nextWidth,
+        height: nextHeight,
       };
     },
     [],
@@ -90,16 +103,9 @@ export const DraggableBoundaryBox = ({
 
     const syncSize = () => {
       const rect = container.getBoundingClientRect();
-      const nextBoundarySize = getBoundarySize(rect.width, rect.height);
       setContainerSize({ width: rect.width, height: rect.height });
-      setPosition((prev) =>
-        clampPosition(
-          prev,
-          rect.width,
-          rect.height,
-          nextBoundarySize.width,
-          nextBoundarySize.height,
-        ),
+      setBoundaryRect((prev) =>
+        clampRectToContainer(prev, rect.width, rect.height),
       );
     };
 
@@ -113,34 +119,83 @@ export const DraggableBoundaryBox = ({
 
     window.addEventListener("resize", syncSize);
     return () => window.removeEventListener("resize", syncSize);
-  }, [clampPosition, mapContainerRef]);
+  }, [clampRectToContainer, mapContainerRef]);
 
   useEffect(() => {
-    if (!dragState.isDragging) return;
+    if (interactionState.mode === "idle") return;
 
     const handlePointerMove = (event: PointerEvent) => {
       const container = mapContainerRef.current;
       if (!container) return;
 
       const rect = container.getBoundingClientRect();
-      const nextPosition = {
-        x: event.clientX - rect.left - dragState.offsetX,
-        y: event.clientY - rect.top - dragState.offsetY,
-      };
 
-      setPosition(
-        clampPosition(
-          nextPosition,
-          rect.width,
-          rect.height,
-          boundarySize.width,
-          boundarySize.height,
-        ),
+      if (interactionState.mode === "drag") {
+        setBoundaryRect((prev) =>
+          clampRectToContainer(
+            {
+              ...prev,
+              x: event.clientX - rect.left - interactionState.offsetX,
+              y: event.clientY - rect.top - interactionState.offsetY,
+            },
+            rect.width,
+            rect.height,
+          ),
+        );
+        return;
+      }
+
+      const dx = event.clientX - interactionState.startClientX;
+      const dy = event.clientY - interactionState.startClientY;
+      const { edge, startRect } = interactionState;
+      const { maxWidth, maxHeight } = getBoundaryLimits(
+        rect.width,
+        rect.height,
       );
+      let nextRect: BoundaryRect = { ...startRect };
+
+      if (edge === "right") {
+        const rightMaxWidth = Math.min(maxWidth, rect.width - startRect.x);
+        nextRect.width = clamp(
+          startRect.width + dx,
+          MIN_BOUNDARY_WIDTH,
+          rightMaxWidth,
+        );
+      }
+
+      if (edge === "left") {
+        const right = startRect.x + startRect.width;
+        const minX = Math.max(0, right - maxWidth);
+        const maxX = right - MIN_BOUNDARY_WIDTH;
+        nextRect.x = clamp(startRect.x + dx, minX, maxX);
+        nextRect.width = right - nextRect.x;
+      }
+
+      if (edge === "bottom") {
+        const bottomMaxHeight = Math.min(
+          maxHeight,
+          rect.height - BUTTON_OFFSET_Y - startRect.y,
+        );
+        nextRect.height = clamp(
+          startRect.height + dy,
+          MIN_BOUNDARY_HEIGHT,
+          bottomMaxHeight,
+        );
+      }
+
+      if (edge === "top") {
+        const bottom = startRect.y + startRect.height;
+        const minY = Math.max(0, bottom - maxHeight);
+        const maxY = bottom - MIN_BOUNDARY_HEIGHT;
+        nextRect.y = clamp(startRect.y + dy, minY, maxY);
+        nextRect.height = bottom - nextRect.y;
+      }
+
+      setBoundaryRect(clampRectToContainer(nextRect, rect.width, rect.height));
     };
 
     const handlePointerUp = () => {
-      setDragState((prev) => ({ ...prev, isDragging: false }));
+      setInteractionState({ mode: "idle" });
       handleRef.current?.blur();
     };
 
@@ -151,15 +206,7 @@ export const DraggableBoundaryBox = ({
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [
-    boundarySize.height,
-    boundarySize.width,
-    clampPosition,
-    dragState.isDragging,
-    dragState.offsetX,
-    dragState.offsetY,
-    mapContainerRef,
-  ]);
+  }, [clampRectToContainer, interactionState, mapContainerRef]);
 
   const handleDragStart = (event: ReactPointerEvent<HTMLButtonElement>) => {
     const container = mapContainerRef.current;
@@ -169,12 +216,26 @@ export const DraggableBoundaryBox = ({
     event.stopPropagation();
 
     const rect = container.getBoundingClientRect();
-    setDragState({
-      isDragging: true,
-      offsetX: event.clientX - rect.left - position.x,
-      offsetY: event.clientY - rect.top - position.y,
+    setInteractionState({
+      mode: "drag",
+      offsetX: event.clientX - rect.left - boundaryRect.x,
+      offsetY: event.clientY - rect.top - boundaryRect.y,
     });
   };
+
+  const handleResizeStart =
+    (edge: ResizeEdge) => (event: ReactPointerEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      setInteractionState({
+        mode: "resize",
+        edge,
+        startClientX: event.clientX,
+        startClientY: event.clientY,
+        startRect: boundaryRect,
+      });
+    };
 
   const triggerMainGenerateButton = useCallback(() => {
     const buttons = Array.from(
@@ -200,23 +261,54 @@ export const DraggableBoundaryBox = ({
 
   if (!canRender) return null;
 
+  const isDragging = interactionState.mode === "drag";
+
   return (
     <div className="absolute inset-0 map-elements-z-index pointer-events-none">
       <div
         className="absolute border-2 border-red-500 rounded-sm shadow-[0_0_0_1px_rgba(239,68,68,0.25)]"
         style={{
-          width: `${boundarySize.width}px`,
-          height: `${boundarySize.height}px`,
-          left: `${position.x}px`,
-          top: `${position.y}px`,
+          width: `${boundaryRect.width}px`,
+          height: `${boundaryRect.height}px`,
+          left: `${boundaryRect.x}px`,
+          top: `${boundaryRect.y}px`,
         }}
       >
+        <button
+          type="button"
+          onPointerDown={handleResizeStart("top")}
+          title="Resize boundary top edge"
+          className="absolute -top-1 left-0 w-full h-2 pointer-events-auto cursor-ns-resize"
+          aria-label="Resize top edge"
+        />
+        <button
+          type="button"
+          onPointerDown={handleResizeStart("right")}
+          title="Resize boundary right edge"
+          className="absolute top-0 -right-1 h-full w-2 pointer-events-auto cursor-ew-resize"
+          aria-label="Resize right edge"
+        />
+        <button
+          type="button"
+          onPointerDown={handleResizeStart("bottom")}
+          title="Resize boundary bottom edge"
+          className="absolute -bottom-1 left-0 w-full h-2 pointer-events-auto cursor-ns-resize"
+          aria-label="Resize bottom edge"
+        />
+        <button
+          type="button"
+          onPointerDown={handleResizeStart("left")}
+          title="Resize boundary left edge"
+          className="absolute top-0 -left-1 h-full w-2 pointer-events-auto cursor-ew-resize"
+          aria-label="Resize left edge"
+        />
+
         <button
           ref={handleRef}
           type="button"
           onPointerDown={handleDragStart}
           title="Move boundary"
-          className={`absolute -top-4 -right-4 pointer-events-auto rounded-full bg-white border border-red-500 p-1.5 ${dragState.isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+          className={`absolute -top-4 -right-4 pointer-events-auto rounded-full bg-white border border-red-500 p-1.5 ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
         >
           <ArrowMoveIcon className="w-4 h-4 text-red-600" />
         </button>
