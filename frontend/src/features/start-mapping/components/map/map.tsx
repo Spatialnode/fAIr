@@ -213,7 +213,7 @@ export const StartMappingMapComponent = ({
         />
       )}
       {memoizedToolTip}
-      <DraggableBoundaryBox mapContainerRef={mapContainerRef} />
+      <DraggableBoundaryBox map={map} mapContainerRef={mapContainerRef} />
 
       <div
         className={

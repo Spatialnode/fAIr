@@ -1,5 +1,6 @@
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
 import { ArrowMoveIcon } from "@/components/ui/icons";
+import { BBOX } from "@/types";
 import {
   PointerEvent as ReactPointerEvent,
   RefObject,
@@ -9,6 +10,8 @@ import {
   useRef,
   useState,
 } from "react";
+import { Map } from "maplibre-gl";
+import { useMapStore } from "@/store/map-store";
 
 const BOUNDARY_WIDTH = 320;
 const BOUNDARY_HEIGHT = 200;
@@ -63,8 +66,10 @@ const getBoundaryLimits = (containerWidth: number, containerHeight: number) => {
 };
 
 export const DraggableBoundaryBox = ({
+  map,
   mapContainerRef,
 }: {
+  map: Map | null;
   mapContainerRef: RefObject<HTMLDivElement | null>;
 }) => {
   const [boundaryRect, setBoundaryRect] = useState<BoundaryRect>({
@@ -78,6 +83,9 @@ export const DraggableBoundaryBox = ({
   });
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const handleRef = useRef<HTMLButtonElement | null>(null);
+  const setPendingPredictionBBox = useMapStore(
+    (state) => state.setPendingPredictionBBox,
+  );
 
   const clampRectToContainer = useCallback(
     (nextRect: BoundaryRect, width: number, height: number): BoundaryRect => {
@@ -244,15 +252,45 @@ export const DraggableBoundaryBox = ({
       ),
     );
 
-    const targetButton =
+    const targetOnlineButton =
       buttons.find(
-        (button) => !button.disabled && button.offsetParent !== null,
+        (button) =>
+          button.dataset.startMappingPredictOnline === "true" &&
+          !button.disabled &&
+          button.offsetParent !== null,
       ) ||
+      buttons.find(
+        (button) =>
+          button.dataset.startMappingPredictOnline === "true" &&
+          !button.disabled,
+      ) ||
+      null;
+
+    if (targetOnlineButton && map) {
+      const topLeft = map.unproject([boundaryRect.x, boundaryRect.y]);
+      const bottomRight = map.unproject([
+        boundaryRect.x + boundaryRect.width,
+        boundaryRect.y + boundaryRect.height,
+      ]);
+
+      const bbox: BBOX = [
+        Math.min(topLeft.lng, bottomRight.lng),
+        Math.min(topLeft.lat, bottomRight.lat),
+        Math.max(topLeft.lng, bottomRight.lng),
+        Math.max(topLeft.lat, bottomRight.lat),
+      ];
+
+      setPendingPredictionBBox(bbox);
+    }
+
+    const targetButton =
+      targetOnlineButton ||
+      buttons.find((button) => !button.disabled && button.offsetParent !== null) ||
       buttons.find((button) => !button.disabled) ||
       null;
 
     targetButton?.click();
-  }, []);
+  }, [boundaryRect, map, setPendingPredictionBBox]);
 
   const canRender = useMemo(
     () => containerSize.width > 0 && containerSize.height > 0,

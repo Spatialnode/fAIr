@@ -1,8 +1,14 @@
-import { handleConflation, showErrorToast, showSuccessToast } from "@/utils";
+import {
+  featureIsWithinBounds,
+  handleConflation,
+  showErrorToast,
+  showSuccessToast,
+} from "@/utils";
 import { Map } from "maplibre-gl";
 import { START_MAPPING_PAGE_CONTENT, TOAST_NOTIFICATIONS } from "@/constants";
 import {
   BBOX,
+  FeatureCollection,
   TModelDetails,
   TModelPredictionFeature,
   TModelPredictionsConfig,
@@ -15,6 +21,7 @@ import { SEARCH_PARAMS } from "@/app/routes/start-mapping";
 import { MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION } from "@/config";
 import { useParams } from "react-router-dom";
 import { useMapStore } from "@/store/map-store";
+import { Feature as GeoJSONFeature } from "geojson";
 
 const ModelAction = ({
   map,
@@ -44,49 +51,71 @@ const ModelAction = ({
     null,
   );
   const currentZoom = useMapStore((state) => state.zoom);
+  const consumePendingPredictionBBox = useMapStore(
+    (state) => state.consumePendingPredictionBBox,
+  );
 
-  const getTrainingConfig = useCallback((): TModelPredictionsConfig => {
-    return {
-      tolerance: query[SEARCH_PARAMS.tolerance] as number,
-      area_threshold: query[SEARCH_PARAMS.area] as number,
-      orthogonalize: query[SEARCH_PARAMS.orthogonalize] as boolean,
-      confidence: query[SEARCH_PARAMS.confidenceLevel] as number,
-      checkpoint: predictionModelCheckpoint,
-      ortho_max_angle_change_deg: query[SEARCH_PARAMS.maxAngleChange] as number,
-      model_id: modelId as string,
-      ortho_skew_tolerance_deg: query[SEARCH_PARAMS.skewTolerance] as number,
-      source: tileServerURL ?? (modelInfo?.dataset?.source_imagery as string),
-      zoom_level: predictionZoomLevel ?? currentZoom,
-      bbox: [
-        map?.getBounds().getWest(),
-        map?.getBounds().getSouth(),
-        map?.getBounds().getEast(),
-        map?.getBounds().getNorth(),
-      ] as BBOX,
-    };
-  }, [
-    map,
-    query,
-    currentZoom,
-    modelInfo,
-    predictionZoomLevel,
-    predictionModelCheckpoint,
-    tileServerURL,
-  ]);
+  const getTrainingConfig = useCallback(
+    (bboxOverride?: BBOX | null): TModelPredictionsConfig => {
+      const activeMapBounds: BBOX = [
+        map?.getBounds().getWest() ?? 0,
+        map?.getBounds().getSouth() ?? 0,
+        map?.getBounds().getEast() ?? 0,
+        map?.getBounds().getNorth() ?? 0,
+      ];
+
+      return {
+        tolerance: query[SEARCH_PARAMS.tolerance] as number,
+        area_threshold: query[SEARCH_PARAMS.area] as number,
+        orthogonalize: query[SEARCH_PARAMS.orthogonalize] as boolean,
+        confidence: query[SEARCH_PARAMS.confidenceLevel] as number,
+        checkpoint: predictionModelCheckpoint,
+        ortho_max_angle_change_deg: query[SEARCH_PARAMS.maxAngleChange] as number,
+        model_id: modelId as string,
+        ortho_skew_tolerance_deg: query[SEARCH_PARAMS.skewTolerance] as number,
+        source: tileServerURL ?? (modelInfo?.dataset?.source_imagery as string),
+        zoom_level: predictionZoomLevel ?? currentZoom,
+        bbox: bboxOverride ?? activeMapBounds,
+      };
+    },
+    [
+      map,
+      query,
+      currentZoom,
+      modelInfo,
+      predictionZoomLevel,
+      predictionModelCheckpoint,
+      tileServerURL,
+    ],
+  );
+
+  const filterFeaturesByBBox = useCallback(
+    (features: FeatureCollection["features"], bbox: BBOX) =>
+      features.filter((feature) =>
+        featureIsWithinBounds(bbox, feature as GeoJSONFeature),
+      ),
+    [],
+  );
 
   const modelPredictionMutation = useGetModelPredictions({
     mutationConfig: {
-      onSuccess: (data) => {
+      onSuccess: (data, predictionConfig) => {
+        const filteredFeatures = filterFeaturesByBBox(
+          data.features,
+          predictionConfig.bbox,
+        );
+        const constrainedPredictions: FeatureCollection = {
+          ...data,
+          features: filteredFeatures,
+        };
+
         showSuccessToast(
           TOAST_NOTIFICATIONS.startMapping.modelPrediction.success,
         );
         const conflatedResults = handleConflation(
           modelPredictions,
-          data.features,
-          {
-            ...getTrainingConfig(),
-            zoom_level: predictionZoomLevel ?? currentZoom,
-          },
+          constrainedPredictions.features,
+          predictionConfig,
         );
         setModelPredictions(conflatedResults);
       },
@@ -96,9 +125,19 @@ const ModelAction = ({
 
   const handlePrediction = useCallback(async () => {
     if (!map) return;
+
+    const predictionBBox = consumePendingPredictionBBox();
+    const config = getTrainingConfig(predictionBBox);
+
     setPredictionZoomLevel(currentZoom);
-    await modelPredictionMutation.mutateAsync(getTrainingConfig());
-  }, [getTrainingConfig, modelPredictionMutation, map, currentZoom]);
+    await modelPredictionMutation.mutateAsync(config);
+  }, [
+    consumePendingPredictionBBox,
+    currentZoom,
+    getTrainingConfig,
+    modelPredictionMutation,
+    map,
+  ]);
 
   const disablePredictionButton =
     (currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION ||
@@ -119,6 +158,7 @@ const ModelAction = ({
         <button
           type="button"
           data-start-mapping-generate-button="true"
+          data-start-mapping-predict-online={!hasDrawnAOI}
           disabled={disablePredictionButton}
           onClick={
             hasDrawnAOI ? openOfflinePredictionRequestDialog : handlePrediction
