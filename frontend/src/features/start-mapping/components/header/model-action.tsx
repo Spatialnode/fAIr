@@ -15,7 +15,7 @@ import {
   TQueryParams,
 } from "@/types";
 import { ToolTip } from "@/components/ui/tooltip";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useGetModelPredictions } from "@/features/start-mapping/hooks/use-model-predictions";
 import { SEARCH_PARAMS } from "@/app/routes/start-mapping";
 import { MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION } from "@/config";
@@ -53,6 +53,12 @@ const ModelAction = ({
   const currentZoom = useMapStore((state) => state.zoom);
   const consumePendingPredictionBBox = useMapStore(
     (state) => state.consumePendingPredictionBBox,
+  );
+  const setBoundaryPredictionPending = useMapStore(
+    (state) => state.setBoundaryPredictionPending,
+  );
+  const setBoundaryPredictionEnabled = useMapStore(
+    (state) => state.setBoundaryPredictionEnabled,
   );
 
   const getTrainingConfig = useCallback(
@@ -147,6 +153,24 @@ const ModelAction = ({
     predictionModelCheckpoint?.length === 0 ||
     isOfflineMode ||
     hasDrawnAOI;
+
+  useEffect(() => {
+    setBoundaryPredictionPending(modelPredictionMutation.isPending);
+    setBoundaryPredictionEnabled(!disableBoundaryPredictionButton);
+  }, [
+    disableBoundaryPredictionButton,
+    modelPredictionMutation.isPending,
+    setBoundaryPredictionEnabled,
+    setBoundaryPredictionPending,
+  ]);
+
+  useEffect(
+    () => () => {
+      setBoundaryPredictionPending(false);
+      setBoundaryPredictionEnabled(false);
+    },
+    [setBoundaryPredictionEnabled, setBoundaryPredictionPending],
+  );
 
   const disablePredictionButton =
     (currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION ||

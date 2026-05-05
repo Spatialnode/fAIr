@@ -16,7 +16,6 @@ import { DraggableBoundaryBox } from "@/features/start-mapping/components/map/dr
 import { TileJSON, TModelPredictionFeature } from "@/types";
 import {
   MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION,
-  MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION,
   PREDICTION_IMAGERY_LAYER_ID,
 } from "@/config";
 import bbox from "@turf/bbox";
@@ -133,11 +132,21 @@ export const StartMappingMapComponent = ({
     hadHashOnLoad,
   ]);
 
+  const boundaryActivationZoom = useMemo(() => {
+    if (typeof tileJSONMetadata?.maxzoom === "number") {
+      return Math.min(
+        MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION,
+        Math.floor(tileJSONMetadata.maxzoom),
+      );
+    }
+
+    return MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION;
+  }, [tileJSONMetadata?.maxzoom]);
+
   /**
    * It is used to show a tooltip when the user is zoomed out too far to start mapping.
    */
-  const shouldShowTooltip =
-    currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION;
+  const shouldShowTooltip = currentZoom < boundaryActivationZoom;
 
   const memoizedToolTip = useMemo(() => {
     if (!map) return null;
@@ -147,12 +156,12 @@ export const StartMappingMapComponent = ({
         color="bg-primary"
         map={map}
         showTooltip={shouldShowTooltip}
-        minZoom={MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION}
+        minZoom={boundaryActivationZoom}
       >
-        {MINIMUM_ZOOM_LEVEL_INSTRUCTION_FOR_PREDICTION}
+        {`Zoom in to at least zoom ${boundaryActivationZoom} to start mapping.`}
       </MapCursorToolTip>
     );
-  }, [map, shouldShowTooltip]);
+  }, [boundaryActivationZoom, map, shouldShowTooltip]);
 
   const predictionImageryLayerId = useMemo(() => {
     return `${PREDICTION_IMAGERY_LAYER_ID}-${predictionImagerySource}`;

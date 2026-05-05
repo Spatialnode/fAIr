@@ -65,6 +65,27 @@ const getBoundaryLimits = (containerWidth: number, containerHeight: number) => {
   return { maxWidth, maxHeight };
 };
 
+const getCenteredBoundaryRect = (
+  containerWidth: number,
+  containerHeight: number,
+): BoundaryRect => {
+  const { maxWidth, maxHeight } = getBoundaryLimits(
+    containerWidth,
+    containerHeight,
+  );
+  const width = clamp(BOUNDARY_WIDTH, MIN_BOUNDARY_WIDTH, maxWidth);
+  const height = clamp(BOUNDARY_HEIGHT, MIN_BOUNDARY_HEIGHT, maxHeight);
+
+  const maxY = Math.max(0, containerHeight - height - BUTTON_OFFSET_Y);
+
+  return {
+    width,
+    height,
+    x: Math.max(0, (containerWidth - width) / 2),
+    y: Math.max(0, maxY / 2),
+  };
+};
+
 export const DraggableBoundaryBox = ({
   map,
   mapContainerRef,
@@ -83,8 +104,15 @@ export const DraggableBoundaryBox = ({
   });
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const handleRef = useRef<HTMLButtonElement | null>(null);
+  const hasCenteredBoundaryBox = useRef<boolean>(false);
   const setPendingPredictionBBox = useMapStore(
     (state) => state.setPendingPredictionBBox,
+  );
+  const boundaryPredictionPending = useMapStore(
+    (state) => state.boundaryPredictionPending,
+  );
+  const boundaryPredictionEnabled = useMapStore(
+    (state) => state.boundaryPredictionEnabled,
   );
 
   const clampRectToContainer = useCallback(
@@ -112,6 +140,18 @@ export const DraggableBoundaryBox = ({
     const syncSize = () => {
       const rect = container.getBoundingClientRect();
       setContainerSize({ width: rect.width, height: rect.height });
+      if (!hasCenteredBoundaryBox.current) {
+        hasCenteredBoundaryBox.current = true;
+        setBoundaryRect(
+          clampRectToContainer(
+            getCenteredBoundaryRect(rect.width, rect.height),
+            rect.width,
+            rect.height,
+          ),
+        );
+        return;
+      }
+
       setBoundaryRect((prev) =>
         clampRectToContainer(prev, rect.width, rect.height),
       );
@@ -246,6 +286,8 @@ export const DraggableBoundaryBox = ({
     };
 
   const triggerMainGenerateButton = useCallback(() => {
+    if (!boundaryPredictionEnabled || boundaryPredictionPending) return;
+
     const boundaryProxyButton = document.querySelector<HTMLButtonElement>(
       '[data-start-mapping-boundary-generate-button="true"]',
     );
@@ -318,7 +360,13 @@ export const DraggableBoundaryBox = ({
       null;
 
     targetButton?.click();
-  }, [boundaryRect, map, setPendingPredictionBBox]);
+  }, [
+    boundaryPredictionEnabled,
+    boundaryPredictionPending,
+    boundaryRect,
+    map,
+    setPendingPredictionBBox,
+  ]);
 
   const canRender = useMemo(
     () => containerSize.width > 0 && containerSize.height > 0,
@@ -332,7 +380,7 @@ export const DraggableBoundaryBox = ({
   return (
     <div className="absolute inset-0 map-elements-z-index pointer-events-none">
       <div
-        className="absolute border-2 border-red-500 rounded-sm shadow-[0_0_0_1px_rgba(239,68,68,0.25)]"
+        className="absolute border-4 border-red-500 rounded-sm shadow-[0_0_0_1px_rgba(239,68,68,0.35)]"
         style={{
           width: `${boundaryRect.width}px`,
           height: `${boundaryRect.height}px`,
@@ -381,11 +429,14 @@ export const DraggableBoundaryBox = ({
 
         <button
           type="button"
+          disabled={!boundaryPredictionEnabled || boundaryPredictionPending}
           onClick={triggerMainGenerateButton}
-          className="absolute -bottom-12 right-0 pointer-events-auto text-nowrap bg-primary px-3 py-2 rounded-md text-white"
+          className={`absolute -bottom-12 right-0 pointer-events-auto text-nowrap px-3 py-2 rounded-md text-white ${!boundaryPredictionEnabled || boundaryPredictionPending ? "bg-primary/60 cursor-not-allowed" : "bg-primary"}`}
         >
           <span className="capitalize text-body-4">
-            {START_MAPPING_PAGE_CONTENT.buttons.runPrediction}
+            {boundaryPredictionPending
+              ? "Generating..."
+              : START_MAPPING_PAGE_CONTENT.buttons.runPrediction}
           </span>
         </button>
       </div>
