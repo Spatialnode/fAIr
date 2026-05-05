@@ -246,6 +246,32 @@ export const DraggableBoundaryBox = ({
     };
 
   const triggerMainGenerateButton = useCallback(() => {
+    const boundaryProxyButton = document.querySelector<HTMLButtonElement>(
+      '[data-start-mapping-boundary-generate-button="true"]',
+    );
+
+    if (boundaryProxyButton && !boundaryProxyButton.disabled) {
+      if (map) {
+        const topLeft = map.unproject([boundaryRect.x, boundaryRect.y]);
+        const bottomRight = map.unproject([
+          boundaryRect.x + boundaryRect.width,
+          boundaryRect.y + boundaryRect.height,
+        ]);
+
+        const bbox: BBOX = [
+          Math.min(topLeft.lng, bottomRight.lng),
+          Math.min(topLeft.lat, bottomRight.lat),
+          Math.max(topLeft.lng, bottomRight.lng),
+          Math.max(topLeft.lat, bottomRight.lat),
+        ];
+
+        setPendingPredictionBBox(bbox);
+      }
+
+      boundaryProxyButton.click();
+      return;
+    }
+
     const buttons = Array.from(
       document.querySelectorAll<HTMLButtonElement>(
         '[data-start-mapping-generate-button="true"]',

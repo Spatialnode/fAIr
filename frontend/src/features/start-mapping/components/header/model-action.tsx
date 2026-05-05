@@ -141,6 +141,13 @@ const ModelAction = ({
     map,
   ]);
 
+  const disableBoundaryPredictionButton =
+    modelPredictionMutation.isPending ||
+    tileServerURL?.length === 0 ||
+    predictionModelCheckpoint?.length === 0 ||
+    isOfflineMode ||
+    hasDrawnAOI;
+
   const disablePredictionButton =
     (currentZoom < MIN_ZOOM_LEVEL_FOR_START_MAPPING_PREDICTION ||
       modelPredictionMutation.isPending ||
@@ -157,6 +164,15 @@ const ModelAction = ({
             : null
         }
       >
+        <button
+          type="button"
+          data-start-mapping-boundary-generate-button="true"
+          disabled={disableBoundaryPredictionButton}
+          onClick={handlePrediction}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="sr-only"
+        />
         <button
           type="button"
           data-start-mapping-generate-button="true"
