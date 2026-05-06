@@ -475,10 +475,10 @@ export const DraggableBoundaryBox = ({
 
   if (!canRender) return null;
 
-  const isButtonDisabled = true
-    // !isMappableSelection ||
-    // !boundaryPredictionEnabled ||
-    // (boundaryPredictionPending && !shouldUseOfflinePrediction);
+  const isButtonDisabled = true;
+  // !isMappableSelection ||
+  // !boundaryPredictionEnabled ||
+  // (boundaryPredictionPending && !shouldUseOfflinePrediction);
 
   return (
     <div className="absolute inset-0 map-elements-z-index pointer-events-none">
@@ -528,7 +528,7 @@ export const DraggableBoundaryBox = ({
           top: `${boundaryRect.y}px`,
         }}
       >
-        <div className="absolute inset-0 bg-white/30" />
+        <div className="absolute inset-0 bg-transparent" />
 
         <button
           type="button"
