@@ -475,10 +475,10 @@ export const DraggableBoundaryBox = ({
 
   if (!canRender) return null;
 
-  const isButtonDisabled =
-    !isMappableSelection ||
-    !boundaryPredictionEnabled ||
-    (boundaryPredictionPending && !shouldUseOfflinePrediction);
+  const isButtonDisabled = true
+    // !isMappableSelection ||
+    // !boundaryPredictionEnabled ||
+    // (boundaryPredictionPending && !shouldUseOfflinePrediction);
 
   return (
     <div className="absolute inset-0 map-elements-z-index pointer-events-none">
@@ -608,7 +608,7 @@ export const DraggableBoundaryBox = ({
           type="button"
           disabled={isButtonDisabled}
           onClick={triggerMainGenerateButton}
-          className={`absolute -bottom-12 right-0 pointer-events-auto text-nowrap px-3 py-2 rounded-md text-white ${isButtonDisabled ? "bg-primary/60 cursor-not-allowed" : "bg-primary"}`}
+          className={`absolute -bottom-12 right-0 pointer-events-auto text-nowrap px-3 py-2 rounded-md text-white ${isButtonDisabled ? "bg-primary cursor-not-allowed" : "bg-primary"}`}
         >
           <span className="capitalize text-body-4">
             {boundaryPredictionPending && !shouldUseOfflinePrediction
@@ -620,7 +620,7 @@ export const DraggableBoundaryBox = ({
         </button>
 
         {!isMappableSelection && (
-          <div className="absolute -bottom-12 left-0 rounded-md bg-[#7f1d1d] px-3 py-2 text-body-4 text-white">
+          <div className="absolute -bottom-12 left-0 rounded-md bg-primary px-3 py-2 text-body-4 text-white">
             Area outside imagery is not mappable
           </div>
         )}
