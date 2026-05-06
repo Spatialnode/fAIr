@@ -12,6 +12,7 @@ import {
 } from "react";
 import { Map } from "maplibre-gl";
 import { useMapStore } from "@/store/map-store";
+import { Button } from "@/components/ui/button";
 
 const BOUNDARY_WIDTH = 320;
 const BOUNDARY_HEIGHT = 200;
@@ -114,7 +115,6 @@ export const DraggableBoundaryBox = ({
   const boundaryPredictionEnabled = useMapStore(
     (state) => state.boundaryPredictionEnabled,
   );
-
   const clampRectToContainer = useCallback(
     (nextRect: BoundaryRect, width: number, height: number): BoundaryRect => {
       const { maxWidth, maxHeight } = getBoundaryLimits(width, height);
