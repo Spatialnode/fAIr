@@ -397,7 +397,11 @@ export const DraggableBoundaryBox = ({
   const isMappableSelection = boundaryMetrics.isWithinImageryBounds;
 
   const triggerMainGenerateButton = useCallback(() => {
-    if (!boundaryPredictionEnabled || !boundaryMetrics.bbox || !isMappableSelection)
+    if (
+      !boundaryPredictionEnabled ||
+      !boundaryMetrics.bbox ||
+      !isMappableSelection
+    )
       return;
 
     if (shouldUseOfflinePrediction) {
@@ -480,7 +484,12 @@ export const DraggableBoundaryBox = ({
     <div className="absolute inset-0 map-elements-z-index pointer-events-none">
       <div
         className="absolute bg-black/35"
-        style={{ top: 0, left: 0, width: "100%", height: `${boundaryRect.y}px` }}
+        style={{
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: `${boundaryRect.y}px`,
+        }}
       />
       <div
         className="absolute bg-black/35"
