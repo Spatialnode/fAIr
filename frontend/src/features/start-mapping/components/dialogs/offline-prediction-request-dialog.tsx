@@ -2,9 +2,9 @@ import { Dialog } from "@/components/ui/dialog";
 
 import { FormLabel, Input } from "@/components/ui/form";
 import { RadioGroup } from "@/components/ui/form/radio-group/radio-group";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ModelSettings } from "@/features/start-mapping/components/model-settings";
-import { Feature, TModelDetails, TQueryParams } from "@/types";
+import { BBOX, Feature, TModelDetails, TQueryParams } from "@/types";
 import { Button } from "@/components/ui/button";
 import { ButtonVariant } from "@/enums";
 import { Alert } from "@/components/ui/alert";
@@ -21,9 +21,32 @@ import { OfflinePredictionRequestSuccess } from "@/features/start-mapping/compon
 import { useDialog } from "@/hooks/use-dialog";
 import { DatabaseIcon, LayerStackIcon, MapIcon } from "@/components/ui/icons";
 import { PredictionImagerySource } from "@/enums/start-mapping";
+import { useMapStore } from "@/store/map-store";
 
 const MINIMUM_PREDICTION_NAME_LENGTH = 2;
 const MAXIMUM_PREDICTION_NAME_LENGTH = 50;
+
+const bboxToFeature = (bbox: BBOX): Feature => {
+  const [west, south, east, north] = bbox;
+
+  return {
+    type: "Feature",
+    properties: {},
+    geometry: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [west, south],
+          [east, south],
+          [east, north],
+          [west, north],
+          [west, south],
+        ],
+      ],
+    },
+  };
+};
+
 export const OfflinePredictionRequestDialog = ({
   isOpen,
   onClose,
@@ -54,6 +77,22 @@ export const OfflinePredictionRequestDialog = ({
     useState<string>("");
   const [zoomLevel, setZoomLevel] = useState<string>("18");
   const { isOpened, openDialog, closeDialog } = useDialog();
+  const boundarySelectionBBox = useMapStore(
+    (state) => state.boundarySelectionBBox,
+  );
+
+  const selectedAOI = useMemo<Feature | null>(() => {
+    if (drawnAOI) return drawnAOI;
+    if (!boundarySelectionBBox) return null;
+
+    return bboxToFeature(boundarySelectionBBox);
+  }, [boundarySelectionBBox, drawnAOI]);
+
+  const selectedAOIArea = useMemo(
+    () => (selectedAOI ? calculateGeoJSONArea(selectedAOI) : 0),
+    [selectedAOI],
+  );
+
   const modelPredictionMutation = useSubmitOfflinePredictionsRequest({
     mutationConfig: {
       onSuccess: () => {
@@ -107,9 +146,7 @@ export const OfflinePredictionRequestDialog = ({
                 <div>
                   <div className="font-medium ">AOI Size</div>
                   <div className="">
-                    {formatAreaInAppropriateUnit(
-                      drawnAOI ? calculateGeoJSONArea(drawnAOI as Feature) : 0,
-                    )}
+                    {formatAreaInAppropriateUnit(selectedAOIArea)}
                   </div>
                 </div>
               </div>
@@ -185,12 +222,13 @@ export const OfflinePredictionRequestDialog = ({
               disabled={
                 predictionRequestName.trim().length <
                   MINIMUM_PREDICTION_NAME_LENGTH ||
-                modelPredictionMutation.isPending
+                modelPredictionMutation.isPending ||
+                !selectedAOI
               }
               onClick={() => {
                 modelPredictionMutation.mutateAsync({
                   description: predictionRequestName,
-                  geom: drawnAOI?.geometry as Geometry,
+                  geom: selectedAOI?.geometry as Geometry,
                   config: {
                     tolerance: query[SEARCH_PARAMS.tolerance] as number,
                     area_threshold: query[SEARCH_PARAMS.area] as number,

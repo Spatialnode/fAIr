@@ -8,6 +8,8 @@ type MapState = {
   pendingPredictionBBox: BBOX | null;
   setPendingPredictionBBox: (bbox: BBOX | null) => void;
   consumePendingPredictionBBox: () => BBOX | null;
+  boundarySelectionBBox: BBOX | null;
+  setBoundarySelectionBBox: (bbox: BBOX | null) => void;
   boundaryPredictionPending: boolean;
   setBoundaryPredictionPending: (isPending: boolean) => void;
   boundaryPredictionEnabled: boolean;
@@ -24,6 +26,8 @@ export const useMapStore = create<MapState>((set, get) => ({
     set({ pendingPredictionBBox: null });
     return bbox;
   },
+  boundarySelectionBBox: null,
+  setBoundarySelectionBBox: (bbox) => set({ boundarySelectionBBox: bbox }),
   boundaryPredictionPending: false,
   setBoundaryPredictionPending: (isPending) =>
     set({ boundaryPredictionPending: isPending }),

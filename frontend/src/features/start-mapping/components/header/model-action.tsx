@@ -154,6 +154,12 @@ const ModelAction = ({
     isOfflineMode ||
     hasDrawnAOI;
 
+  const disableBoundaryOfflineRequestButton =
+    modelPredictionMutation.isPending ||
+    tileServerURL?.length === 0 ||
+    predictionModelCheckpoint?.length === 0 ||
+    !openOfflinePredictionRequestDialog;
+
   useEffect(() => {
     setBoundaryPredictionPending(modelPredictionMutation.isPending);
     setBoundaryPredictionEnabled(!disableBoundaryPredictionButton);
@@ -193,6 +199,15 @@ const ModelAction = ({
           data-start-mapping-boundary-generate-button="true"
           disabled={disableBoundaryPredictionButton}
           onClick={handlePrediction}
+          tabIndex={-1}
+          aria-hidden="true"
+          className="sr-only"
+        />
+        <button
+          type="button"
+          data-start-mapping-boundary-request-offline-button="true"
+          disabled={disableBoundaryOfflineRequestButton}
+          onClick={openOfflinePredictionRequestDialog}
           tabIndex={-1}
           aria-hidden="true"
           className="sr-only"

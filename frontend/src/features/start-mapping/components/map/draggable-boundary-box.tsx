@@ -1,5 +1,4 @@
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
-import { ArrowMoveIcon } from "@/components/ui/icons";
 import { BBOX } from "@/types";
 import {
   PointerEvent as ReactPointerEvent,
@@ -10,44 +9,60 @@ import {
   useRef,
   useState,
 } from "react";
-import { Map } from "maplibre-gl";
+import { LngLatBoundsLike, Map } from "maplibre-gl";
 import { useMapStore } from "@/store/map-store";
+import { calculateGeoJSONArea, distance, featureIsWithinBounds } from "@/utils";
+import { Feature } from "geojson";
 
-const BOUNDARY_WIDTH = 320;
-const BOUNDARY_HEIGHT = 200;
-const MIN_BOUNDARY_WIDTH = 180;
-const MIN_BOUNDARY_HEIGHT = 120;
-const BOUNDARY_MARGIN = 16;
-const BUTTON_OFFSET_Y = 56;
+const DEFAULT_BOUNDARY_WIDTH = 620;
+const DEFAULT_BOUNDARY_HEIGHT = 420;
+const MIN_BOUNDARY_WIDTH = 240;
+const MIN_BOUNDARY_HEIGHT = 180;
+const BOUNDARY_HORIZONTAL_GUTTER = 18;
+const BOUNDARY_VERTICAL_GUTTER = 84;
+const LARGE_BOUNDARY_OFFLINE_AREA_THRESHOLD_SQM = 50_000_000;
 
-type Position = {
-  x: number;
-  y: number;
-};
-
-type BoundaryRect = Position & {
+type BoundarySize = {
   width: number;
   height: number;
 };
 
-type ResizeEdge = "top" | "right" | "bottom" | "left";
+type BoundaryRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
+
+type ResizeHandle =
+  | "top"
+  | "right"
+  | "bottom"
+  | "left"
+  | "top-right"
+  | "top-left"
+  | "bottom-right"
+  | "bottom-left";
 
 type InteractionState =
   | {
       mode: "idle";
     }
   | {
-      mode: "drag";
-      offsetX: number;
-      offsetY: number;
-    }
-  | {
       mode: "resize";
-      edge: ResizeEdge;
+      handle: ResizeHandle;
       startClientX: number;
       startClientY: number;
-      startRect: BoundaryRect;
+      startSize: BoundarySize;
     };
+
+type BoundaryMetrics = {
+  bbox: BBOX | null;
+  widthKm: number;
+  heightKm: number;
+  areaSqM: number;
+  isWithinImageryBounds: boolean;
+};
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max);
@@ -55,58 +70,95 @@ const clamp = (value: number, min: number, max: number) =>
 const getBoundaryLimits = (containerWidth: number, containerHeight: number) => {
   const maxWidth = Math.max(
     MIN_BOUNDARY_WIDTH,
-    containerWidth - BOUNDARY_MARGIN,
+    containerWidth - BOUNDARY_HORIZONTAL_GUTTER * 2,
   );
   const maxHeight = Math.max(
     MIN_BOUNDARY_HEIGHT,
-    containerHeight - BUTTON_OFFSET_Y - BOUNDARY_MARGIN,
+    containerHeight - BOUNDARY_VERTICAL_GUTTER * 2,
   );
 
   return { maxWidth, maxHeight };
 };
 
+const clampSizeToContainer = (
+  nextSize: BoundarySize,
+  width: number,
+  height: number,
+): BoundarySize => {
+  const { maxWidth, maxHeight } = getBoundaryLimits(width, height);
+
+  return {
+    width: clamp(nextSize.width, MIN_BOUNDARY_WIDTH, maxWidth),
+    height: clamp(nextSize.height, MIN_BOUNDARY_HEIGHT, maxHeight),
+  };
+};
+
 const getCenteredBoundaryRect = (
   containerWidth: number,
   containerHeight: number,
-): BoundaryRect => {
-  const { maxWidth, maxHeight } = getBoundaryLimits(
-    containerWidth,
-    containerHeight,
-  );
-  const width = clamp(BOUNDARY_WIDTH, MIN_BOUNDARY_WIDTH, maxWidth);
-  const height = clamp(BOUNDARY_HEIGHT, MIN_BOUNDARY_HEIGHT, maxHeight);
+  size: BoundarySize,
+): BoundaryRect => ({
+  width: size.width,
+  height: size.height,
+  x: Math.max(0, (containerWidth - size.width) / 2),
+  y: Math.max(0, (containerHeight - size.height) / 2),
+});
 
-  const maxY = Math.max(0, containerHeight - height - BUTTON_OFFSET_Y);
+const bboxToFeature = (bbox: BBOX): Feature => {
+  const [west, south, east, north] = bbox;
 
   return {
-    width,
-    height,
-    x: Math.max(0, (containerWidth - width) / 2),
-    y: Math.max(0, maxY / 2),
+    type: "Feature",
+    properties: {},
+    geometry: {
+      type: "Polygon",
+      coordinates: [
+        [
+          [west, south],
+          [east, south],
+          [east, north],
+          [west, north],
+          [west, south],
+        ],
+      ],
+    },
   };
 };
+
+const formatKm = (value: number) =>
+  Number.isFinite(value) && value > 0 ? `${value.toFixed(2)} km` : "-- km";
 
 export const DraggableBoundaryBox = ({
   map,
   mapContainerRef,
+  imageryBounds,
 }: {
   map: Map | null;
   mapContainerRef: RefObject<HTMLDivElement | null>;
+  imageryBounds?: LngLatBoundsLike | null;
 }) => {
-  const [boundaryRect, setBoundaryRect] = useState<BoundaryRect>({
-    x: 48,
-    y: 90,
-    width: BOUNDARY_WIDTH,
-    height: BOUNDARY_HEIGHT,
+  const [boundarySize, setBoundarySize] = useState<BoundarySize>({
+    width: DEFAULT_BOUNDARY_WIDTH,
+    height: DEFAULT_BOUNDARY_HEIGHT,
   });
   const [interactionState, setInteractionState] = useState<InteractionState>({
     mode: "idle",
   });
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-  const handleRef = useRef<HTMLButtonElement | null>(null);
-  const hasCenteredBoundaryBox = useRef<boolean>(false);
+  const [boundaryMetrics, setBoundaryMetrics] = useState<BoundaryMetrics>({
+    bbox: null,
+    widthKm: 0,
+    heightKm: 0,
+    areaSqM: 0,
+    isWithinImageryBounds: true,
+  });
+  const hasInitializedBoundarySize = useRef<boolean>(false);
+
   const setPendingPredictionBBox = useMapStore(
     (state) => state.setPendingPredictionBBox,
+  );
+  const setBoundarySelectionBBox = useMapStore(
+    (state) => state.setBoundarySelectionBBox,
   );
   const boundaryPredictionPending = useMapStore(
     (state) => state.boundaryPredictionPending,
@@ -115,22 +167,14 @@ export const DraggableBoundaryBox = ({
     (state) => state.boundaryPredictionEnabled,
   );
 
-  const clampRectToContainer = useCallback(
-    (nextRect: BoundaryRect, width: number, height: number): BoundaryRect => {
-      const { maxWidth, maxHeight } = getBoundaryLimits(width, height);
-      const nextWidth = clamp(nextRect.width, MIN_BOUNDARY_WIDTH, maxWidth);
-      const nextHeight = clamp(nextRect.height, MIN_BOUNDARY_HEIGHT, maxHeight);
-      const maxX = Math.max(0, width - nextWidth);
-      const maxY = Math.max(0, height - nextHeight - BUTTON_OFFSET_Y);
-
-      return {
-        x: clamp(nextRect.x, 0, maxX),
-        y: clamp(nextRect.y, 0, maxY),
-        width: nextWidth,
-        height: nextHeight,
-      };
-    },
-    [],
+  const boundaryRect = useMemo(
+    () =>
+      getCenteredBoundaryRect(
+        containerSize.width,
+        containerSize.height,
+        boundarySize,
+      ),
+    [boundarySize, containerSize.height, containerSize.width],
   );
 
   useEffect(() => {
@@ -140,11 +184,15 @@ export const DraggableBoundaryBox = ({
     const syncSize = () => {
       const rect = container.getBoundingClientRect();
       setContainerSize({ width: rect.width, height: rect.height });
-      if (!hasCenteredBoundaryBox.current) {
-        hasCenteredBoundaryBox.current = true;
-        setBoundaryRect(
-          clampRectToContainer(
-            getCenteredBoundaryRect(rect.width, rect.height),
+
+      if (!hasInitializedBoundarySize.current) {
+        hasInitializedBoundarySize.current = true;
+        setBoundarySize(
+          clampSizeToContainer(
+            {
+              width: DEFAULT_BOUNDARY_WIDTH,
+              height: DEFAULT_BOUNDARY_HEIGHT,
+            },
             rect.width,
             rect.height,
           ),
@@ -152,8 +200,8 @@ export const DraggableBoundaryBox = ({
         return;
       }
 
-      setBoundaryRect((prev) =>
-        clampRectToContainer(prev, rect.width, rect.height),
+      setBoundarySize((prev) =>
+        clampSizeToContainer(prev, rect.width, rect.height),
       );
     };
 
@@ -167,84 +215,69 @@ export const DraggableBoundaryBox = ({
 
     window.addEventListener("resize", syncSize);
     return () => window.removeEventListener("resize", syncSize);
-  }, [clampRectToContainer, mapContainerRef]);
+  }, [mapContainerRef]);
 
   useEffect(() => {
     if (interactionState.mode === "idle") return;
 
     const handlePointerMove = (event: PointerEvent) => {
       const container = mapContainerRef.current;
-      if (!container) return;
+      if (!container || interactionState.mode !== "resize") return;
 
       const rect = container.getBoundingClientRect();
-
-      if (interactionState.mode === "drag") {
-        setBoundaryRect((prev) =>
-          clampRectToContainer(
-            {
-              ...prev,
-              x: event.clientX - rect.left - interactionState.offsetX,
-              y: event.clientY - rect.top - interactionState.offsetY,
-            },
-            rect.width,
-            rect.height,
-          ),
-        );
-        return;
-      }
-
       const dx = event.clientX - interactionState.startClientX;
       const dy = event.clientY - interactionState.startClientY;
-      const { edge, startRect } = interactionState;
-      const { maxWidth, maxHeight } = getBoundaryLimits(
-        rect.width,
-        rect.height,
+      const { handle, startSize } = interactionState;
+
+      let nextWidth = startSize.width;
+      let nextHeight = startSize.height;
+
+      if (handle.includes("right")) {
+        nextWidth = startSize.width + dx * 2;
+      }
+
+      if (handle.includes("left")) {
+        nextWidth = startSize.width - dx * 2;
+      }
+
+      if (handle.includes("bottom")) {
+        nextHeight = startSize.height + dy * 2;
+      }
+
+      if (handle.includes("top")) {
+        nextHeight = startSize.height - dy * 2;
+      }
+
+      if (handle === "top") {
+        nextHeight = startSize.height - dy * 2;
+      }
+
+      if (handle === "bottom") {
+        nextHeight = startSize.height + dy * 2;
+      }
+
+      if (handle === "left") {
+        nextWidth = startSize.width - dx * 2;
+      }
+
+      if (handle === "right") {
+        nextWidth = startSize.width + dx * 2;
+      }
+
+      setBoundarySize(
+        clampSizeToContainer(
+          {
+            width: nextWidth,
+            height: nextHeight,
+          },
+          rect.width,
+          rect.height,
+        ),
       );
-      let nextRect: BoundaryRect = { ...startRect };
-
-      if (edge === "right") {
-        const rightMaxWidth = Math.min(maxWidth, rect.width - startRect.x);
-        nextRect.width = clamp(
-          startRect.width + dx,
-          MIN_BOUNDARY_WIDTH,
-          rightMaxWidth,
-        );
-      }
-
-      if (edge === "left") {
-        const right = startRect.x + startRect.width;
-        const minX = Math.max(0, right - maxWidth);
-        const maxX = right - MIN_BOUNDARY_WIDTH;
-        nextRect.x = clamp(startRect.x + dx, minX, maxX);
-        nextRect.width = right - nextRect.x;
-      }
-
-      if (edge === "bottom") {
-        const bottomMaxHeight = Math.min(
-          maxHeight,
-          rect.height - BUTTON_OFFSET_Y - startRect.y,
-        );
-        nextRect.height = clamp(
-          startRect.height + dy,
-          MIN_BOUNDARY_HEIGHT,
-          bottomMaxHeight,
-        );
-      }
-
-      if (edge === "top") {
-        const bottom = startRect.y + startRect.height;
-        const minY = Math.max(0, bottom - maxHeight);
-        const maxY = bottom - MIN_BOUNDARY_HEIGHT;
-        nextRect.y = clamp(startRect.y + dy, minY, maxY);
-        nextRect.height = bottom - nextRect.y;
-      }
-
-      setBoundaryRect(clampRectToContainer(nextRect, rect.width, rect.height));
     };
 
     const handlePointerUp = () => {
       setInteractionState({ mode: "idle" });
-      handleRef.current?.blur();
     };
 
     window.addEventListener("pointermove", handlePointerMove);
@@ -254,62 +287,137 @@ export const DraggableBoundaryBox = ({
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [clampRectToContainer, interactionState, mapContainerRef]);
+  }, [interactionState, mapContainerRef]);
 
-  const handleDragStart = (event: ReactPointerEvent<HTMLButtonElement>) => {
-    const container = mapContainerRef.current;
-    if (!container) return;
+  const refreshBoundaryMetrics = useCallback(() => {
+    if (!map || containerSize.width <= 0 || containerSize.height <= 0) {
+      setBoundaryMetrics({
+        bbox: null,
+        widthKm: 0,
+        heightKm: 0,
+        areaSqM: 0,
+        isWithinImageryBounds: true,
+      });
+      setBoundarySelectionBBox(null);
+      return;
+    }
 
-    event.preventDefault();
-    event.stopPropagation();
+    const topLeft = map.unproject([boundaryRect.x, boundaryRect.y]);
+    const topRight = map.unproject([
+      boundaryRect.x + boundaryRect.width,
+      boundaryRect.y,
+    ]);
+    const bottomLeft = map.unproject([
+      boundaryRect.x,
+      boundaryRect.y + boundaryRect.height,
+    ]);
+    const bottomRight = map.unproject([
+      boundaryRect.x + boundaryRect.width,
+      boundaryRect.y + boundaryRect.height,
+    ]);
 
-    const rect = container.getBoundingClientRect();
-    setInteractionState({
-      mode: "drag",
-      offsetX: event.clientX - rect.left - boundaryRect.x,
-      offsetY: event.clientY - rect.top - boundaryRect.y,
+    const bbox: BBOX = [
+      Math.min(topLeft.lng, bottomRight.lng),
+      Math.min(topLeft.lat, bottomRight.lat),
+      Math.max(topLeft.lng, bottomRight.lng),
+      Math.max(topLeft.lat, bottomRight.lat),
+    ];
+
+    const widthKm = distance(
+      topLeft.lat,
+      topLeft.lng,
+      topRight.lat,
+      topRight.lng,
+      "K",
+    );
+    const heightKm = distance(
+      topLeft.lat,
+      topLeft.lng,
+      bottomLeft.lat,
+      bottomLeft.lng,
+      "K",
+    );
+    const areaSqM = calculateGeoJSONArea(bboxToFeature(bbox));
+    const isWithinImageryBounds = imageryBounds
+      ? featureIsWithinBounds(imageryBounds, bboxToFeature(bbox))
+      : true;
+
+    setBoundarySelectionBBox(bbox);
+    setBoundaryMetrics({
+      bbox,
+      widthKm,
+      heightKm,
+      areaSqM,
+      isWithinImageryBounds,
     });
-  };
+  }, [
+    boundaryRect.height,
+    boundaryRect.width,
+    boundaryRect.x,
+    boundaryRect.y,
+    containerSize.height,
+    containerSize.width,
+    imageryBounds,
+    map,
+    setBoundarySelectionBBox,
+  ]);
+
+  useEffect(() => {
+    refreshBoundaryMetrics();
+  }, [refreshBoundaryMetrics]);
+
+  useEffect(() => {
+    if (!map) return;
+
+    map.on("move", refreshBoundaryMetrics);
+    map.on("zoom", refreshBoundaryMetrics);
+
+    return () => {
+      map.off("move", refreshBoundaryMetrics);
+      map.off("zoom", refreshBoundaryMetrics);
+    };
+  }, [map, refreshBoundaryMetrics]);
 
   const handleResizeStart =
-    (edge: ResizeEdge) => (event: ReactPointerEvent<HTMLButtonElement>) => {
+    (handle: ResizeHandle) => (event: ReactPointerEvent<HTMLButtonElement>) => {
       event.preventDefault();
       event.stopPropagation();
 
       setInteractionState({
         mode: "resize",
-        edge,
+        handle,
         startClientX: event.clientX,
         startClientY: event.clientY,
-        startRect: boundaryRect,
+        startSize: boundarySize,
       });
     };
 
+  const shouldUseOfflinePrediction =
+    boundaryMetrics.areaSqM >= LARGE_BOUNDARY_OFFLINE_AREA_THRESHOLD_SQM;
+  const isMappableSelection = boundaryMetrics.isWithinImageryBounds;
+
   const triggerMainGenerateButton = useCallback(() => {
-    if (!boundaryPredictionEnabled || boundaryPredictionPending) return;
+    if (!boundaryPredictionEnabled || !boundaryMetrics.bbox || !isMappableSelection)
+      return;
+
+    if (shouldUseOfflinePrediction) {
+      const offlineBoundaryProxyButton =
+        document.querySelector<HTMLButtonElement>(
+          '[data-start-mapping-boundary-request-offline-button="true"]',
+        );
+
+      offlineBoundaryProxyButton?.click();
+      return;
+    }
+
+    if (boundaryPredictionPending) return;
 
     const boundaryProxyButton = document.querySelector<HTMLButtonElement>(
       '[data-start-mapping-boundary-generate-button="true"]',
     );
 
     if (boundaryProxyButton && !boundaryProxyButton.disabled) {
-      if (map) {
-        const topLeft = map.unproject([boundaryRect.x, boundaryRect.y]);
-        const bottomRight = map.unproject([
-          boundaryRect.x + boundaryRect.width,
-          boundaryRect.y + boundaryRect.height,
-        ]);
-
-        const bbox: BBOX = [
-          Math.min(topLeft.lng, bottomRight.lng),
-          Math.min(topLeft.lat, bottomRight.lat),
-          Math.max(topLeft.lng, bottomRight.lng),
-          Math.max(topLeft.lat, bottomRight.lat),
-        ];
-
-        setPendingPredictionBBox(bbox);
-      }
-
+      setPendingPredictionBBox(boundaryMetrics.bbox);
       boundaryProxyButton.click();
       return;
     }
@@ -334,21 +442,8 @@ export const DraggableBoundaryBox = ({
       ) ||
       null;
 
-    if (targetOnlineButton && map) {
-      const topLeft = map.unproject([boundaryRect.x, boundaryRect.y]);
-      const bottomRight = map.unproject([
-        boundaryRect.x + boundaryRect.width,
-        boundaryRect.y + boundaryRect.height,
-      ]);
-
-      const bbox: BBOX = [
-        Math.min(topLeft.lng, bottomRight.lng),
-        Math.min(topLeft.lat, bottomRight.lat),
-        Math.max(topLeft.lng, bottomRight.lng),
-        Math.max(topLeft.lat, bottomRight.lat),
-      ];
-
-      setPendingPredictionBBox(bbox);
+    if (targetOnlineButton) {
+      setPendingPredictionBBox(boundaryMetrics.bbox);
     }
 
     const targetButton =
@@ -361,11 +456,12 @@ export const DraggableBoundaryBox = ({
 
     targetButton?.click();
   }, [
+    boundaryMetrics.bbox,
     boundaryPredictionEnabled,
     boundaryPredictionPending,
-    boundaryRect,
-    map,
+    isMappableSelection,
     setPendingPredictionBBox,
+    shouldUseOfflinePrediction,
   ]);
 
   const canRender = useMemo(
@@ -375,12 +471,47 @@ export const DraggableBoundaryBox = ({
 
   if (!canRender) return null;
 
-  const isDragging = interactionState.mode === "drag";
+  const isButtonDisabled =
+    !isMappableSelection ||
+    !boundaryPredictionEnabled ||
+    (boundaryPredictionPending && !shouldUseOfflinePrediction);
 
   return (
     <div className="absolute inset-0 map-elements-z-index pointer-events-none">
       <div
-        className="absolute border-4 border-red-500 rounded-sm shadow-[0_0_0_1px_rgba(239,68,68,0.35)]"
+        className="absolute bg-black/35"
+        style={{ top: 0, left: 0, width: "100%", height: `${boundaryRect.y}px` }}
+      />
+      <div
+        className="absolute bg-black/35"
+        style={{
+          top: `${boundaryRect.y + boundaryRect.height}px`,
+          left: 0,
+          width: "100%",
+          height: `${Math.max(0, containerSize.height - (boundaryRect.y + boundaryRect.height))}px`,
+        }}
+      />
+      <div
+        className="absolute bg-black/35"
+        style={{
+          top: `${boundaryRect.y}px`,
+          left: 0,
+          width: `${boundaryRect.x}px`,
+          height: `${boundaryRect.height}px`,
+        }}
+      />
+      <div
+        className="absolute bg-black/35"
+        style={{
+          top: `${boundaryRect.y}px`,
+          left: `${boundaryRect.x + boundaryRect.width}px`,
+          width: `${Math.max(0, containerSize.width - (boundaryRect.x + boundaryRect.width))}px`,
+          height: `${boundaryRect.height}px`,
+        }}
+      />
+
+      <div
+        className="absolute border-[3px] border-primary rounded-sm shadow-[0_0_0_1px_var(--hot-fair-color-primary)]"
         style={{
           width: `${boundaryRect.width}px`,
           height: `${boundaryRect.height}px`,
@@ -388,6 +519,8 @@ export const DraggableBoundaryBox = ({
           top: `${boundaryRect.y}px`,
         }}
       >
+        <div className="absolute inset-0 bg-white/30" />
+
         <button
           type="button"
           onPointerDown={handleResizeStart("top")}
@@ -418,27 +551,70 @@ export const DraggableBoundaryBox = ({
         />
 
         <button
-          ref={handleRef}
           type="button"
-          onPointerDown={handleDragStart}
-          title="Move boundary"
-          className={`absolute -top-4 -right-4 pointer-events-auto rounded-full bg-white border border-red-500 p-1.5 ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+          onPointerDown={handleResizeStart("top-left")}
+          title="Resize boundary from top-left"
+          className="absolute -top-2 -left-2 h-4 w-4 pointer-events-auto cursor-nwse-resize"
+          aria-label="Resize top-left corner"
+        />
+        <button
+          type="button"
+          onPointerDown={handleResizeStart("top-right")}
+          title="Resize boundary from top-right"
+          className="absolute -top-2 -right-2 h-4 w-4 pointer-events-auto cursor-nesw-resize"
+          aria-label="Resize top-right corner"
+        />
+        <button
+          type="button"
+          onPointerDown={handleResizeStart("bottom-left")}
+          title="Resize boundary from bottom-left"
+          className="absolute -bottom-2 -left-2 h-4 w-4 pointer-events-auto cursor-nesw-resize"
+          aria-label="Resize bottom-left corner"
+        />
+        <button
+          type="button"
+          onPointerDown={handleResizeStart("bottom-right")}
+          title="Resize boundary from bottom-right"
+          className="absolute -bottom-2 -right-2 h-4 w-4 pointer-events-auto cursor-nwse-resize"
+          aria-label="Resize bottom-right corner"
+        />
+
+        <div className="absolute -top-4 -left-4 h-7 w-7 rounded-lg bg-primary" />
+        <div className="absolute -top-4 -right-4 h-7 w-7 rounded-lg bg-primary" />
+        <div className="absolute -bottom-4 -left-4 h-7 w-7 rounded-lg bg-primary" />
+        <div className="absolute -bottom-4 -right-4 h-7 w-7 rounded-lg bg-primary" />
+
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-xl bg-[#e6edf7] px-3 py-1 text-body-3 font-semibold text-[#1f2937]">
+          {formatKm(boundaryMetrics.widthKm)}
+        </div>
+
+        <div
+          className="absolute top-1/2 -left-4 -translate-y-1/2 rounded-xl bg-[#e6edf7] px-2 py-2 text-body-3 font-semibold text-[#1f2937]"
+          style={{ writingMode: "vertical-rl", textOrientation: "mixed" }}
         >
-          <ArrowMoveIcon className="w-4 h-4 text-red-600" />
-        </button>
+          {formatKm(boundaryMetrics.heightKm)}
+        </div>
 
         <button
           type="button"
-          disabled={!boundaryPredictionEnabled || boundaryPredictionPending}
+          disabled={isButtonDisabled}
           onClick={triggerMainGenerateButton}
-          className={`absolute -bottom-12 right-0 pointer-events-auto text-nowrap px-3 py-2 rounded-md text-white ${!boundaryPredictionEnabled || boundaryPredictionPending ? "bg-primary/60 cursor-not-allowed" : "bg-primary"}`}
+          className={`absolute -bottom-12 right-0 pointer-events-auto text-nowrap px-3 py-2 rounded-md text-white ${isButtonDisabled ? "bg-primary/60 cursor-not-allowed" : "bg-primary"}`}
         >
           <span className="capitalize text-body-4">
-            {boundaryPredictionPending
+            {boundaryPredictionPending && !shouldUseOfflinePrediction
               ? "Generating..."
-              : START_MAPPING_PAGE_CONTENT.buttons.runPrediction}
+              : shouldUseOfflinePrediction
+                ? "Generate Offline"
+                : START_MAPPING_PAGE_CONTENT.buttons.runPrediction}
           </span>
         </button>
+
+        {!isMappableSelection && (
+          <div className="absolute -bottom-12 left-0 rounded-md bg-[#7f1d1d] px-3 py-2 text-body-4 text-white">
+            Area outside imagery is not mappable
+          </div>
+        )}
       </div>
     </div>
   );
