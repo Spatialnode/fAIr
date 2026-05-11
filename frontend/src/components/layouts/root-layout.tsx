@@ -42,7 +42,7 @@ export const RootLayout = () => {
    * Therefore, we can disable the footer.
    */
   const { modelId } = useParams();
-
+  const isDashboardRoute = pathname.startsWith(APPLICATION_ROUTES.DASHBOARD);
   return (
     <>
       <HotTracking />
@@ -78,7 +78,7 @@ export const RootLayout = () => {
           !pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
           !pathname.includes(
             APPLICATION_ROUTES.EMAIL_VERIFICATION_CALLBACK,
-          ) && <Footer />}
+          ) && <Footer variant={isDashboardRoute ? "dashboard" : "default"} />}
       </main>
     </>
   );

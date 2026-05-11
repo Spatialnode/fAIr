@@ -191,7 +191,12 @@ const NavBarLinks: React.FC<NavBarLinksProps> = ({ className, setOpen }) => {
             }}
             className={`${styles.navLinkItem} ${location.pathname === link.href && styles.activeLink}`}
           >
-            <Link href={link.href} title={link.title} nativeAnchor={false} className="capitalize">
+            <Link
+              href={link.href}
+              title={link.title}
+              nativeAnchor={false}
+              className="capitalize"
+            >
               {link.title}
             </Link>
           </li>

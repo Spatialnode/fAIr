@@ -1,7 +1,11 @@
 import { CreativeCommonsBadge } from "@/assets/images";
 import { Image } from "@/components/ui/image";
 import { Link } from "@/components/ui/link";
-import { SHARED_CONTENT } from "@/constants";
+import {
+  APPLICATION_ROUTES,
+  HOT_PRIVACY_POLICY_URL,
+  SHARED_CONTENT,
+} from "@/constants";
 import {
   FacebookIcon,
   GitHubIcon,
@@ -39,7 +43,74 @@ const socials = [
     logo: InstagramIcon,
   },
 ];
-export const Footer = () => {
+
+type FooterProps = {
+  variant?: "default" | "dashboard";
+};
+
+const DashboardFooter = () => {
+  const dashboardLinks = [
+    {
+      title: "Learn",
+      route: APPLICATION_ROUTES.LEARN_BASE,
+      isExternalLink: false,
+    },
+    {
+      title: "About",
+      route: APPLICATION_ROUTES.ABOUT,
+      isExternalLink: false,
+    },
+    {
+      title: "Privacy Policy",
+      route: HOT_PRIVACY_POLICY_URL,
+      isExternalLink: true,
+    },
+  ];
+
+  return (
+    <footer className="bg-off-white border-t border-gray-border">
+      <div className="app-padding min-h-14 py-3 flex flex-col gap-y-3 lg:gap-y-0 lg:flex-row lg:items-center lg:justify-between">
+        <ul className="flex items-center gap-x-4 self-start lg:self-auto">
+          {socials.map((media) => (
+            <li key={media.name}>
+              <Link href={media.url} title={media.name} blank disableLinkStyle>
+                <Image
+                  src={media.logo}
+                  alt={`${media.name} Icon`}
+                  title={`${media.name}`}
+                  className="h-4 w-4 opacity-80 hover:opacity-100"
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
+
+        <MadeWithLove />
+
+        <ul className="flex items-center gap-x-6 self-start lg:self-auto">
+          {dashboardLinks.map((route) => (
+            <li key={route.title}>
+              <Link
+                href={route.route}
+                title={route.title}
+                nativeAnchor={route.isExternalLink}
+                blank={route.isExternalLink}
+                disableLinkStyle
+                className="text-body-3 text-dark hover:text-primary"
+              >
+                {route.title}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </footer>
+  );
+};
+export const Footer = ({ variant = "default" }: FooterProps) => {
+  if (variant === "dashboard") {
+    return <DashboardFooter />;
+  }
   return (
     <footer>
       <div className="grid grid-cols-12 grid-rows-2 gap-y-[67px] app-padding bg-dark text-white py-[77px]">

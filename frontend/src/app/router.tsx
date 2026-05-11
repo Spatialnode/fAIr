@@ -12,6 +12,7 @@ import {
   createBrowserRouter,
 } from "react-router-dom";
 import { ModelsProvider } from "@/app/providers/models-provider";
+import { NuqsAdapter } from "nuqs/adapters/react-router/v6";
 
 const router = createBrowserRouter([
   {
@@ -253,8 +254,9 @@ const router = createBrowserRouter([
       /**
        * Model edit routes ends.
        */
+
       /**
-       *  Datasets details route starts.
+       * Datasets details route starts.
        */
       {
         path: APPLICATION_ROUTES.DATASET_DETAILS,
@@ -269,7 +271,7 @@ const router = createBrowserRouter([
       },
 
       /**
-       *  Datasets explorer route starts.
+       * Datasets explorer route starts.
        */
       {
         path: APPLICATION_ROUTES.DATASETS,
@@ -310,7 +312,22 @@ const router = createBrowserRouter([
        */
 
       /**
-       * User account routes start.
+       * Public dashboard route
+       */
+      {
+        path: APPLICATION_ROUTES.DASHBOARD,
+        lazy: async () => {
+          const { DashboardOverviewPage } = await import(
+            "@/app/routes/dashboard/overview"
+          );
+          return {
+            Component: () => <DashboardOverviewPage />,
+          };
+        },
+      },
+
+      /**
+       * User account routes start (protected)
        */
       {
         element: (
@@ -441,5 +458,9 @@ const router = createBrowserRouter([
 ]);
 
 export const AppRouter = () => {
-  return <RouterProvider router={router} />;
+  return (
+    <NuqsAdapter>
+      <RouterProvider router={router} />
+    </NuqsAdapter>
+  );
 };

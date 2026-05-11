@@ -5,6 +5,7 @@
 import { TProfileNavigationTabs } from "@/types";
 
 export const MODELS_BASE = "/ai-models";
+export const DASHBOARD_BASE = "/dashboard";
 
 export const MODELS_ROUTES = {
   // Creation Routes
@@ -62,8 +63,12 @@ export const APPLICATION_ROUTES = {
   PROFILE_MODELS: "/profile/models",
   PROFILE_DATASETS: "/profile/datasets",
   PROFILE_OFFLINE_PREDICTIONS: "/profile/prediction-requests",
-};
 
+  DASHBOARD: "/dashboard",
+};
+export const DASHBOARD_QUERY_PARAMS = {
+  FIRST_TIME: "first_time",
+} as const;
 export const HOT_PRIVACY_POLICY_URL: string = "https://www.hotosm.org/privacy";
 /**
  * The navigation tabs used in the profile layout.
