@@ -256,38 +256,38 @@ export const DraggableBoundaryBox = ({
         width={containerSize.width}
         height={containerSize.height}
       >
-          <defs>
-            <mask id="start-mapping-grid-cutout">
-              <rect width="100%" height="100%" fill="white" />
-              {cellRects.map((cell) => (
-                <rect
-                  key={`mask-${cell.key}`}
-                  x={cell.x}
-                  y={cell.y}
-                  width={CELL_SIZE}
-                  height={CELL_SIZE}
-                  fill="black"
-                />
-              ))}
-            </mask>
-          </defs>
+        <defs>
+          <mask id="start-mapping-grid-cutout">
+            <rect width="100%" height="100%" fill="white" />
+            {cellRects.map((cell) => (
+              <rect
+                key={`mask-${cell.key}`}
+                x={cell.x}
+                y={cell.y}
+                width={CELL_SIZE}
+                height={CELL_SIZE}
+                fill="black"
+              />
+            ))}
+          </mask>
+        </defs>
+        <rect
+          width="100%"
+          height="100%"
+          fill="rgba(75, 85, 99, 0.55)"
+          mask="url(#start-mapping-grid-cutout)"
+        />
+        {cellRects.map((cell) => (
           <rect
-            width="100%"
-            height="100%"
-            fill="rgba(75, 85, 99, 0.55)"
-            mask="url(#start-mapping-grid-cutout)"
+            key={`border-${cell.key}`}
+            x={cell.x}
+            y={cell.y}
+            width={CELL_SIZE}
+            height={CELL_SIZE}
+            fill="none"
+            stroke="rgb(239, 68, 68)"
+            strokeWidth={2}
           />
-          {cellRects.map((cell) => (
-            <rect
-              key={`border-${cell.key}`}
-              x={cell.x}
-              y={cell.y}
-              width={CELL_SIZE}
-              height={CELL_SIZE}
-              fill="none"
-              stroke="rgb(239, 68, 68)"
-              strokeWidth={2}
-            />
         ))}
       </svg>
 
