@@ -213,7 +213,7 @@ export const CreateDatasetMapSwipeFlow = ({
 
             <Button
               className="mt-2"
-              uppercase={false}
+              // uppercase={false}
               disabled={!canUseExistingProjectData}
               onClick={handleConfirmMapSwipeFlow}
             >
@@ -232,9 +232,7 @@ export const CreateDatasetMapSwipeFlow = ({
               To create a new MapSwipe Locate Project, continue to the project
               setup form.
             </p>
-            <Button uppercase={false} onClick={openNewProjectModal}>
-              Continue
-            </Button>
+            <Button onClick={openNewProjectModal}>Continue</Button>
           </div>
         )}
       </ModalShell>

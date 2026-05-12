@@ -15,9 +15,10 @@ type ButtonProps = {
   size?: ButtonSize;
   disabled?: boolean;
   slot?: string;
-  uppercase?: boolean;
+
   type?: "button" | "submit";
   contentClassName?: string;
+  uppercase?: boolean
 };
 const Button: React.FC<ButtonProps> = ({
   children,
@@ -26,11 +27,11 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   spinner = false,
   disabled = false,
-  uppercase = true,
   size,
   slot,
   type = "button",
   contentClassName,
+  
 }) => {
   const spinnerColor = variant === "primary" ? "white" : "red";
   const trackColor = variant === "primary" ? "red" : "white";
@@ -40,7 +41,7 @@ const Button: React.FC<ButtonProps> = ({
       //@ts-expect-error bad type definition
       variant={variant}
       size={size ? size : isMobile ? "medium" : "large"}
-      className={cn(`button ${variant} ${className} `)}
+      className={cn(`button ${variant} ${className}`)}
       style={{ width: "100%" }}
       //@ts-expect-error bad type definition
       onClick={onClick}
@@ -50,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({
     >
       <div
         className={cn(
-          `flex items-center gap-x-2  ${uppercase && "uppercase"} ${contentClassName} `,
+          `flex items-center gap-x-2 ${contentClassName} capitalize`,
         )}
       >
         {children}

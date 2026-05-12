@@ -4,6 +4,9 @@
 export const ENVS = {
   BASE_API_URL: import.meta.env.VITE_BASE_API_URL,
 
+  AUTH_PROVIDER: import.meta.env.VITE_AUTH_PROVIDER,
+  HANKO_URL: import.meta.env.VITE_HANKO_URL,
+
   MATOMO_ID: import.meta.env.VITE_MATOMO_ID,
 
   MATOMO_APP_DOMAIN: import.meta.env.VITE_MATOMO_APP_DOMAIN,
@@ -101,4 +104,6 @@ export const ENVS = {
   MAPSWIPE_VERIFICATION_NUMBER: import.meta.env
     .VITE_MAPSWIPE_VERIFICATION_NUMBER,
   MAPSWIPE_GROUP_SIZE: import.meta.env.VITE_MAPSWIPE_GROUP_SIZE,
+  FAIR_STAC_CATALOG_BASE_URL: import.meta.env.VITE_FAIR_STAC_CATALOG_BASE_URL,
+  NODE_ENV: import.meta.env.VITE_NODE_ENV,
 };

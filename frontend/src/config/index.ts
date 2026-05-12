@@ -37,6 +37,24 @@ export const parseStringEnv = (
   defaultValue: string,
 ): string => (value && value.trim() !== "" ? value.trim() : defaultValue);
 
+// Authentication
+export const AUTH_PROVIDER: string = parseStringEnv(
+  ENVS.AUTH_PROVIDER,
+  "legacy",
+);
+export const HANKO_URL: string = parseStringEnv(
+  ENVS.HANKO_URL,
+  "https://dev.login.hotosm.org",
+);
+export const FRONTEND_URL: string =
+  typeof window !== "undefined"
+    ? window.location.origin
+    : "http://localhost:5173";
+
+export const NODE_ENV: string = parseStringEnv(ENVS.NODE_ENV, "development");
+export const IS_DEV = NODE_ENV === "development";
+export const IS_PROD = NODE_ENV === "production";
+
 // ==============================================================================================================================
 // API Endpoints
 // ==============================================================================================================================
@@ -48,6 +66,14 @@ export const parseStringEnv = (
 export const BASE_API_URL: string = parseStringEnv(
   ENVS.BASE_API_URL,
   "http://localhost:8000/api/v1/",
+);
+
+/**
+ * The STAC Catalog API endpoint url. This is used to fetch the base models, datasets and local models as STAC items from the catalog.
+ */
+export const STAC_CATALOG_API_URL: string = parseStringEnv(
+  ENVS.FAIR_STAC_CATALOG_BASE_URL,
+  "https://stac.fair.krschap.tech/stac/",
 );
 
 /**
@@ -217,9 +243,8 @@ export const MAX_ACCEPTABLE_POLYGON_IN_TRAINING_AREA_GEOJSON_FILE: number =
 /**
  * The maximum zoom level for the map.
  * Model predictions require a max zoom of 22.
- * 21 is used here because 1 is already added to the 'currentZoom' in the useMapInstance() hook.
  */
-export const MAX_ZOOM_LEVEL: number = parseIntEnv(ENVS.MAX_ZOOM_LEVEL, 19);
+export const MAX_ZOOM_LEVEL: number = parseIntEnv(ENVS.MAX_ZOOM_LEVEL, 22);
 
 /**
  * The minimum zoom level for the map before the prediction components can be activated.

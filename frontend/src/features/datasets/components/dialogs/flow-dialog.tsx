@@ -245,7 +245,7 @@ export const CreateDatasetFlowDialog = () => {
 
           <Button
             className="mt-7"
-            uppercase={false}
+            // uppercase={false}
             disabled={flow.validTaskingIds.length === 0}
             onClick={flow.handleConfirmTaskingFlow}
           >

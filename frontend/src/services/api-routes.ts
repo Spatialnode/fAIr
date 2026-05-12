@@ -26,8 +26,8 @@ export const API_ENDPOINTS = {
   CREATE_OFFLINE_PREDICTION: "prediction/",
   GET_OFFLINE_PREDICTIONS: "prediction/",
   UPDATE_OFFLINE_PREDICTION: (id: number) => `prediction/${id}/`,
-  GET_PUBLISHED_PREDICTIONS: "prediction/",
-  GET_PUBLISHED_PREDICTIONS_CENTROIDS: "predictions/centroid/",
+  GET_AI_PREDICTIONS: "prediction/",
+  GET_AI_PREDICTIONS_CENTROIDS: "predictions/centroid/",
 
   // Feedbacks
 
@@ -122,4 +122,10 @@ export const API_ENDPOINTS = {
 
   GET_MAPSWIPE_PROJECT_STATUS: (projectId: string) =>
     `mapswipe-project/${projectId}/`,
+
+  // STAC
+  GET_BASE_MODELS: (limit: number): string =>
+    `/collections/base-models/items/?limit=${limit}`,
+  GET_BASE_MODEL_BY_ID: (id: string): string =>
+    `/collections/base-models/items/${id}`,
 };
