@@ -13,7 +13,7 @@ export const ActionCard = ({
 }: {
   card: DashboardCard;
   className?: string;
-firstTime?: boolean;
+  firstTime?: boolean;
   Icon?: React.ElementType;
   smallHeight?: boolean;
   IconPostion?: "top-left" | "top";

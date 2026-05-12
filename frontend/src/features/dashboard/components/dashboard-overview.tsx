@@ -106,7 +106,7 @@ export const DashboardOverview = () => {
             Icon={AIMapModelIcon}
             card={RETURNING_CARDS[1]}
           />
-          <OverviewStats  />
+          <OverviewStats />
 
           <ActionCard
             IconPostion="top-left"

@@ -9,8 +9,8 @@ import type { OverviewStat } from "@/features/dashboard/utils/types";
 import { useAuth } from "@/app/providers/auth-provider";
 
 export const OverviewStats = () => {
-    const { user } = useAuth();
-  
+  const { user } = useAuth();
+
   const items: OverviewStat[] = [
     {
       icon: BotIcon,
