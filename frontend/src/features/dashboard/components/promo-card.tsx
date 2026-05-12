@@ -30,7 +30,7 @@ export const PromoCard = ({
 }: PromoCardProps) => {
   return (
     <article
-      className={`rounded-2xl overflow-hidden min-h-[135px] bg-primary text-white flex items-center gap-4 ${className}`}
+      className={`rounded-2xl overflow-hidden min-h-[135px] bg-primary text-white flex items-center gap-4 w-full ${className}`}
       style={{
         backgroundImage: `linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 100%), url(${ContourBackground})`,
         backgroundSize: "cover",

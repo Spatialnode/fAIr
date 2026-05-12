@@ -5,10 +5,12 @@ import {
   FeedbackIcon,
   TimerIcon,
 } from "@/components/ui/icons";
-import type { TUser } from "@/types";
 import type { OverviewStat } from "@/features/dashboard/utils/types";
+import { useAuth } from "@/app/providers/auth-provider";
 
-export const OverviewStats = ({ user }: { user?: TUser }) => {
+export const OverviewStats = () => {
+    const { user } = useAuth();
+  
   const items: OverviewStat[] = [
     {
       icon: BotIcon,

@@ -13,13 +13,13 @@ export const ActionCard = ({
 }: {
   card: DashboardCard;
   className?: string;
-  firstTime?: boolean;
+firstTime?: boolean;
   Icon?: React.ElementType;
   smallHeight?: boolean;
   IconPostion?: "top-left" | "top";
 }) => (
   <article
-    className={`rounded-2xl p-6 flex flex-col justify-between ${firstTime ? "min-h-[360px] max-w-[330px] " : smallHeight ? "min-h-[135px] max-w-[445px]" : "min-h-[260px] max-w-[445px]"} ${card.dark ? "text-white" : "text-dark bg-frosted-blue"} ${className}`}
+    className={`rounded-2xl p-6 flex flex-col justify-between w-full ${firstTime ? "min-h-[360px] sm:max-w-[330px] " : smallHeight ? "min-h-[135px] sm:max-w-[445px]" : "min-h-[260px] sm:max-w-[445px]"} ${card.dark ? "text-white" : "text-dark bg-frosted-blue"} ${className}`}
     style={
       card.dark
         ? {

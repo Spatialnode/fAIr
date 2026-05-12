@@ -51,7 +51,7 @@ export const DashboardOverview = () => {
       <header className="flex my-3 flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex flex-col gap-2 justify-center">
           <div className="flex items-center gap-4">
-            <h1 className="text-title-1 md:text-[24px] font-bold text-dark">
+            <h1 className="text-title-1 md:text-lg font-bold text-dark">
               Welcome,{" "}
               <span className="italic font-regular">{displayName}</span>
             </h1>
@@ -106,7 +106,7 @@ export const DashboardOverview = () => {
             Icon={AIMapModelIcon}
             card={RETURNING_CARDS[1]}
           />
-          <OverviewStats user={user} />
+          <OverviewStats  />
 
           <ActionCard
             IconPostion="top-left"
