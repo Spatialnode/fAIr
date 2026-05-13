@@ -1,6 +1,8 @@
 import { START_MAPPING_PAGE_CONTENT } from "@/constants";
+import { ArrowMoveIcon } from "@/components/ui/icons";
 import { BBOX } from "@/types";
 import {
+  PointerEvent as ReactPointerEvent,
   RefObject,
   useCallback,
   useEffect,
@@ -8,11 +10,16 @@ import {
   useRef,
   useState,
 } from "react";
-import { Map, MapMouseEvent } from "maplibre-gl";
+import {
+  LngLatBounds,
+  LngLatBoundsLike,
+  Map,
+} from "maplibre-gl";
 import { useMapStore } from "@/store/map-store";
 
-const CELL_SIZE = 40;
+const CELL_SIZE = 60;
 const MAX_GRID_DIM = 5;
+const GRID_PIXEL_SIZE = CELL_SIZE * MAX_GRID_DIM;
 
 type CellKey = string;
 
@@ -22,18 +29,27 @@ const parseCell = (key: CellKey): [number, number] => {
   return [r, c];
 };
 
+const clamp = (value: number, min: number, max: number) => {
+  if (max < min) return min;
+  return Math.min(Math.max(value, min), max);
+};
+
 export const DraggableBoundaryBox = ({
   map,
   mapContainerRef,
+  imageryBounds,
 }: {
   map: Map | null;
   mapContainerRef: RefObject<HTMLDivElement | null>;
+  imageryBounds?: LngLatBoundsLike;
 }) => {
   const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
   const [cells, setCells] = useState<Set<CellKey>>(new Set());
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
+  const [mapViewTick, setMapViewTick] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragOffsetRef = useRef<{ dx: number; dy: number } | null>(null);
   const hasInitializedGrid = useRef(false);
-  const missClickCountRef = useRef(0);
 
   const setPendingPredictionBBox = useMapStore(
     (state) => state.setPendingPredictionBBox,
@@ -67,13 +83,70 @@ export const DraggableBoundaryBox = ({
   }, [mapContainerRef]);
 
   useEffect(() => {
+    if (!map) return;
+    const handler = () => setMapViewTick((t) => t + 1);
+    map.on("move", handler);
+    map.on("zoom", handler);
+    return () => {
+      map.off("move", handler);
+      map.off("zoom", handler);
+    };
+  }, [map]);
+
+  const getOriginLimits = useCallback(() => {
+    const minX = 0;
+    const minY = 0;
+    let maxX = Math.max(0, containerSize.width - GRID_PIXEL_SIZE);
+    let maxY = Math.max(0, containerSize.height - GRID_PIXEL_SIZE);
+
+    let imageryMinX = minX;
+    let imageryMinY = minY;
+    let imageryMaxX = maxX;
+    let imageryMaxY = maxY;
+
+    if (map && imageryBounds) {
+      const b = LngLatBounds.convert(imageryBounds);
+      const nw = map.project([b.getWest(), b.getNorth()]);
+      const se = map.project([b.getEast(), b.getSouth()]);
+      const imgLeft = Math.min(nw.x, se.x);
+      const imgRight = Math.max(nw.x, se.x);
+      const imgTop = Math.min(nw.y, se.y);
+      const imgBottom = Math.max(nw.y, se.y);
+
+      imageryMinX = imgLeft;
+      imageryMinY = imgTop;
+      imageryMaxX = imgRight - GRID_PIXEL_SIZE;
+      imageryMaxY = imgBottom - GRID_PIXEL_SIZE;
+    }
+
+    return {
+      minX: Math.max(minX, imageryMinX),
+      minY: Math.max(minY, imageryMinY),
+      maxX: Math.min(maxX, imageryMaxX),
+      maxY: Math.min(maxY, imageryMaxY),
+    };
+  }, [containerSize.width, containerSize.height, map, imageryBounds]);
+
+  const clampOrigin = useCallback(
+    (x: number, y: number) => {
+      const limits = getOriginLimits();
+      return {
+        x: clamp(x, limits.minX, limits.maxX),
+        y: clamp(y, limits.minY, limits.maxY),
+      };
+    },
+    [getOriginLimits],
+  );
+
+  useEffect(() => {
     if (hasInitializedGrid.current) return;
     if (!boundaryPredictionEnabled) return;
     if (containerSize.width === 0 || containerSize.height === 0) return;
 
-    const gridPixelSize = MAX_GRID_DIM * CELL_SIZE;
-    const originX = Math.max(0, (containerSize.width - gridPixelSize) / 2);
-    const originY = Math.max(0, (containerSize.height - gridPixelSize) / 2);
+    const initialOrigin = clampOrigin(
+      (containerSize.width - GRID_PIXEL_SIZE) / 2,
+      (containerSize.height - GRID_PIXEL_SIZE) / 2,
+    );
 
     const initialCells = new Set<CellKey>();
     for (let r = 0; r < MAX_GRID_DIM; r++) {
@@ -82,82 +155,63 @@ export const DraggableBoundaryBox = ({
       }
     }
 
-    setOrigin({ x: originX, y: originY });
+    setOrigin(initialOrigin);
     setCells(initialCells);
     hasInitializedGrid.current = true;
-  }, [boundaryPredictionEnabled, containerSize.width, containerSize.height]);
+  }, [
+    boundaryPredictionEnabled,
+    containerSize.width,
+    containerSize.height,
+    clampOrigin,
+  ]);
 
   useEffect(() => {
-    if (!map) return;
+    if (!origin) return;
+    void mapViewTick;
+    const clamped = clampOrigin(origin.x, origin.y);
+    if (clamped.x !== origin.x || clamped.y !== origin.y) {
+      setOrigin(clamped);
+    }
+  }, [mapViewTick, clampOrigin, origin]);
 
-    const handleMapClick = (event: MapMouseEvent) => {
-      if (!boundaryPredictionEnabled) return;
-      const { x, y } = event.point;
+  useEffect(() => {
+    if (!isDragging) return;
 
-      if (!origin || cells.size === 0) {
-        setOrigin({ x: x - CELL_SIZE / 2, y: y - CELL_SIZE / 2 });
-        setCells(new Set([cellKey(0, 0)]));
-        missClickCountRef.current = 0;
-        return;
-      }
-
-      const col = Math.floor((x - origin.x) / CELL_SIZE);
-      const row = Math.floor((y - origin.y) / CELL_SIZE);
-      const key = cellKey(row, col);
-
-      if (cells.has(key)) {
-        const next = new Set(cells);
-        next.delete(key);
-        setCells(next);
-        if (next.size === 0) setOrigin(null);
-        missClickCountRef.current = 0;
-        return;
-      }
-
-      const isAdjacent =
-        cells.has(cellKey(row - 1, col)) ||
-        cells.has(cellKey(row + 1, col)) ||
-        cells.has(cellKey(row, col - 1)) ||
-        cells.has(cellKey(row, col + 1));
-
-      const rows = [...cells].map((k) => parseCell(k)[0]).concat(row);
-      const cols = [...cells].map((k) => parseCell(k)[1]).concat(col);
-      const withinBounds =
-        Math.max(...rows) - Math.min(...rows) + 1 <= MAX_GRID_DIM &&
-        Math.max(...cols) - Math.min(...cols) + 1 <= MAX_GRID_DIM;
-
-      if (isAdjacent && withinBounds) {
-        const next = new Set(cells);
-        next.add(key);
-        setCells(next);
-        missClickCountRef.current = 0;
-        return;
-      }
-
-      missClickCountRef.current += 1;
-      if (missClickCountRef.current >= 3) {
-        const gridPixelSize = MAX_GRID_DIM * CELL_SIZE;
-        const newOriginX = x - gridPixelSize / 2;
-        const newOriginY = y - gridPixelSize / 2;
-
-        const newCells = new Set<CellKey>();
-        for (let r = 0; r < MAX_GRID_DIM; r++) {
-          for (let c = 0; c < MAX_GRID_DIM; c++) {
-            newCells.add(cellKey(r, c));
-          }
-        }
-
-        setOrigin({ x: newOriginX, y: newOriginY });
-        setCells(newCells);
-        missClickCountRef.current = 0;
-      }
+    const onPointerMove = (event: PointerEvent) => {
+      const container = mapContainerRef.current;
+      if (!container || !dragOffsetRef.current) return;
+      const rect = container.getBoundingClientRect();
+      const nextX = event.clientX - rect.left - dragOffsetRef.current.dx;
+      const nextY = event.clientY - rect.top - dragOffsetRef.current.dy;
+      setOrigin(clampOrigin(nextX, nextY));
     };
 
-    map.on("click", handleMapClick);
+    const onPointerUp = () => {
+      setIsDragging(false);
+      dragOffsetRef.current = null;
+    };
+
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
     return () => {
-      map.off("click", handleMapClick);
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
     };
-  }, [map, boundaryPredictionEnabled, origin, cells]);
+  }, [isDragging, clampOrigin, mapContainerRef]);
+
+  const handleDragStart = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (!origin) return;
+    const container = mapContainerRef.current;
+    if (!container) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const rect = container.getBoundingClientRect();
+    dragOffsetRef.current = {
+      dx: event.clientX - rect.left - origin.x,
+      dy: event.clientY - rect.top - origin.y,
+    };
+    setIsDragging(true);
+  };
 
   const cellRects = useMemo(() => {
     if (!origin) return [];
@@ -290,6 +344,25 @@ export const DraggableBoundaryBox = ({
           />
         ))}
       </svg>
+
+      {gridBounds && (
+        <button
+          type="button"
+          onPointerDown={handleDragStart}
+          title="Move grid"
+          aria-label="Move grid"
+          style={{
+            left: `${gridBounds.x + gridBounds.width}px`,
+            top: `${gridBounds.y}px`,
+            transform: "translate(-50%, -50%)",
+          }}
+          className={`absolute pointer-events-auto rounded-full bg-white border border-red-500 p-1.5 ${
+            isDragging ? "cursor-grabbing" : "cursor-grab"
+          }`}
+        >
+          <ArrowMoveIcon className="w-4 h-4 text-red-600" />
+        </button>
+      )}
 
       {gridBounds && (
         <button

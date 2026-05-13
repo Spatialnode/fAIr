@@ -222,7 +222,11 @@ export const StartMappingMapComponent = ({
         />
       )}
       {memoizedToolTip}
-      <DraggableBoundaryBox map={map} mapContainerRef={mapContainerRef} />
+      <DraggableBoundaryBox
+        map={map}
+        mapContainerRef={mapContainerRef}
+        imageryBounds={tileJSONMetadata?.bounds}
+      />
 
       <div
         className={
