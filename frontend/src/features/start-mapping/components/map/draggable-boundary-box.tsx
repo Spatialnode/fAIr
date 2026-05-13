@@ -10,11 +10,7 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  LngLatBounds,
-  LngLatBoundsLike,
-  Map,
-} from "maplibre-gl";
+import { LngLatBounds, LngLatBoundsLike, Map } from "maplibre-gl";
 import { useMapStore } from "@/store/map-store";
 
 const CELL_SIZE = 60;
