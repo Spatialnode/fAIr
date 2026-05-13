@@ -375,7 +375,7 @@ export const DraggableBoundaryBox = ({
           }}
           className={`absolute pointer-events-auto text-nowrap px-3 py-2 rounded-md text-white ${
             !boundaryPredictionEnabled || boundaryPredictionPending
-              ? "bg-primary/60 cursor-not-allowed"
+              ? "bg-primary cursor-not-allowed"
               : "bg-primary"
           }`}
         >
