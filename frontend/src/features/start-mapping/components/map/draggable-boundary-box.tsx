@@ -13,7 +13,7 @@ import {
 import { LngLatBounds, LngLatBoundsLike, Map } from "maplibre-gl";
 import { useMapStore } from "@/store/map-store";
 
-const CELL_SIZE = 60;
+const CELL_SIZE = 70;
 const MAX_GRID_DIM = 5;
 const GRID_PIXEL_SIZE = CELL_SIZE * MAX_GRID_DIM;
 
@@ -56,6 +56,8 @@ export const DraggableBoundaryBox = ({
   const boundaryPredictionEnabled = useMapStore(
     (state) => state.boundaryPredictionEnabled,
   );
+  const currentZoom = useMapStore((state) => state.zoom);
+  const isAtPredictionZoom = currentZoom >= 18;
 
   useEffect(() => {
     const container = mapContainerRef.current;
@@ -136,7 +138,7 @@ export const DraggableBoundaryBox = ({
 
   useEffect(() => {
     if (hasInitializedGrid.current) return;
-    if (!boundaryPredictionEnabled) return;
+    if (!isAtPredictionZoom) return;
     if (containerSize.width === 0 || containerSize.height === 0) return;
 
     const initialOrigin = clampOrigin(
@@ -155,7 +157,7 @@ export const DraggableBoundaryBox = ({
     setCells(initialCells);
     hasInitializedGrid.current = true;
   }, [
-    boundaryPredictionEnabled,
+    isAtPredictionZoom,
     containerSize.width,
     containerSize.height,
     clampOrigin,
@@ -298,6 +300,7 @@ export const DraggableBoundaryBox = ({
   ]);
 
   if (containerSize.width === 0 || containerSize.height === 0) return null;
+  if (!isAtPredictionZoom) return null;
 
   return (
     <div className="absolute inset-0 map-elements-z-index pointer-events-none">
