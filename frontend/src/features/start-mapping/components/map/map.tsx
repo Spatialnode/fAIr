@@ -225,7 +225,7 @@ export const StartMappingMapComponent = ({
       <DraggableBoundaryBox
         map={map}
         mapContainerRef={mapContainerRef}
-        imageryBounds={tileJSONMetadata?.bounds}
+        imageryBounds={tileJSONMetadata?.bounds ?? null}
       />
 
       <div
