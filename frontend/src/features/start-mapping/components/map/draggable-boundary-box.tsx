@@ -55,14 +55,18 @@ const latToTileY = (lat: number, z: number) => {
   return y * worldSizeAtZoom(z);
 };
 
-const tileToLng = (x: number, z: number) => (x / worldSizeAtZoom(z)) * 360 - 180;
+const tileToLng = (x: number, z: number) =>
+  (x / worldSizeAtZoom(z)) * 360 - 180;
 
 const tileToLat = (y: number, z: number) => {
   const n = Math.PI - (2 * Math.PI * y) / worldSizeAtZoom(z);
   return Math.atan(0.5 * (Math.exp(n) - Math.exp(-n))) * (180 / Math.PI);
 };
 
-const getFracTileCoords = (lngLat: { lng: number; lat: number }, z: number) => ({
+const getFracTileCoords = (
+  lngLat: { lng: number; lat: number },
+  z: number,
+) => ({
   x: lonToTileX(lngLat.lng, z),
   y: latToTileY(lngLat.lat, z),
 });
@@ -74,10 +78,7 @@ const getGridBBoxFromAnchor = (anchor: TileAnchor): BBOX => {
     anchor.z,
   );
   const north = tileToLat(anchor.y, anchor.z);
-  const south = tileToLat(
-    anchor.y + GRID_ROWS * GRID_CELL_TILE_SPAN,
-    anchor.z,
-  );
+  const south = tileToLat(anchor.y + GRID_ROWS * GRID_CELL_TILE_SPAN, anchor.z);
   return [west, south, east, north];
 };
 
@@ -93,7 +94,10 @@ const clampAnchor = (anchor: TileAnchor): TileAnchor => {
   };
 };
 
-const getCenteredAnchor = (center: { lng: number; lat: number }): TileAnchor => {
+const getCenteredAnchor = (center: {
+  lng: number;
+  lat: number;
+}): TileAnchor => {
   const tileCoords = getFracTileCoords(center, GRID_ZOOM);
   return clampAnchor({
     x: tileCoords.x - (GRID_COLUMNS * GRID_CELL_TILE_SPAN) / 2,
@@ -295,7 +299,9 @@ export const DraggableBoundaryBox = ({
     );
 
     const targetButton =
-      buttons.find((button) => !button.disabled && button.offsetParent !== null) ||
+      buttons.find(
+        (button) => !button.disabled && button.offsetParent !== null,
+      ) ||
       buttons.find((button) => !button.disabled) ||
       null;
 
