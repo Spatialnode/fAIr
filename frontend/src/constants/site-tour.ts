@@ -46,7 +46,6 @@ export const getTryFairTourSteps = (isSmallViewport: boolean): StepType[] => [
     selector: `#${APP_TOUR_IDS.TRY_FAIR_MAP_BUTTON_TOOLTIP}`,
     content: "Click Map to run your first prediction.",
     position: isSmallViewport ? "top" : "right",
-
     styles: {
       close: (base) => ({
         ...base,
@@ -59,9 +58,6 @@ export const getTryFairTourSteps = (isSmallViewport: boolean): StepType[] => [
         borderRadius: "6px",
         height: "100px",
       }),
-      maskWrapper: () => ({
-        display: "none",
-      }),
       navigation: (base) => ({
         ...base,
         display: "none",
@@ -70,7 +66,9 @@ export const getTryFairTourSteps = (isSmallViewport: boolean): StepType[] => [
         ...base,
         display: "none",
       }),
-
+maskWrapper: () => ({
+        display: "none",
+      }),
       arrow: (base) => ({
         ...base,
         display: "none",
@@ -83,9 +81,11 @@ export const getTryFairTourSteps = (isSmallViewport: boolean): StepType[] => [
       "Adjust confidence and resolution to explore how prediction output changes.",
     position: isSmallViewport ? "top" : "bottom",
     styles: {
+      
       maskWrapper: () => ({
         display: "none",
       }),
+      
     },
   },
   {
@@ -94,9 +94,11 @@ export const getTryFairTourSteps = (isSmallViewport: boolean): StepType[] => [
       "And you can also click Map again to run predictions with the new parameters.",
     position: isSmallViewport ? "top" : "right",
     styles: {
+      
       maskWrapper: () => ({
         display: "none",
       }),
+      
     },
   },
   {

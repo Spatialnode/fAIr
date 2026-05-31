@@ -3,10 +3,7 @@ import { TRY_FAIR_PAGE_CONTENT } from "@/constants/ui-contents/try-fair-contents
 import { TryFairMapOutputType, TryFairResolution } from "@/enums/try-fair";
 import { TryFairMap } from "@/features/try-fair/components/map/try-fair-map";
 import { TryFairSidebar } from "@/features/try-fair/components/try-fair-sidebar";
-import {
-  DEMO_MODEL_CONFIGS,
-  getDemoConfig,
-} from "@/features/try-fair/utils/models";
+import { DEMO_MODEL_CONFIGS, getDemoConfig } from "@/features/try-fair/models";
 import { useMapInstance } from "@/hooks/use-map-instance";
 import { useTileservice } from "@/hooks/use-tileservice";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -15,6 +12,7 @@ import { useTryFairParams } from "@/features/try-fair/hooks/use-try-fair-params"
 import { useBaseModels } from "@/features/try-fair/hooks/use-base-models";
 import { BBOX } from "@/types";
 import { useFairPredict } from "@/features/try-fair/hooks/use-fair-predict";
+import { TryFairOnboardingDialog } from "@/features/try-fair/components/try-fair-onboarding-dialog";
 import { getTryFairTourSteps } from "@/constants/site-tour";
 import {
   getInferenceParams,
@@ -23,6 +21,7 @@ import {
 import useScreenSize from "@/hooks/use-screen-size";
 import { MobileDrawer } from "@/components/ui/drawer";
 import {
+  TRY_FAIR_ONBOARDING_DIALOG_SEEN_LOCAL_STORAGE_KEY,
   TRY_FAIR_TOUR_PARAMETERS_ADJUSTMENTS_SEEN_LOCAL_STORAGE_KEY,
   TRY_FAIR_TOUR_START_MAPPING_BUTTON_SEEN_LOCAL_STORAGE_KEY,
   TRY_FAIR_TOUR_MAP_BUTTON_TOOLTIP_LOCAL_STORAGE_KEY,
@@ -87,6 +86,13 @@ export const TryFairPage = () => {
   const [isDirty, setIsDirty] = useState<boolean>(true);
 
   const [mapClickCount, setMapClickCount] = useState<number>(0);
+
+  const hasSeenOnboardingDialog =
+    getValue(TRY_FAIR_ONBOARDING_DIALOG_SEEN_LOCAL_STORAGE_KEY) === "true";
+
+  const [showOnboarding, setShowOnboarding] = useState<boolean>(
+    () => !hasSeenOnboardingDialog,
+  );
 
   // Site Tours
   const [tourStepMapButtonTooltipSeen, setTourStepMapButtonTooltipSeen] =
@@ -167,6 +173,7 @@ export const TryFairPage = () => {
   }, [tileJSONMetadata, demoConfig]);
 
   useEffect(() => {
+    if (showOnboarding) return;
     if (!map || !demoConfig || !imageryCenter) return;
     const doFly = () => {
       map.flyTo({
@@ -284,7 +291,7 @@ export const TryFairPage = () => {
 
   // Site tour trigger logic based on map interactions and prediction state.
   useEffect(() => {
-    if (!tourStepMapButtonTooltipSeen) {
+    if (hasSeenOnboardingDialog && !tourStepMapButtonTooltipSeen) {
       const timer = setTimeout(() => {
         openTryFairTourStep(0);
         setValue(TRY_FAIR_TOUR_MAP_BUTTON_TOOLTIP_LOCAL_STORAGE_KEY, "true");
@@ -325,6 +332,7 @@ export const TryFairPage = () => {
       setTourStepStartMappingButtonSeen(true);
     }
   }, [
+    hasSeenOnboardingDialog,
     tourStepMapButtonTooltipSeen,
     mapClickCount,
     isSmallViewport,
@@ -342,9 +350,27 @@ export const TryFairPage = () => {
     }
   };
 
+  const closeOnboarding = () => {
+    localStorage.setItem(
+      TRY_FAIR_ONBOARDING_DIALOG_SEEN_LOCAL_STORAGE_KEY,
+      "true",
+    );
+    setShowOnboarding(false);
+    // Zoom to the grid after the onboarding dialog is closed or skipped.
+    handleZoomToGrid();
+  };
+
   return (
     <>
       <Head title={TRY_FAIR_PAGE_CONTENT.pageTitle} />
+
+      {showOnboarding && (
+        <TryFairOnboardingDialog
+          isOpened={showOnboarding}
+          onContinue={closeOnboarding}
+          handleSkipOnboarding={closeOnboarding}
+        />
+      )}
 
       <div className="flex h-screen md:h-[92vh] flex-col fullscreen">
         <div className="flex-grow relative">
@@ -363,7 +389,7 @@ export const TryFairPage = () => {
             resolution={resolution}
             modelId={modelId}
             isPredicting={isPredicting}
-            canFitToBounds={true}
+            canFitToBounds={!showOnboarding}
           />
 
           {!isSmallViewport && (

@@ -13,6 +13,7 @@ import { PREDICTION_LAYER_IDS } from "@/features/try-fair/utils/common";
 import { getTileZoomForResolution } from "@/features/try-fair/utils/tile-math";
 import { TryFairLayerControl } from "@/features/try-fair/components/map/try-fair-layer-control";
 import useScreenSize from "@/hooks/use-screen-size";
+import { PredictionStatusLayer } from "./prediction-status";
 
 type TryFairMapProps = {
   map: Map | null;
@@ -54,11 +55,13 @@ export const TryFairMap = ({
   >(null);
   // Track the grid bbox locally so fit-to-grid always has the latest value
   const gridBBoxRef = useRef<BBOX | null>(null);
+  const [gridBBox, setGridBBox] = useState<BBOX | null>(null);
 
   // Intercept bbox changes so gridBBoxRef always has the latest value
   const handleBBoxChange = useCallback(
     (bbox: BBOX, tileZoom: number) => {
       gridBBoxRef.current = bbox;
+      setGridBBox(bbox);
       onBBoxChange(bbox, tileZoom);
     },
     [onBBoxChange],
@@ -154,6 +157,14 @@ export const TryFairMap = ({
           outputType={outputType}
           predictionBBox={predictionBBox}
           predictionGridZoom={predictionGridZoom}
+        />
+      )}
+
+      {map && isPredicting && (
+        <PredictionStatusLayer
+          map={map}
+          isPredicting={isPredicting}
+          bbox={gridBBox}
         />
       )}
 
