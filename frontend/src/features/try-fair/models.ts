@@ -135,7 +135,7 @@ export const DEMO_MODEL_CONFIGS: DemoModelConfig[] = [
       "https://tiles.openaerialmap.org/690585b76415e43597ffd7ea/0/690585b76415e43597ffd7eb/{z}/{x}/{y}",
     center: [-13.2415, 8.4835],
     displayName: "Buildings",
-    location: "Nepal",
+    location: "Freetown",
     featureType: "building",
     author: "HOTOSM",
   },
