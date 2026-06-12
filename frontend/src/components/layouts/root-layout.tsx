@@ -9,6 +9,7 @@ import { useScrollToTop } from "@/hooks/use-scroll-to-element";
 import { useAuth } from "@/app/providers/auth-provider";
 import { AuthenticationModal } from "@/components/auth";
 import { BANNER_TIMEOUT_DURATION } from "@/config";
+import { DashboardFooter } from "./footer/footer";
 
 export const RootLayout = () => {
   const { pathname, state } = useLocation();
@@ -57,6 +58,7 @@ export const RootLayout = () => {
           !pathname.includes(APPLICATION_ROUTES.START_MAPPING_BASE) &&
           !pathname.includes(MODELS_ROUTES.CREATE_MODEL_BASE) &&
           !pathname.includes(APPLICATION_ROUTES.TRY_FAIR) &&
+          !pathname.includes(APPLICATION_ROUTES.USER_DASHBOARD) &&
           !modelId && <>{showBanner && <Banner />}</>}
 
         {!pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
@@ -78,9 +80,13 @@ export const RootLayout = () => {
           !modelId &&
           !pathname.includes(APPLICATION_ROUTES.TRY_FAIR) &&
           !pathname.includes(APPLICATION_ROUTES.AUTH_CALLBACK) &&
+          !pathname.includes(APPLICATION_ROUTES.USER_DASHBOARD) &&
           !pathname.includes(
             APPLICATION_ROUTES.EMAIL_VERIFICATION_CALLBACK,
           ) && <Footer />}
+        {pathname.includes(APPLICATION_ROUTES.USER_DASHBOARD) && (
+          <DashboardFooter />
+        )}
       </main>
     </>
   );

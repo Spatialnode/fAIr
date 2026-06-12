@@ -19,6 +19,7 @@ export default {
         "status-pending-color": "var(--hot-fair-color-status-pending-color)",
         "status-changes-color": "var(--hot-fair-color-status-changes-color)",
         "secondary-yellow": "var(--hot-fair-color-yellow-secondary)",
+        "lighter-ink":"var(--hot-fair-color-lighter-ink)",
       },
       fontFamily: {
         archivo: "var(--sl-font-sans)",

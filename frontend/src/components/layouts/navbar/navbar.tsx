@@ -15,6 +15,7 @@ import { UserProfile } from "@/components/layouts";
 import { useState } from "react";
 import { UserNotifications } from "@/features/user-profile/components/notifications/user-notifications";
 import { DropDown } from "@/components/ui/dropdown";
+import { SearchBar } from "@/components/ui/search-bar/search-bar";
 import {
   AUTH_PROVIDER,
   BASE_API_URL,
@@ -54,6 +55,9 @@ export const NavBar = () => {
 
   const location = useLocation();
   const isTryFairPage = location.pathname.includes(APPLICATION_ROUTES.TRY_FAIR);
+  const isUserDashboardPage = location.pathname.includes(
+    APPLICATION_ROUTES.USER_DASHBOARD,
+  );
 
   return (
     <>
@@ -156,10 +160,16 @@ export const NavBar = () => {
         className={`${styles.nav} app-padding z-20 py-1 border-b border-gray-border`}
       >
         <NavLogo />
-        {!isTryFairPage && (
-          <div className="hidden sm:flex">
-            <NavBarLinks className={styles.webNavLinks} />
+        {isUserDashboardPage ? (
+          <div className="hidden sm:flex flex-grow justify-center max-w-xl mx-auto">
+            <SearchBar />
           </div>
+        ) : (
+          !isTryFairPage && (
+            <div className="hidden sm:flex">
+              <NavBarLinks className={styles.webNavLinks} />
+            </div>
+          )
         )}
         <div className="hidden sm:flex items-center gap-x-3">
           {AUTH_PROVIDER === "hanko" && !IS_DEV ? (

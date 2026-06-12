@@ -340,7 +340,25 @@ const router = createBrowserRouter([
       /**
        * Start mapping route ends.
        */
-
+      /**
+       * Dashboard route starts.
+       */
+      {
+        path: APPLICATION_ROUTES.USER_DASHBOARD,
+        lazy: async () => {
+          const { UserDashboard } = await import("@/app/routes/dashboard");
+          return {
+            Component: () => (
+              <ProtectedRoute>
+                <UserDashboard />
+              </ProtectedRoute>
+            ),
+          };
+        },
+      },
+      /**
+       * Dashboard route ends.
+       */
       /**
        * User account routes start.
        */

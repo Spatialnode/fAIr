@@ -10,12 +10,14 @@ type ButtonWithIconProps = {
   prefixIcon?: React.ElementType;
   suffixIcon?: React.ElementType;
   textClassName?: string;
+  textStyle?: React.CSSProperties;
   className?: string;
   iconClassName?: string;
   disabled?: boolean;
   size?: ButtonSize;
 
   contentClassName?: string;
+  rounded?: boolean;
 };
 const ButtonWithIcon: React.FC<ButtonWithIconProps> = ({
   onClick,
@@ -28,7 +30,9 @@ const ButtonWithIcon: React.FC<ButtonWithIconProps> = ({
   disabled,
   size,
   textClassName,
+  textStyle,
   contentClassName,
+  rounded,
 }) => {
   return (
     <div role="button">
@@ -38,10 +42,13 @@ const ButtonWithIcon: React.FC<ButtonWithIconProps> = ({
         className={className}
         disabled={disabled}
         size={size}
+        rounded={rounded}
         contentClassName={contentClassName}
       >
         {PrefixIcon && <PrefixIcon className={cn(`icon ${iconClassName}`)} />}
-        <p className={textClassName}>{label}</p>
+        <p className={textClassName} style={textStyle}>
+          {label}
+        </p>
         {SuffixIcon && <SuffixIcon className={cn(`icon ${iconClassName}`)} />}
       </Button>
     </div>

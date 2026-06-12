@@ -67,6 +67,9 @@ export const APPLICATION_ROUTES = {
 
   // Published AI Predictions
   AI_PREDICTIONS: "/ai-predictions",
+
+  // Dashboard Routes
+  USER_DASHBOARD: "/dashboard",
 };
 
 export const HOT_PRIVACY_POLICY_URL: string = "https://www.hotosm.org/privacy";
@@ -108,4 +111,11 @@ export const DatasetURLParams = {
   DATASET_ID: "datasetId",
   DATASET_NAME: "datasetName",
   DATASET_SOURCE_IMAGERY: "datasetSourceImagery",
+};
+
+/**
+ * The URL parameter used for dashboard first timer.
+ */
+export const DASHBOARD_QUERY_PARAMS = {
+  FIRST_TIME: "first_time",
 };
