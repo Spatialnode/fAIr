@@ -15,7 +15,6 @@ export const BaseModelKeywords = ({
 
   const visible = sanitized.slice(0, visibleLimit);
 
-
   return (
     <div className="flex flex-wrap gap-2">
       {visible.map((keyword) => (
@@ -26,7 +25,6 @@ export const BaseModelKeywords = ({
           {keyword}
         </span>
       ))}
-    
     </div>
   );
 };

@@ -432,15 +432,14 @@ export type TSharedContent = {
       ctaLink: string;
       paragraph: string;
     };
- baseModelCTA: {
+    baseModelCTA: {
       title: string;
       description: string;
       ctaButton: string;
       ctaLink: string;
     };
-   
   };
-   baseModelsPage: {
+  baseModelsPage: {
     pageHeadingTitle: string;
     pageHeadingDescription: string;
     pageHeadingButtonText: string;

@@ -1,5 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import { getBaseModelById, getBaseModels } from "@/features/base-models/api/get-base-models";
+import {
+  getBaseModelById,
+  getBaseModels,
+} from "@/features/base-models/api/get-base-models";
 import {
   mapStacItemToBaseModel,
   mapStacItemToBaseModelDetail,

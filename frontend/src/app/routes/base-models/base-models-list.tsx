@@ -133,8 +133,9 @@ export const BaseModelsPage = () => {
       return (
         <div className="flex flex-col  gap-y-10 items-center justify-center">
           <NoTrainingAreaIcon />
-          <p className="text-grey text-body-1 font-medium">No base models found</p>
-
+          <p className="text-grey text-body-1 font-medium">
+            No base models found
+          </p>
         </div>
       );
     }

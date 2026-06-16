@@ -26,7 +26,10 @@ export const ModelExtentMap = ({ bbox }: TModelExtentMapProps) => {
   useEffect(() => {
     if (!map) return;
 
-    const bounds: LngLatBoundsLike = [[minLng, minLat], [maxLng, maxLat]];
+    const bounds: LngLatBoundsLike = [
+      [minLng, minLat],
+      [maxLng, maxLat],
+    ];
     map.setMinZoom(0); // allow the whole world to fit this container
     map.fitBounds(bounds, { animate: false, padding: 0 });
 
@@ -39,10 +42,15 @@ export const ModelExtentMap = ({ bbox }: TModelExtentMapProps) => {
           properties: {},
           geometry: {
             type: "Polygon",
-            coordinates: [[
-              [minLng, minLat], [maxLng, minLat],
-              [maxLng, maxLat], [minLng, maxLat], [minLng, minLat],
-            ]],
+            coordinates: [
+              [
+                [minLng, minLat],
+                [maxLng, minLat],
+                [maxLng, maxLat],
+                [minLng, maxLat],
+                [minLng, minLat],
+              ],
+            ],
           },
         },
       });
@@ -71,7 +79,12 @@ export const ModelExtentMap = ({ bbox }: TModelExtentMapProps) => {
 
   return (
     <div className="w-full h-[380px]">
-      <MapComponent map={map} mapContainerRef={mapContainerRef} basemaps zoomControls />
+      <MapComponent
+        map={map}
+        mapContainerRef={mapContainerRef}
+        basemaps
+        zoomControls
+      />
     </div>
   );
 };

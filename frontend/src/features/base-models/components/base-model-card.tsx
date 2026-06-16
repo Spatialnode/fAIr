@@ -24,8 +24,6 @@ const BaseModelCard: React.FC<BaseModelCardProps> = ({ model }) => {
         {model.description}
       </p>
 
-
-
       {/* Author & Date */}
       <div className="flex flex-col gap-y-1 mt-auto">
         <p className="font-semibold text-body-2base text-dark">
@@ -42,4 +40,3 @@ const BaseModelCard: React.FC<BaseModelCardProps> = ({ model }) => {
 };
 
 export default BaseModelCard;
-

@@ -139,7 +139,7 @@ export const SHARED_CONTENT: TSharedContent = {
         "fAIr is a collaborative project. We welcome all types of experience to join our community on HOTOSM Slack. There is always a room for AI/ML for earth observation expertise, community engagement enthusiastic, academic researcher or student looking for an academic challenge around social impact.",
     },
 
-     baseModelCTA: {
+    baseModelCTA: {
       title: "Contribute Your Base Model",
       description:
         "Contribute a base model to fAIr and help teams turn imagery into actionable map data, faster and more reliably.",
@@ -147,7 +147,7 @@ export const SHARED_CONTENT: TSharedContent = {
       ctaLink: "/base-models",
     },
   },
-  
+
   pageNotFound: {
     messages: {
       constant: "Oh sorry,",
@@ -161,7 +161,7 @@ export const SHARED_CONTENT: TSharedContent = {
       pageNotFound: "go to homepage",
     },
   },
-   baseModelsPage: {
+  baseModelsPage: {
     pageHeadingTitle: "Base Models",
     pageHeadingDescription:
       " Each model is trained using one of the training datasets. Published models can be used to find mappable features in imagery that is similar to the training areas that dataset comes from.",

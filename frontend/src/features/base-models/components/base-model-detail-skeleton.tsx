@@ -1,8 +1,4 @@
-const SkeletonBlock = ({
-  className = "",
-}: {
-  className?: string;
-}) => (
+const SkeletonBlock = ({ className = "" }: { className?: string }) => (
   <div className={`bg-light-gray rounded animate-pulse ${className}`} />
 );
 

@@ -2,7 +2,7 @@ import { APPLICATION_ROUTES } from "@/constants";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
 import DataTable from "@/components/ui/data-table/data-table";
 import { SortableHeader } from "@/features/models/components/table-header";
-import {  truncateString } from "@/utils";
+import { truncateString } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { TBaseModel } from "@/types";

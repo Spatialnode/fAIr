@@ -73,11 +73,19 @@ export const mapStacItemToBaseModelDetail = (item: any) => {
       baseModel: p["mlm:name"],
       architecture: p["mlm:architecture"],
       framework: p["mlm:framework"],
-      pretrained: p["mlm:pretrained"] != null ? (p["mlm:pretrained"] ? "Yes" : "No") : undefined,
+      pretrained:
+        p["mlm:pretrained"] != null
+          ? p["mlm:pretrained"]
+            ? "Yes"
+            : "No"
+          : undefined,
       accelerator: p["mlm:accelerator"],
       cpuRequest: p["fair:cpu_request"],
       memoryLimit: p["fair:memory_limit"],
-      acceleratorCount: p["mlm:accelerator_count"] != null ? String(p["mlm:accelerator_count"]) : undefined,
+      acceleratorCount:
+        p["mlm:accelerator_count"] != null
+          ? String(p["mlm:accelerator_count"])
+          : undefined,
       frameworkVersion: p["mlm:framework_version"],
       pretrainedSource: p["mlm:pretrained_source"],
       tileSizePx: "640",
@@ -88,7 +96,6 @@ export const mapStacItemToBaseModelDetail = (item: any) => {
       variants: [],
     },
 
-   
     mlmTasks: (p["mlm:tasks"] ?? []) as string[],
 
     mlmInput: (p["mlm:input"] ?? []) as {
@@ -103,7 +110,11 @@ export const mapStacItemToBaseModelDetail = (item: any) => {
       bands: { name: string }[];
       tasks: string[];
       result: { shape: number[]; data_type: string; dim_order: string[] };
-      "classification:classes"?: { name: string; value: number; description: string }[];
+      "classification:classes"?: {
+        name: string;
+        value: number;
+        description: string;
+      }[];
       post_processing_function?: { format: string; expression: string };
     }[],
 

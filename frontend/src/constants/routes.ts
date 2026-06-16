@@ -68,7 +68,6 @@ export const APPLICATION_ROUTES = {
   // Published AI Predictions
   AI_PREDICTIONS: "/ai-predictions",
 
-
   // base-model start
   BASE_MODELS_HOME: "/base-models",
   BASE_MODEL_DETAILS: "/base-models/:id",
