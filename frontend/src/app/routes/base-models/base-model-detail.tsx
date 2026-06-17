@@ -331,7 +331,7 @@ export const BaseModelDetailPage = () => {
               value={model.datasetLicense}
             />
             <div className="flex gap-4 items-center sm:col-span-2">
-              <span className="text-grey text-body-3">Task:</span>
+              <span className="text-grey text-body-3">Tasks:</span>
               <BaseModelKeywords
                 keywords={model.keywords ?? []}
                 visibleLimit={5}
@@ -373,7 +373,7 @@ export const BaseModelDetailPage = () => {
 
           {/* Right Column - Architecture Info */}
           <div className="bg-frosted-blue border rounded-lg border-gray-border p-6 h-fit sticky top-8">
-            <CollapsibleSection title="Architecture Info" defaultOpen={true}>
+            <CollapsibleSection title="Architecture Information" defaultOpen={true}>
               <div className="flex flex-col">
                 {architectureRows.map((row) => (
                   <InfoRow
@@ -412,7 +412,7 @@ export const BaseModelDetailPage = () => {
               </div>
             </CollapsibleSection>
 
-            <CollapsibleSection title="Data Info" defaultOpen={false}>
+            <CollapsibleSection title="Data Information" defaultOpen={false}>
               <div className="flex flex-col">
                 {dataInfoRows.map((row) => (
                   <InfoRow
