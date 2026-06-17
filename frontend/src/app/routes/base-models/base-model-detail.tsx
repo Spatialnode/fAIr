@@ -373,7 +373,10 @@ export const BaseModelDetailPage = () => {
 
           {/* Right Column - Architecture Info */}
           <div className="bg-frosted-blue border rounded-lg border-gray-border p-6 h-fit sticky top-8">
-            <CollapsibleSection title="Architecture Information" defaultOpen={true}>
+            <CollapsibleSection
+              title="Architecture Information"
+              defaultOpen={true}
+            >
               <div className="flex flex-col">
                 {architectureRows.map((row) => (
                   <InfoRow
