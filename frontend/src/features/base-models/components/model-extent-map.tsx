@@ -30,8 +30,10 @@ export const ModelExtentMap = ({ bbox }: TModelExtentMapProps) => {
       [minLng, minLat],
       [maxLng, maxLat],
     ];
+
     map.setMinZoom(0); // allow the whole world to fit this container
-    map.fitBounds(bounds, { animate: false, padding: 0 });
+    map.setRenderWorldCopies(true); // repeat basemap + extent horizontally
+    map.fitBounds(bounds, { animate: false, padding: 32 });
 
     map.once("idle", () => {
       if (map.getSource(SOURCE_ID)) return;
@@ -78,7 +80,7 @@ export const ModelExtentMap = ({ bbox }: TModelExtentMapProps) => {
   }, [map, minLng, minLat, maxLng, maxLat]);
 
   return (
-    <div className="w-full rounded-lg h-[330px]">
+    <div className="w-full max-w-[600px] rounded-lg h-[330px]">
       <MapComponent
         map={map}
         mapContainerRef={mapContainerRef}

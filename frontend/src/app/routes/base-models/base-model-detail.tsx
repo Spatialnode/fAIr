@@ -321,7 +321,7 @@ export const BaseModelDetailPage = () => {
           <MetadataItem label="Generated on" value={model.generatedOn} />
 
           <MetadataItem label="Last Modified" value={model.lastModified} />
-          <MetadataItem label="Version" value={model.version} />
+          <MetadataItem label="Architecture" value={model.architecture.architecture} />
           <MetadataItem
             label="Model Weights License"
             value={model.modelWeightsLicense}
@@ -361,7 +361,7 @@ export const BaseModelDetailPage = () => {
         )}
 
         {/* Main Content: Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,_1fr)_450px] gap-x-12 gap-y-10">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,_1fr)_600px] gap-x-12 gap-y-10">
           {/* Left Column - Overview */}
           <MarkdownViewer content={model.markdownContent} />
 
