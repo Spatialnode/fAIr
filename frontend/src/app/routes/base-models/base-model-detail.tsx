@@ -114,174 +114,174 @@ export const BaseModelDetailPage = () => {
 
   const architectureRows: TInfoRowConfig[] = model
     ? [
-        { label: "Base Model", value: model.architecture.baseModel },
-        { label: "Architecture", value: model.architecture.architecture },
-        { label: "Framework", value: model.architecture.framework },
-        {
-          label: "Framework Version",
-          value: model.architecture.frameworkVersion,
-        },
-        { label: "Pretrained", value: model.architecture.pretrained },
-        {
-          label: "Pretrained Source",
-          value: model.architecture.pretrainedSource,
-        },
-        { label: "Accelerator", value: model.architecture.accelerator },
-        {
-          label: "Accelerator Count",
-          value: model.architecture.acceleratorCount,
-        },
-        { label: "CPU Request", value: model.architecture.cpuRequest },
-        { label: "Memory Limit", value: model.architecture.memoryLimit },
-        { label: "Tile Size px", value: model.architecture.tileSizePx },
-        {
-          label: "Processing",
-          value: model.architecture.processing,
-          tooltip: "Pre-processing steps applied",
-        },
-        {
-          label: "Resize",
-          value: model.architecture.resize,
-          tooltip: "How images are resized before inference",
-        },
-        {
-          label: "Scaling",
-          value: model.architecture.scaling,
-          tooltip: "Pixel value normalization method",
-        },
-        {
-          label: "Description",
-          value: model.architecture.outputDescription,
-          tooltip: "Description of the model output",
-        },
-      ]
+      { label: "Base Model", value: model.architecture.baseModel },
+      { label: "Architecture", value: model.architecture.architecture },
+      { label: "Framework", value: model.architecture.framework },
+      {
+        label: "Framework Version",
+        value: model.architecture.frameworkVersion,
+      },
+      { label: "Pretrained", value: model.architecture.pretrained },
+      {
+        label: "Pretrained Source",
+        value: model.architecture.pretrainedSource,
+      },
+      { label: "Accelerator", value: model.architecture.accelerator },
+      {
+        label: "Accelerator Count",
+        value: model.architecture.acceleratorCount,
+      },
+      { label: "CPU Request", value: model.architecture.cpuRequest },
+      { label: "Memory Limit", value: model.architecture.memoryLimit },
+      { label: "Tile Size px", value: model.architecture.tileSizePx },
+      {
+        label: "Processing",
+        value: model.architecture.processing,
+        tooltip: "Pre-processing steps applied",
+      },
+      {
+        label: "Resize",
+        value: model.architecture.resize,
+        tooltip: "How images are resized before inference",
+      },
+      {
+        label: "Scaling",
+        value: model.architecture.scaling,
+        tooltip: "Pixel value normalization method",
+      },
+      {
+        label: "Description",
+        value: model.architecture.outputDescription,
+        tooltip: "Description of the model output",
+      },
+    ]
     : [];
 
   const mlmRows: TInfoRowConfig[] = model
     ? [
-        { label: "Tasks", value: model.mlmTasks.join(", ") },
-        // Input
-        ...(model.mlmInput[0]
-          ? [
-              { label: "Input Name", value: model.mlmInput[0].name },
+      { label: "Tasks", value: model.mlmTasks.join(", ") },
+      // Input
+      ...(model.mlmInput[0]
+        ? [
+          { label: "Input Name", value: model.mlmInput[0].name },
+          {
+            label: "Input Bands",
+            value: model.mlmInput[0].bands
+              .map((b: { name: string }) => b.name)
+              .join(", "),
+          },
+          {
+            label: "Input Shape",
+            value: model.mlmInput[0].input.shape.join(" × "),
+          },
+          {
+            label: "Input Data Type",
+            value: model.mlmInput[0].input.data_type,
+          },
+          {
+            label: "Input Dim Order",
+            value: model.mlmInput[0].input.dim_order.join(", "),
+          },
+          ...(model.mlmInput[0].pre_processing_function
+            ? [
               {
-                label: "Input Bands",
-                value: model.mlmInput[0].bands
+                label: "Pre-processing",
+                value:
+                  model.mlmInput[0].pre_processing_function.expression,
+              },
+            ]
+            : []),
+        ]
+        : []),
+      // Output
+      ...(model.mlmOutput[0]
+        ? [
+          { label: "Output Name", value: model.mlmOutput[0].name },
+          {
+            label: "Output Bands",
+            value:
+              model.mlmOutput[0].bands.length > 0
+                ? model.mlmOutput[0].bands
                   .map((b: { name: string }) => b.name)
+                  .join(", ")
+                : "n/a",
+          },
+          {
+            label: "Output Tasks",
+            value: model.mlmOutput[0].tasks.join(", "),
+          },
+          {
+            label: "Output Shape",
+            value: model.mlmOutput[0].result.shape.join(" × "),
+          },
+          {
+            label: "Output Data Type",
+            value: model.mlmOutput[0].result.data_type,
+          },
+          {
+            label: "Output Dim Order",
+            value: model.mlmOutput[0].result.dim_order.join(", "),
+          },
+          ...(model.mlmOutput[0]["classification:classes"]?.length
+            ? [
+              {
+                label: "Classes",
+                value: model.mlmOutput[0]["classification:classes"]
+                  .map(
+                    (c: { name: string; value: number }) =>
+                      `${c.name} (${c.value})`,
+                  )
                   .join(", "),
               },
-              {
-                label: "Input Shape",
-                value: model.mlmInput[0].input.shape.join(" × "),
-              },
-              {
-                label: "Input Data Type",
-                value: model.mlmInput[0].input.data_type,
-              },
-              {
-                label: "Input Dim Order",
-                value: model.mlmInput[0].input.dim_order.join(", "),
-              },
-              ...(model.mlmInput[0].pre_processing_function
-                ? [
-                    {
-                      label: "Pre-processing",
-                      value:
-                        model.mlmInput[0].pre_processing_function.expression,
-                    },
-                  ]
-                : []),
             ]
-          : []),
-        // Output
-        ...(model.mlmOutput[0]
-          ? [
-              { label: "Output Name", value: model.mlmOutput[0].name },
+            : []),
+          ...(model.mlmOutput[0].post_processing_function
+            ? [
               {
-                label: "Output Bands",
+                label: "Post-processing",
                 value:
-                  model.mlmOutput[0].bands.length > 0
-                    ? model.mlmOutput[0].bands
-                        .map((b: { name: string }) => b.name)
-                        .join(", ")
-                    : "n/a",
+                  model.mlmOutput[0].post_processing_function.expression,
               },
-              {
-                label: "Output Tasks",
-                value: model.mlmOutput[0].tasks.join(", "),
-              },
-              {
-                label: "Output Shape",
-                value: model.mlmOutput[0].result.shape.join(" × "),
-              },
-              {
-                label: "Output Data Type",
-                value: model.mlmOutput[0].result.data_type,
-              },
-              {
-                label: "Output Dim Order",
-                value: model.mlmOutput[0].result.dim_order.join(", "),
-              },
-              ...(model.mlmOutput[0]["classification:classes"]?.length
-                ? [
-                    {
-                      label: "Classes",
-                      value: model.mlmOutput[0]["classification:classes"]
-                        .map(
-                          (c: { name: string; value: number }) =>
-                            `${c.name} (${c.value})`,
-                        )
-                        .join(", "),
-                    },
-                  ]
-                : []),
-              ...(model.mlmOutput[0].post_processing_function
-                ? [
-                    {
-                      label: "Post-processing",
-                      value:
-                        model.mlmOutput[0].post_processing_function.expression,
-                    },
-                  ]
-                : []),
             ]
-          : []),
-      ].filter((row) => row.value != null && row.value !== "")
+            : []),
+        ]
+        : []),
+    ].filter((row) => row.value != null && row.value !== "")
     : [];
 
   const dataInfoRows: TInfoRowConfig[] = model
     ? [
-        {
-          label: "Sensor",
-          value: model.dataInfo.sensor,
-          tooltip: "Type of sensor used to capture imagery",
-        },
-        {
-          label: "CRS",
-          value: model.dataInfo.crs,
-          tooltip: "Coordinate Reference System",
-        },
-        {
-          label: "Spatial Extent",
-          value: model.dataInfo.spatialExtent,
-          tooltip: "Geographic coverage of training data",
-        },
-        {
-          label: "Temporal Extent",
-          value: model.dataInfo.temporalExtent,
-          tooltip: "Time period of training data",
-        },
-      ]
+      {
+        label: "Sensor",
+        value: model.dataInfo.sensor,
+        tooltip: "Type of sensor used to capture imagery",
+      },
+      {
+        label: "CRS",
+        value: model.dataInfo.crs,
+        tooltip: "Coordinate Reference System",
+      },
+      {
+        label: "Spatial Extent",
+        value: model.dataInfo.spatialExtent,
+        tooltip: "Geographic coverage of training data",
+      },
+      {
+        label: "Temporal Extent",
+        value: model.dataInfo.temporalExtent,
+        tooltip: "Time period of training data",
+      },
+    ]
     : [];
 
   const generalInfoRows: TInfoRowConfig[] = model
     ? [
-        { label: "Created", value: formatDate(model.generatedOn) },
-        { label: "License", value: model.modelWeightsLicense },
-        { label: "Updated", value: formatDate(model.lastModified) },
-        { label: "Data Version", value: model.version },
-        { label: "Time of Data", value: formatDate(model.dataDatetime) },
-      ].filter((row) => row.value != null && row.value !== "")
+      { label: "Created", value: formatDate(model.generatedOn) },
+      { label: "License", value: model.modelWeightsLicense },
+      { label: "Updated", value: formatDate(model.lastModified) },
+      { label: "Data Version", value: model.version },
+      { label: "Time of Data", value: formatDate(model.dataDatetime) },
+    ].filter((row) => row.value != null && row.value !== "")
     : [];
 
   if (!model) {
@@ -315,37 +315,37 @@ export const BaseModelDetailPage = () => {
         </div>
 
         {/* Metadata + Map Extent — metadata on left, map on right */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          {/* Left: metadata */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-body-3">
-            <MetadataItem label="Created by" value={model.createdBy} />
-            <MetadataItem label="Generated on" value={model.generatedOn} />
-            <MetadataItem label="Last Modified" value={model.lastModified} />
-            <MetadataItem label="Version" value={model.version} />
-            <MetadataItem
-              label="Model Weights License"
-              value={model.modelWeightsLicense}
-            />
-            <MetadataItem
-              label="Dataset License"
-              value={model.datasetLicense}
-            />
-            <div className="flex gap-4 items-center sm:col-span-2">
-              <span className="text-grey text-body-3">Tasks:</span>
-              <BaseModelKeywords
-                keywords={model.keywords ?? []}
-                visibleLimit={5}
-              />
-            </div>
-            <MetadataItem
-              label="Data ID"
-              value={model.dataId}
-              tooltip="Unique dataset identifier"
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
+          <MetadataItem label="Created by" value={model.createdBy} />
+          <MetadataItem label="Version" value={model.version} />
+          <MetadataItem label="Generated on" value={model.generatedOn} />
+
+          <MetadataItem label="Last Modified" value={model.lastModified} />
+          <MetadataItem label="Version" value={model.version} />
+          <MetadataItem
+            label="Model Weights License"
+            value={model.modelWeightsLicense}
+          />
+          
+          
+          <MetadataItem
+            label="Dataset License"
+            value={model.datasetLicense}
+          />
+          <div className="flex gap-4 items-center ">
+            <span className="text-grey text-body-3">Tasks:</span>
+            <BaseModelKeywords
+              keywords={model.keywords ?? []}
+              visibleLimit={5}
             />
           </div>
+          <MetadataItem
+            label="Data ID"
+            value={model.dataId}
+            tooltip="Unique dataset identifier"
+          />
 
-          {/* Right: map extent — justified to the end */}
-          {model.bbox ? <ModelExtentMap bbox={model.bbox} /> : null}
+
         </div>
 
         {/* Download Metadata Link */}
@@ -367,66 +367,73 @@ export const BaseModelDetailPage = () => {
         )}
 
         {/* Main Content: Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] overflow-hidden gap-x-12 gap-y-10">
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,_1fr)_450px] gap-x-12 gap-y-10">
           {/* Left Column - Overview */}
           <MarkdownViewer content={model.markdownContent} />
 
           {/* Right Column - Architecture Info */}
-          <div className="bg-frosted-blue border rounded-lg border-gray-border p-6 h-fit sticky top-8">
-            <CollapsibleSection
-              title="Architecture Information"
-              defaultOpen={true}
-            >
-              <div className="flex flex-col">
-                {architectureRows.map((row) => (
-                  <InfoRow
-                    key={row.label}
-                    label={row.label}
-                    value={row.value}
-                    tooltip={row.tooltip}
-                  />
-                ))}
-              </div>
-            </CollapsibleSection>
+          <div className="flex gap-4 flex-col lg:sticky lg:top-8 lg:self-start">
+            <div className="flex space-y-4 flex-col">
+              <h4 className="font-semibold text-dark">Coverage</h4>
+              {/* Right: map extent — justified to the end */}
+              {model.bbox ? <ModelExtentMap bbox={model.bbox} /> : null}
+            </div>
+            <div className="bg-frosted-blue border rounded-lg border-gray-border p-6 h-fit">
+              <CollapsibleSection
+                title="Architecture Information"
+                defaultOpen={false}
+              >
+                <div className="flex flex-col">
+                  {architectureRows.map((row) => (
+                    <InfoRow
+                      key={row.label}
+                      label={row.label}
+                      value={row.value}
+                      tooltip={row.tooltip}
+                    />
+                  ))}
+                </div>
+              </CollapsibleSection>
 
-            <CollapsibleSection title="General Information" defaultOpen={false}>
-              <div className="flex flex-col">
-                {generalInfoRows.map((row) => (
-                  <InfoRow
-                    key={row.label}
-                    label={row.label}
-                    value={row.value}
-                    tooltip={row.tooltip}
-                  />
-                ))}
-              </div>
-            </CollapsibleSection>
+              <CollapsibleSection title="General Information" defaultOpen={false}>
+                <div className="flex flex-col">
+                  {generalInfoRows.map((row) => (
+                    <InfoRow
+                      key={row.label}
+                      label={row.label}
+                      value={row.value}
+                      tooltip={row.tooltip}
+                    />
+                  ))}
+                </div>
+              </CollapsibleSection>
 
-            <CollapsibleSection title="Model Information" defaultOpen={false}>
-              <div className="flex flex-col">
-                {mlmRows.map((row) => (
-                  <InfoRow
-                    key={row.label}
-                    label={row.label}
-                    value={row.value}
-                    tooltip={row.tooltip}
-                  />
-                ))}
-              </div>
-            </CollapsibleSection>
+              <CollapsibleSection title="Model Information" defaultOpen={false}>
+                <div className="flex flex-col">
+                  {mlmRows.map((row) => (
+                    <InfoRow
+                      key={row.label}
+                      label={row.label}
+                      value={row.value}
+                      tooltip={row.tooltip}
+                    />
+                  ))}
+                </div>
+              </CollapsibleSection>
 
-            <CollapsibleSection title="Data Information" defaultOpen={false}>
-              <div className="flex flex-col">
-                {dataInfoRows.map((row) => (
-                  <InfoRow
-                    key={row.label}
-                    label={row.label}
-                    value={row.value}
-                    tooltip={row.tooltip}
-                  />
-                ))}
-              </div>
-            </CollapsibleSection>
+              <CollapsibleSection title="Data Information" defaultOpen={false}>
+                <div className="flex flex-col">
+                  {dataInfoRows.map((row) => (
+                    <InfoRow
+                      key={row.label}
+                      label={row.label}
+                      value={row.value}
+                      tooltip={row.tooltip}
+                    />
+                  ))}
+                </div>
+              </CollapsibleSection>
+            </div>
           </div>
         </div>
       </div>

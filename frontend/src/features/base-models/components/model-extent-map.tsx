@@ -78,7 +78,7 @@ export const ModelExtentMap = ({ bbox }: TModelExtentMapProps) => {
   }, [map, minLng, minLat, maxLng, maxLat]);
 
   return (
-    <div className="w-full h-[380px]">
+    <div className="w-full rounded-lg h-[330px]">
       <MapComponent
         map={map}
         mapContainerRef={mapContainerRef}
