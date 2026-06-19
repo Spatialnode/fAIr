@@ -321,7 +321,10 @@ export const BaseModelDetailPage = () => {
           <MetadataItem label="Generated on" value={model.generatedOn} />
 
           <MetadataItem label="Last Modified" value={model.lastModified} />
-          <MetadataItem label="Architecture" value={model.architecture.architecture} />
+          <MetadataItem
+            label="Architecture"
+            value={model.architecture.architecture}
+          />
           <MetadataItem
             label="Model Weights License"
             value={model.modelWeightsLicense}
