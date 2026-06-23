@@ -27,11 +27,6 @@ export const APPLICATION_ROUTES = {
   MODEL_DETAILS: `${MODELS_BASE}/:id`,
   MODEL_FEEDBACKS: `${MODELS_BASE}/:id/feedbacks`,
 
-  // base-model start
-  BASE_MODELS_HOME: "/base-models",
-  BASE_MODEL_DETAILS: "/base-models/:id",
-  // base-model end
-
   // Model routes start
 
   CREATE_NEW_MODEL: `${MODELS_ROUTES.CREATE_MODEL_BASE}/${MODELS_ROUTES.DETAILS}`,
@@ -55,6 +50,7 @@ export const APPLICATION_ROUTES = {
   DATASET_DETAILS: "/datasets/:id",
   START_MAPPING_BASE: "/start-mapping/",
   START_MAPPING: "/start-mapping/:modelId",
+  HEADER_START_MAPPING: "/ai-models",
   NOTFOUND: "/404",
   AUTH_CALLBACK: "/authenticate",
   EMAIL_VERIFICATION_CALLBACK: "/verify-email",
@@ -68,6 +64,7 @@ export const APPLICATION_ROUTES = {
   PROFILE_MODELS: "/profile/models",
   PROFILE_DATASETS: "/profile/datasets",
   PROFILE_OFFLINE_PREDICTIONS: "/profile/prediction-requests",
+  TRY_FAIR: "/try-fair",
 
   // Published AI Predictions
   AI_PREDICTIONS: "/ai-predictions",

@@ -432,43 +432,6 @@ export type TSharedContent = {
       ctaLink: string;
       paragraph: string;
     };
-    baseModelCTA: {
-      title: string;
-      description: string;
-      ctaButton: string;
-      ctaLink: string;
-    };
-  };
-  baseModelsPage: {
-    pageHeadingTitle: string;
-    pageHeadingDescription: string;
-    pageHeadingButtonText: string;
-    contributeModelDialog: {
-      label: string;
-      intro: string;
-
-      github: {
-        title: string;
-        href: string;
-        buttonLabel: string;
-      };
-      steps: {
-        title: string;
-        description?: string;
-        sections?: {
-          title: string;
-          description?: string;
-          listType?: "unordered" | "ordered";
-          items?: string[];
-          note?: string;
-        }[];
-        statuses?: {
-          variant: "pending" | "changes" | "approved";
-          label: string;
-          description: string;
-        }[];
-      }[];
-    };
   };
   pageNotFound: {
     messages: {
@@ -502,7 +465,6 @@ export type TSharedContent = {
 // Shared pages content types ends.
 
 // Start mapping page content types starts.
-
 export type TStartMappingPageContent = {
   pageTitle: (modelName: string) => string;
   map: {
@@ -1057,3 +1019,46 @@ export type TDatasetContent = {
 };
 
 //Dataset page types ends.
+// Try fAIr page content types starts.
+
+export type TTryFairPageContent = {
+  pageTitle: string;
+  header: {
+    logoAlt: string;
+    startMappingButton: string;
+  };
+  sidebar: {
+    modelSelector: {
+      placeholder: string;
+    };
+    mapButton: string;
+    mapButtonRunning: string;
+    mapOutput: {
+      label: string;
+    };
+    parameters: {
+      label: string;
+      description: string;
+      learnMore: string;
+      resolution: {
+        label: string;
+        low: string;
+        mid: string;
+        high: string;
+      };
+      confidence: {
+        label: string;
+      };
+    };
+  };
+  modelPicker: {
+    title: string;
+    modelLabel: string;
+    byLabel: string;
+  };
+  map: {
+    zoomPrompt: string;
+  };
+};
+
+// Try fAIr page content types ends.
