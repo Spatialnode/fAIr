@@ -130,4 +130,12 @@ export const API_ENDPOINTS = {
     `/collections/local-models/items/?limit=${limit}`,
   GET_BASE_MODEL_BY_ID: (id: string): string =>
     `/collections/base-models/items/${id}`,
+
+  // DATASETS
+  CREATE_DATASET: `/datasets/`,
+  GET_DATASET_BY_ID: (datasetId: number) => `/datasets/${datasetId}/`,
+  EDIT_DATASET:  (datasetId: number) => `/datasets/${datasetId}/`,
+  BUILD_DATASET: `/datasets/build/`
+
+
 };

@@ -18,7 +18,7 @@ type ButtonProps = {
   rounded?: boolean;
   type?: "button" | "submit";
   contentClassName?: string;
-  uppercase?: boolean
+  uppercase?: boolean;
   fontSize?: React.CSSProperties["fontSize"];
   capitalize?: boolean;
 };

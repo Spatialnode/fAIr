@@ -69,6 +69,15 @@ export const BASE_API_URL: string = parseStringEnv(
 );
 
 /**
+ * The new backend api endpoint url.
+ * Note: Ensure CORs is enabled in the backend and access is given to your port.
+ */
+export const NEW_BASE_API_URL: string = parseStringEnv(
+  ENVS.NEW_BASE_API_URL,
+  "http://localhost:8000/api/v1/",
+);
+
+/**
  * The STAC Catalog API endpoint url. This is used to fetch the base models, datasets and local models as STAC items from the catalog.
  */
 export const STAC_CATALOG_API_URL: string = parseStringEnv(

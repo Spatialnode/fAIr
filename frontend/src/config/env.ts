@@ -3,6 +3,8 @@
  */
 export const ENVS = {
   BASE_API_URL: import.meta.env.VITE_BASE_API_URL,
+  NEW_BASE_API_URL: import.meta.env.VITE_NEW_BASE_API_URL,
+
 
   AUTH_PROVIDER: import.meta.env.VITE_AUTH_PROVIDER,
   HANKO_URL: import.meta.env.VITE_HANKO_URL,

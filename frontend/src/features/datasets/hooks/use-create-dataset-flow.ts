@@ -1,7 +1,7 @@
 import { TileServiceType } from "@/enums";
 import { useMapInstance } from "@/hooks/use-map-instance";
 import { useTileservice } from "@/hooks/use-tileservice";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getTileServerTypeFromURL, showErrorToast } from "@/utils";
 import {
   DatasetMetadataForm,
@@ -23,6 +23,12 @@ import {
   getDatasetFlowInitialState,
 } from "@/features/datasets/utils/dataset-flow-mocks";
 import { TTrainingDataset } from "@/types";
+import {
+  createDataset,
+  buildDataset,
+  buildDatasetPayloadFromForm,
+  type IBuildDatasetPayload,
+} from "@/features/datasets/api/create-dataset";
 
 // ─── Types ───────────────────────────────────────────────────────────
 
@@ -87,15 +93,32 @@ export const useCreateDatasetFlow = ({
   const [tilePreviewError, setTilePreviewError] = useState("");
 
   const trainingAreas = useDatasetTrainingAreas({
-    initialDatasetId: existingDataset?.id ?? 42, // Temporary dataset ID to allow using the hook's logic for new datasets
+    initialDatasetId: existingDataset?.id ?? null,
     initialOffset: initialFlowState.offset,
     step,
   });
+
+  // ── Build dataset handler ──────────────────────────────────────────
+
+  const handleBuildDataset = useCallback(
+    async (_payload: IBuildDatasetPayload) => {
+      const aoiIds = await trainingAreas.getAllDatasetAoiIds();
+      const buildPayload = buildDatasetPayloadFromForm(
+        metadataForm.datasetMetadataForm,
+        tileserverURL,
+        aoiIds,
+      ) as IBuildDatasetPayload;
+
+      return buildDataset(buildPayload);
+    },
+    [trainingAreas.getAllDatasetAoiIds, metadataForm.datasetMetadataForm, tileserverURL],
+  );
 
   const flowModals = useFlowModals({
     hasDrawnAOI: trainingAreas.hasDrawnAOI,
     getAllDatasetAoiIds: trainingAreas.getAllDatasetAoiIds,
     markFetched: labelSourceState.markFetched,
+    onBuildDataset: handleBuildDataset,
   });
 
   // ── Tile preview (map layer management) ────────────────────────────
@@ -219,22 +242,29 @@ export const useCreateDatasetFlow = ({
   // ── Step transition handler ────────────────────────────────────────
 
   const handleContinueToStepTwo = async () => {
-    // Temporary bypass: skip dataset create/update API calls in create mode
-    // so we can still access step two while authentication is unavailable.
-    if (mode === "create") {
-      onStepChange(2);
-      return;
-    }
-
     try {
+      const form = metadataForm.datasetMetadataForm;
+
+      if (mode === "create" && trainingAreas.createdDatasetId === null) {
+        // Step 1 → create a new dataset record via the API with all step-1 fields
+        const created = await createDataset(
+          buildDatasetPayloadFromForm(form, tileserverURL),
+        );
+
+        trainingAreas.setCreatedDatasetId(created.id);
+        onDatasetCreated(created.id, form);
+        return;
+      }
+
+      // Edit mode — persist any metadata changes then advance
       const isNewDataset = trainingAreas.createdDatasetId === null;
       const datasetId = await trainingAreas.ensureDatasetSaved(
-        metadataForm.datasetMetadataForm.name,
+        form.name,
         tileserverURL,
       );
 
       if (isNewDataset) {
-        onDatasetCreated(datasetId, metadataForm.datasetMetadataForm);
+        onDatasetCreated(datasetId, form);
         return;
       }
 

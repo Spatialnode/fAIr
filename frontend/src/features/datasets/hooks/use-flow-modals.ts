@@ -3,11 +3,13 @@ import { useMutation } from "@tanstack/react-query";
 import { getTrainingAreaLabelsFromOSM } from "@/features/model-creation/api/create-trainings";
 import { showErrorToast, showSuccessToast } from "@/utils";
 import { DatasetFlowModal, LabelSource } from "@/features/datasets/types/types";
+import type { IBuildDatasetPayload } from "@/features/datasets/api/create-dataset";
 
 type UseFlowModalsOptions = {
   hasDrawnAOI: boolean;
   getAllDatasetAoiIds: () => Promise<number[]>;
   markFetched: (source: Exclude<LabelSource, "">) => void;
+  onBuildDataset?: (payload: IBuildDatasetPayload) => Promise<unknown>;
 };
 
 /**
@@ -17,6 +19,7 @@ export const useFlowModals = ({
   hasDrawnAOI,
   getAllDatasetAoiIds,
   markFetched,
+  onBuildDataset,
 }: UseFlowModalsOptions) => {
   const [flowModal, setFlowModal] = useState<DatasetFlowModal>(null);
   const [osmModalFeatureType, setOsmModalFeatureType] = useState("Rooftops");
@@ -136,9 +139,28 @@ export const useFlowModals = ({
     setFlowModal("build-confirm");
   }, []);
 
-  const handleConfirmBuildDataset = useCallback(() => {
-    setFlowModal("build-success");
-  }, []);
+  const buildDatasetMutation = useMutation({
+    mutationFn: onBuildDataset ?? (() => Promise.resolve()),
+  });
+
+  const handleConfirmBuildDataset = useCallback(async () => {
+    if (!onBuildDataset) {
+      setFlowModal("build-success");
+      return;
+    }
+    try {
+      const aoiIds = await getAllDatasetAoiIds();
+      if (aoiIds.length === 0) {
+        showErrorToast(undefined, "No AOIs found. Draw at least one area first.");
+        return;
+      }
+      await buildDatasetMutation.mutateAsync(aoiIds as unknown as IBuildDatasetPayload);
+      setFlowModal("build-success");
+      showSuccessToast("Dataset build job submitted successfully.");
+    } catch (error) {
+      showErrorToast(error);
+    }
+  }, [onBuildDataset, getAllDatasetAoiIds, buildDatasetMutation]);
 
   return {
     flowModal,
@@ -158,6 +180,7 @@ export const useFlowModals = ({
     validTaskingIds,
     fetchOsmPending: fetchOsmLabelsMutation.isPending,
     actionPending: fetchOsmLabelsMutation.isPending,
+    buildDatasetPending: buildDatasetMutation.isPending,
     prepareModalForLabelSource,
     handleConfirmOsmFlow,
     handleConfirmMapSwipeFlow,
