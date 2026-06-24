@@ -151,10 +151,15 @@ export const useFlowModals = ({
     try {
       const aoiIds = await getAllDatasetAoiIds();
       if (aoiIds.length === 0) {
-        showErrorToast(undefined, "No AOIs found. Draw at least one area first.");
+        showErrorToast(
+          undefined,
+          "No AOIs found. Draw at least one area first.",
+        );
         return;
       }
-      await buildDatasetMutation.mutateAsync(aoiIds as unknown as IBuildDatasetPayload);
+      await buildDatasetMutation.mutateAsync(
+        aoiIds as unknown as IBuildDatasetPayload,
+      );
       setFlowModal("build-success");
       showSuccessToast("Dataset build job submitted successfully.");
     } catch (error) {

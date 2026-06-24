@@ -3,9 +3,16 @@ import type { DatasetMetadataForm } from "@/features/datasets/types/types";
 
 // ─── Shared enums ──────────────────────────────────────────────────────────────
 
-export type LabelTaskEnum = "semantic-segmentation" | "object-detection" | "classification";
+export type LabelTaskEnum =
+  | "semantic-segmentation"
+  | "object-detection"
+  | "classification";
 export type LabelTypeEnum = "vector" | "raster";
-export type GeometryTypeEnum = "point" | "linestring" | "polygon" | "multipolygon";
+export type GeometryTypeEnum =
+  | "point"
+  | "linestring"
+  | "polygon"
+  | "multipolygon";
 
 export interface ILabelClass {
   [key: string]: string;

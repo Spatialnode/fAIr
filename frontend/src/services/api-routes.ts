@@ -134,8 +134,6 @@ export const API_ENDPOINTS = {
   // DATASETS
   CREATE_DATASET: `/datasets/`,
   GET_DATASET_BY_ID: (datasetId: number) => `/datasets/${datasetId}/`,
-  EDIT_DATASET:  (datasetId: number) => `/datasets/${datasetId}/`,
-  BUILD_DATASET: `/datasets/build/`
-
-
+  EDIT_DATASET: (datasetId: number) => `/datasets/${datasetId}/`,
+  BUILD_DATASET: `/datasets/build/`,
 };

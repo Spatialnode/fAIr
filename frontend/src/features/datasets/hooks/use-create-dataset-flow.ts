@@ -111,7 +111,11 @@ export const useCreateDatasetFlow = ({
 
       return buildDataset(buildPayload);
     },
-    [trainingAreas.getAllDatasetAoiIds, metadataForm.datasetMetadataForm, tileserverURL],
+    [
+      trainingAreas.getAllDatasetAoiIds,
+      metadataForm.datasetMetadataForm,
+      tileserverURL,
+    ],
   );
 
   const flowModals = useFlowModals({

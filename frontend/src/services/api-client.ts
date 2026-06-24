@@ -3,7 +3,7 @@ import {
   BASE_API_URL,
   HOT_FAIR_LOCAL_STORAGE_ACCESS_TOKEN_KEY,
   STAC_CATALOG_API_URL,
-  NEW_BASE_API_URL
+  NEW_BASE_API_URL,
 } from "@/config";
 import { showErrorToast } from "@/utils";
 
@@ -49,7 +49,6 @@ apiClient.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
 
 /**
  * Interceptors
