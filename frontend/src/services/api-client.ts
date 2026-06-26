@@ -50,10 +50,22 @@ apiClient.interceptors.response.use(
   },
 );
 
+// TODO: Replace with proper token flow once auth is integrated for the new API.
+const NEW_API_TEMP_TOKEN =
+  "qeOlSYp0xMiSKqBwOOmgWNjg68R32NjyuG0m1kNEBCU9WJ_a3KlBElQ-7bFE5GuA";
+
+function newApiAuthRequestInterceptor(config: InternalAxiosRequestConfig) {
+  if (config.headers) {
+    config.headers.Accept = "application/json";
+    config.headers.Authorization = `Bearer ${NEW_API_TEMP_TOKEN}`;
+  }
+  return config;
+}
+
 /**
  * Interceptors
  */
-newApiClient.interceptors.request.use(authRequestInterceptor);
+newApiClient.interceptors.request.use(newApiAuthRequestInterceptor);
 newApiClient.interceptors.response.use(
   (response) => {
     return response;
