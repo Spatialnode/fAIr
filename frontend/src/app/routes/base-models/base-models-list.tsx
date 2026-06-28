@@ -20,6 +20,11 @@ import { useBaseModels } from "@/features/base-models/hooks/use-base-models";
 import { TBaseModel } from "@/types";
 import { DATE_SORT_OPTIONS } from "@/features/base-models/utils/common";
 
+const DATE_MENU_ITEMS = DATE_SORT_OPTIONS.map((opt) => ({
+  value: opt.label,
+  apiValue: opt.value,
+}));
+
 export const BaseModelsPage = () => {
   const { isOpened, openDialog, closeDialog } = useDialog();
 
@@ -84,8 +89,8 @@ export const BaseModelsPage = () => {
     }
 
     result.sort((a, b) => {
-      const aDate = new Date(a.updatedAt).getTime();
-      const bDate = new Date(b.updatedAt).getTime();
+      const aDate = new Date(a.lastModified).getTime();
+      const bDate = new Date(b.lastModified).getTime();
 
       if (dateSort === "oldest") return aDate - bDate;
       return bDate - aDate;
@@ -104,10 +109,7 @@ export const BaseModelsPage = () => {
     }));
   }, [taskCategories]);
 
-  const dateMenuItems = DATE_SORT_OPTIONS.map((opt) => ({
-    value: opt.label,
-    apiValue: opt.value,
-  }));
+  const dateMenuItems = DATE_MENU_ITEMS;
 
   const selectedCategoryLabel =
     taskCategories.find((c) => c.value === category)?.label || "Category";

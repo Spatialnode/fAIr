@@ -7,7 +7,6 @@ import { Link } from "@/components/ui/link";
 import { APPLICATION_ROUTES } from "@/constants";
 import { ButtonVariant } from "@/enums";
 
-// import AccuracyDisplay from "@/features/models/components/accuracy-display";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useBaseModel } from "@/features/base-models/hooks/use-base-models";
@@ -283,10 +282,6 @@ export const BaseModelDetailPage = () => {
         { label: "Time of Data", value: formatDate(model.dataDatetime) },
       ].filter((row) => row.value != null && row.value !== "")
     : [];
-
-  if (!model) {
-    return null;
-  }
 
   return (
     <>

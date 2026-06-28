@@ -17,7 +17,7 @@ type StepProps = {
   defaultOpen?: boolean;
 };
 
-const statusBadgeClasses = {
+const statusBadgeClasses: Record<"pending" | "changes" | "approved", string> = {
   pending: "bg-status-pending-color text-grey",
   changes: "bg-status-changes-color text-grey",
   approved: "bg-green-secondary text-grey",

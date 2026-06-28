@@ -88,10 +88,10 @@ export const mapStacItemToBaseModelDetail = (item: any) => {
           : undefined,
       frameworkVersion: p["mlm:framework_version"],
       pretrainedSource: p["mlm:pretrained_source"],
-      tileSizePx: "640",
-      processing: "preprocess pipeline",
-      resize: "640x640",
-      scaling: "0–1 normalization",
+      tileSizePx: p["fair:tile_size_px"] != null ? String(p["fair:tile_size_px"]) : undefined,
+      processing: p["fair:processing"] ?? undefined,
+      resize: p["fair:resize"] ?? undefined,
+      scaling: p["fair:scaling"] ?? undefined,
       outputDescription: p.description,
       variants: [],
     },
@@ -143,5 +143,5 @@ const extractAccuracy = (properties: any): number => {
     return 0;
   }
 
-  return 0;
+  return accuracyMetric.value ?? 0;
 };
