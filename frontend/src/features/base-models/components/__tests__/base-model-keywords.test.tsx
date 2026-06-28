@@ -34,7 +34,10 @@ describe("BaseModelKeywords", () => {
 
   it("does not render keywords beyond the visible limit", () => {
     render(
-      <BaseModelKeywords keywords={["first", "second", "third", "hidden"]} visibleLimit={3} />,
+      <BaseModelKeywords
+        keywords={["first", "second", "third", "hidden"]}
+        visibleLimit={3}
+      />,
     );
     expect(screen.queryByText("hidden")).not.toBeInTheDocument();
   });

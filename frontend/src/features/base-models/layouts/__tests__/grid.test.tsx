@@ -31,9 +31,15 @@ describe("BaseModelGridLayout", () => {
       makeModel(3, "Gamma Model"),
     ];
     renderGrid(models);
-    expect(screen.getByRole("heading", { name: "Alpha Model" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Beta Model" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Gamma Model" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Alpha Model" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Beta Model" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: "Gamma Model" }),
+    ).toBeInTheDocument();
   });
 
   it("renders nothing when models array is empty", () => {

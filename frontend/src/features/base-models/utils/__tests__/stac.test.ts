@@ -94,11 +94,19 @@ describe("mapStacItemToBaseModel", () => {
 // mapStacItemToBaseModelDetail
 // ---------------------------------------------------------------------------
 
-const makeStacItem = (overrides: Record<string, unknown> = {}, assetOverrides: Record<string, unknown> = {}) => ({
+const makeStacItem = (
+  overrides: Record<string, unknown> = {},
+  assetOverrides: Record<string, unknown> = {},
+) => ({
   id: "detail-model-1",
   bbox: [-10, -5, 10, 5] as [number, number, number, number],
   assets: {
-    readme: { href: "https://example.com/readme.md", type: "text/markdown", title: "README", roles: ["overview"] },
+    readme: {
+      href: "https://example.com/readme.md",
+      type: "text/markdown",
+      title: "README",
+      roles: ["overview"],
+    },
     ...assetOverrides,
   },
   properties: {
@@ -173,7 +181,10 @@ describe("mapStacItemToBaseModelDetail", () => {
   it("maps assets array from item assets", () => {
     const model = mapStacItemToBaseModelDetail(makeStacItem());
     expect(model.assets).toContainEqual(
-      expect.objectContaining({ key: "readme", href: "https://example.com/readme.md" }),
+      expect.objectContaining({
+        key: "readme",
+        href: "https://example.com/readme.md",
+      }),
     );
   });
 });

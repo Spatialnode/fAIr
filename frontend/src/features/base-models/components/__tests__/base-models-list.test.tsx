@@ -142,8 +142,18 @@ describe("BaseModelsPage — loading / error states", () => {
 
 describe("BaseModelsPage — search filtering", () => {
   const models = [
-    makeModel({ id: 1, name: "RAMP Detector", description: "Detects buildings", author: "HOT" }),
-    makeModel({ id: 2, name: "YOLOv8 Segmentor", description: "Fast segmentation", author: "OpenAI" }),
+    makeModel({
+      id: 1,
+      name: "RAMP Detector",
+      description: "Detects buildings",
+      author: "HOT",
+    }),
+    makeModel({
+      id: 2,
+      name: "YOLOv8 Segmentor",
+      description: "Fast segmentation",
+      author: "OpenAI",
+    }),
   ];
 
   beforeEach(() => {

@@ -88,7 +88,10 @@ export const mapStacItemToBaseModelDetail = (item: any) => {
           : undefined,
       frameworkVersion: p["mlm:framework_version"],
       pretrainedSource: p["mlm:pretrained_source"],
-      tileSizePx: p["fair:tile_size_px"] != null ? String(p["fair:tile_size_px"]) : undefined,
+      tileSizePx:
+        p["fair:tile_size_px"] != null
+          ? String(p["fair:tile_size_px"])
+          : undefined,
       processing: p["fair:processing"] ?? undefined,
       resize: p["fair:resize"] ?? undefined,
       scaling: p["fair:scaling"] ?? undefined,
