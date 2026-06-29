@@ -31,7 +31,11 @@ export const BaseModelCTA = () => {
                 {SHARED_CONTENT.homepage.baseModelCTA.secondButtonTitle}
               </Button>
             </Link>
-            <Button className="max-w-[180px] " variant={ButtonVariant.SECONDARY} onClick={openDialog}>
+            <Button
+              className="max-w-[180px] "
+              variant={ButtonVariant.SECONDARY}
+              onClick={openDialog}
+            >
               Contribute
             </Button>
           </div>
