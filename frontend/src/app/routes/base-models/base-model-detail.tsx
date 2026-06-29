@@ -364,7 +364,7 @@ export const BaseModelDetailPage = () => {
           <MarkdownViewer content={model.markdownContent} />
 
           {/* Right Column - Architecture Info */}
-          <div className="flex gap-4 flex-col lg:sticky lg:top-8 lg:self-start">
+          <div className="flex gap-4 flex-col hide-scrollbar lg:sticky lg:top-8 lg:self-start lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto">
             <div className="flex space-y-4 flex-col">
               <h4 className="font-semibold text-dark">Coverage</h4>
               {/* Right: map extent — justified to the end */}
