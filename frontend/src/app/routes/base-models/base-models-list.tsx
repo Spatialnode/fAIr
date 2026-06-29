@@ -23,7 +23,7 @@ import { formatKeyword } from "@/utils";
 
 const DATE_MENU_ITEMS = DATE_SORT_OPTIONS.map((opt) => ({
   value: opt.label,
-  apiValue:  opt.value,
+  apiValue: opt.value,
 }));
 
 export const BaseModelsPage = () => {

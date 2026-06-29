@@ -7,7 +7,7 @@ export const navLinks: TNavBarLinks = [
     title: SHARED_CONTENT.navbar.routes.exploreModels,
     href: APPLICATION_ROUTES.MODELS,
     active: true,
-     children: [
+    children: [
       {
         title: "Models",
         href: APPLICATION_ROUTES.MODELS,

@@ -24,9 +24,7 @@ const columnDefinitions: ColumnDef<TBaseModel>[] = [
   {
     accessorKey: "task",
     header: "Task",
-    cell: ({ row }) => (
-      <span>{formatKeyword(row.getValue("task") ?? "")}</span>
-    ),
+    cell: ({ row }) => <span>{formatKeyword(row.getValue("task") ?? "")}</span>,
   },
   {
     accessorKey: "author",

@@ -437,7 +437,7 @@ export type TSharedContent = {
       description: string;
       ctaButton: string;
       ctaLink: string;
-       secondButtonTitle: string
+      secondButtonTitle: string;
     };
   };
   baseModelsPage: {
