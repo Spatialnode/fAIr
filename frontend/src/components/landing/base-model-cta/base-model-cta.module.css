@@ -38,9 +38,18 @@
 }
 
 .ctaButtonContainer {
-  max-width: 213px;
-  width: 70%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sl-spacing-small);
   padding-top: var(--sl-spacing-medium);
+}
+
+@media (min-width: 768px) {
+  .ctaButtonContainer {
+    flex-direction: row;
+    align-items: center;
+  }
 }
 
 .container .cta h1 {

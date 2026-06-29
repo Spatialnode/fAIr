@@ -1,3 +1,5 @@
+import { formatKeyword } from "@/utils";
+
 type BaseModelKeywordsProps = {
   keywords: string[];
   visibleLimit?: number;
@@ -16,7 +18,7 @@ export const BaseModelKeywords = ({
           key={keyword}
           className="rounded-lg w-fit h-fit bg-off-white px-2 py-1 text-body-4 text-dark capitalize"
         >
-          {keyword}
+          {formatKeyword(keyword)}
         </span>
       ))}
     </div>

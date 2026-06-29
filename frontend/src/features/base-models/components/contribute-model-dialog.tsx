@@ -171,6 +171,8 @@ const ContributeModelDialog: React.FC<ContributeModelDialogProps> = ({
               {contributeModelDialogContent.github.buttonLabel}
             </Button>
           </Link>
+
+          
         </div>
       </div>
     </Dialog>

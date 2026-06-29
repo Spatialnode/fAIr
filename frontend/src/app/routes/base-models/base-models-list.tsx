@@ -19,10 +19,11 @@ import {
 import { useBaseModels } from "@/features/base-models/hooks/use-base-models";
 import { TBaseModel } from "@/types";
 import { DATE_SORT_OPTIONS } from "@/features/base-models/utils/common";
+import { formatKeyword } from "@/utils";
 
 const DATE_MENU_ITEMS = DATE_SORT_OPTIONS.map((opt) => ({
   value: opt.label,
-  apiValue: opt.value,
+  apiValue:  opt.value,
 }));
 
 export const BaseModelsPage = () => {
@@ -60,9 +61,9 @@ export const BaseModelsPage = () => {
 
     return [
       { label: "All", value: "all" },
-      ...list.map((t) => ({
-        label: t,
-        value: t,
+      ...list.map((item) => ({
+        label: formatKeyword(item),
+        value: item,
       })),
     ];
   }, [models]);
@@ -179,7 +180,7 @@ export const BaseModelsPage = () => {
             <div className="self-start md:self-auto">
               <ButtonWithIcon
                 onClick={openDialog}
-                variant={ButtonVariant.PRIMARY}
+                variant={ButtonVariant.TERTIARY}
                 prefixIcon={AddIcon}
                 label={SHARED_CONTENT.baseModelsPage.pageHeadingButtonText}
               />

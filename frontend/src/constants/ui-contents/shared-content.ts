@@ -141,6 +141,7 @@ export const SHARED_CONTENT: TSharedContent = {
 
     baseModelCTA: {
       title: "Contribute Your Base Model",
+      secondButtonTitle: "Explore base models",
       description:
         "Contribute a base model to fAIr and help teams turn imagery into actionable map data, faster and more reliably.",
       ctaButton: "Contribute",

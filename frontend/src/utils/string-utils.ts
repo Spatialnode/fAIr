@@ -18,6 +18,24 @@ export const truncateString = (string?: string, maxLength: number = 30) => {
   return string;
 };
 
+/**
+ * Formats a keyword string by replacing hyphens and underscores with spaces
+ * and capitalizing the first letter of each word (title case).
+ *
+ * @example
+ * formatKeyword("swimming_pool")        // → "Swimming Pool"
+ * formatKeyword("semantic-segmentation") // → "Semantic Segmentation"
+
+ *
+ * @param {string} keyword - The raw keyword string to format.
+ * @returns {string} The formatted, human-readable label.
+ */
+export const formatKeyword = (keyword: string): string => {
+  return keyword
+    .replace(/[-_]/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+};
+
 export const extractTileJSONURL = (OAMTMSURL: string) => {
   // Before, when we hit this url https://tiles.openaerialmap.org/63b457ba3fb8c100063c55f0/0/63b457ba3fb8c100063c55f1/{z}/{x}/{y} (without the /{z}/{x}/{y}),
   // we get the TileJSON which is passed to Maplibre GL JS to render the aerial imagery, but with the recent OAM updates

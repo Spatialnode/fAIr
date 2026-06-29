@@ -89,7 +89,7 @@ const MobileBaseModelFiltersDialog: React.FC<
             }}
             defaultSelectedItem={selectedCategoryLabel}
             triggerComponent={
-              <p className="text-sm text-dark text-nowrap">
+              <p className="text-sm capitalize text-dark text-nowrap">
                 {selectedCategoryLabel}
               </p>
             }
