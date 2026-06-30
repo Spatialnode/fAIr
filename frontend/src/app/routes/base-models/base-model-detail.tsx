@@ -303,7 +303,7 @@ export const BaseModelDetailPage = () => {
                 navigate(`${APPLICATION_ROUTES.START_MAPPING_BASE}${model.id}`)
               }
               prefixIcon={MapIcon}
-              variant={ButtonVariant.PRIMARY}
+              variant={ButtonVariant.TERTIARY}
               label="Start Mapping"
             />
           </div>
