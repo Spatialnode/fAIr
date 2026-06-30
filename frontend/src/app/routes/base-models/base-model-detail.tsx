@@ -304,7 +304,7 @@ export const BaseModelDetailPage = () => {
               }
               prefixIcon={MapIcon}
               variant={ButtonVariant.TERTIARY}
-              label="Start Mapping"
+              label="Map with Base Model"
             />
           </div>
         </div>

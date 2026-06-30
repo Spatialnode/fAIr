@@ -9,7 +9,7 @@ export const navLinks: TNavBarLinks = [
     active: true,
     children: [
       {
-        title: "Models",
+        title: "AI Models",
         href: APPLICATION_ROUTES.MODELS,
       },
       {

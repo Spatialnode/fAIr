@@ -180,7 +180,7 @@ export const BaseModelsPage = () => {
             <div className="self-start md:self-auto">
               <ButtonWithIcon
                 onClick={openDialog}
-                variant={ButtonVariant.TERTIARY}
+                variant={ButtonVariant.PRIMARY}
                 prefixIcon={AddIcon}
                 label={SHARED_CONTENT.baseModelsPage.pageHeadingButtonText}
               />
