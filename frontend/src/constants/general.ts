@@ -13,7 +13,7 @@ export const navLinks: TNavBarLinks = [
         href: APPLICATION_ROUTES.MODELS,
       },
       {
-        title: "Explore Base Models",
+        title: "Base Models",
         href: APPLICATION_ROUTES.BASE_MODELS_HOME,
       },
     ],
