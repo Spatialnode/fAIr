@@ -361,10 +361,9 @@ export const BaseModelDetailPage = () => {
         {/* Main Content: Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,_1fr)_600px] gap-x-12 gap-y-10">
           {/* Left Column - Overview */}
-        <div className="order-2 lg:order-1">
-
-          <MarkdownViewer content={model.markdownContent} />
-        </div>
+          <div className="order-2 lg:order-1">
+            <MarkdownViewer content={model.markdownContent} />
+          </div>
 
           {/* Right Column - Architecture Info */}
           <div className="flex order-1 lg:order-2 gap-4 flex-col hide-scrollbar lg:sticky lg:top-8 lg:self-start lg:max-h-[calc(100vh-4rem)] lg:overflow-y-auto">
