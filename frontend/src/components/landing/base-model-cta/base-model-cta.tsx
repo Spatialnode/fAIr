@@ -27,12 +27,12 @@ export const BaseModelCTA = () => {
               title={SHARED_CONTENT.homepage.baseModelCTA.secondButtonTitle}
               nativeAnchor
             >
-              <Button className="!w-[200px] h-9" variant={ButtonVariant.DARK}>
+              <Button className="!w-56 h-9" variant={ButtonVariant.DARK}>
                 {SHARED_CONTENT.homepage.baseModelCTA.secondButtonTitle}
               </Button>
             </Link>
             <Button
-              className="!w-[200px] h-9 "
+              className="!w-56  h-9 "
               variant={ButtonVariant.SECONDARY}
               onClick={openDialog}
             >
