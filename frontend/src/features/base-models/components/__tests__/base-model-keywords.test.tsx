@@ -28,7 +28,7 @@ describe("BaseModelKeywords", () => {
     );
     expect(screen.getAllByRole("generic").length).toBeGreaterThanOrEqual(5);
     ["a", "b", "c", "d", "e"].forEach((kw) => {
-      expect(screen.getByText(kw)).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(`^${kw}$`, "i"))).toBeInTheDocument();
     });
   });
 
@@ -44,7 +44,7 @@ describe("BaseModelKeywords", () => {
 
   it("renders each keyword in its own badge span", () => {
     render(<BaseModelKeywords keywords={["roof", "road"]} visibleLimit={2} />);
-    const badges = screen.getAllByText(/roof|road/);
+    const badges = screen.getAllByText(/roof|road/i);
     expect(badges).toHaveLength(2);
     badges.forEach((badge) => {
       expect(badge.tagName.toLowerCase()).toBe("span");

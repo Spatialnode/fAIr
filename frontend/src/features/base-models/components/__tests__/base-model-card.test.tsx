@@ -59,8 +59,10 @@ describe("BaseModelCard", () => {
   it("renders BaseModelKeywords with the model keywords", () => {
     renderCard();
     // Default visibleLimit is 3 — all 3 keywords should appear
-    expect(screen.getAllByText("building-detection")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("ramp")[0]).toBeInTheDocument();
-    expect(screen.getAllByText("segmentation")[0]).toBeInTheDocument();
+    // The component converts hyphens to spaces, and CSS `capitalize` uppercases first letters
+    // so "building-detection" renders as "Building Detection" in the DOM
+    expect(screen.getAllByText(/building detection/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/^ramp$/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/^segmentation$/i)[0]).toBeInTheDocument();
   });
 });
