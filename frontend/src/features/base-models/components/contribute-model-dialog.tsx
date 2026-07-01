@@ -28,7 +28,7 @@ const Step: React.FC<StepProps> = ({
   children,
   defaultOpen = false,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(defaultOpen);
+  const [isExpanded, setIsExpanded] = useState<boolean>(defaultOpen);
 
   return (
     <div className="border-b border-gray-border last:border-b-0 pb-6 mb-6 last:mb-0 last:pb-0">
@@ -167,7 +167,7 @@ const ContributeModelDialog: React.FC<ContributeModelDialogProps> = ({
             href={contributeModelDialogContent.github.href}
             blank
           >
-            <Button className="rounded-sm">
+            <Button rounded>
               {contributeModelDialogContent.github.buttonLabel}
             </Button>
           </Link>

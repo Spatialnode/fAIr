@@ -174,7 +174,7 @@ export const SHARED_CONTENT: TSharedContent = {
       github: {
         title: "Fair Model github",
         href: "https://github.com/hotosm/fAIr-models",
-        buttonLabel: "GO TO GITHUB",
+        buttonLabel: "Go to Github",
       },
       steps: [
         {
