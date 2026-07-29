@@ -67,6 +67,11 @@ export const APPLICATION_ROUTES = {
 
   // Published AI Predictions
   AI_PREDICTIONS: "/ai-predictions",
+
+  // base-model start
+  BASE_MODELS_HOME: "/base-models",
+  BASE_MODEL_DETAILS: "/base-models/:id",
+  // base-model end
 };
 
 export const HOT_PRIVACY_POLICY_URL: string = "https://www.hotosm.org/privacy";

@@ -7,6 +7,16 @@ export const navLinks: TNavBarLinks = [
     title: SHARED_CONTENT.navbar.routes.exploreModels,
     href: APPLICATION_ROUTES.MODELS,
     active: true,
+    children: [
+      {
+        title: "AI Models",
+        href: APPLICATION_ROUTES.MODELS,
+      },
+      {
+        title: "Base Models",
+        href: APPLICATION_ROUTES.BASE_MODELS_HOME,
+      },
+    ],
   },
   {
     title: SHARED_CONTENT.navbar.routes.exploreDatasets,

@@ -354,6 +354,7 @@ export type TBaseModel = {
   author: string;
   lastModified: string;
   task: string;
+  keywords: string[];
   version: string;
 };
 
