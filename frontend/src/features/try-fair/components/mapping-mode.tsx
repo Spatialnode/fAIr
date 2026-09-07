@@ -1,4 +1,5 @@
-// import { ChevronDownIcon } from '@/components/ui/icons'
+import { ChevronDownIcon } from '@/components/ui/icons'
+// import { AdvanceIcon } from '@/components/ui/icons/advance-icon';
 import { ModeIcon } from "@/components/ui/icons/mode-icon";
 import { ToolTip } from "@/components/ui/tooltip";
 
@@ -10,7 +11,8 @@ const MappingMode = () => {
           <ModeIcon />
           <p className="text-dark">Basic</p>
         </div>
-        {/* <ChevronDownIcon  className='text-dark size-4' /> */}
+        <ChevronDownIcon className='text-dark size-4' />
+        {/* <AdvanceIcon /> */}
       </div>
     </ToolTip>
   );

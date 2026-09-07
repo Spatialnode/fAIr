@@ -22,7 +22,7 @@ export const MapLargeAreaRequestSuccess = ({
       size={SHOELACE_SIZES.SMALL}
       closeDialog={onClose}
     >
-      <div className="flex flex-col items-center pb-4 gap-y-8 justify-between">
+      <div className="flex flex-col items-center p-5 gap-y-8 justify-between">
         <div className="flex justify-center items-center flex-col gap-2">
           <div>
             <SuccessCheckIcon />
