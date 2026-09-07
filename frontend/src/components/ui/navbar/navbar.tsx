@@ -25,6 +25,7 @@ const HankoAuthComponent = () => (
     redirect-after-login={FRONTEND_URL}
     redirect-after-logout={FRONTEND_URL}
     mapping-check-url={`${BASE_API_URL}auth/status/`}
+    onboarding-url={`${BASE_API_URL}auth/onboarding/`}
     app-id="fair"
   />
 );
@@ -36,9 +37,7 @@ export const NavBar = () => {
 
   const LegacyLoginButton = ({ className }: { className?: string }) => (
     <Button className={className} onClick={handleLogin} spinner={loading}>
-      {loading
-        ? SHARED_CONTENT.loginButtonLoading
-        : SHARED_CONTENT.navbar.loginButton}
+      {loading ? SHARED_CONTENT.loginButtonLoading : SHARED_CONTENT.navbar.loginButton}
     </Button>
   );
 
@@ -48,10 +47,7 @@ export const NavBar = () => {
         <div className={styles.drawerContentContainer}>
           <div className={styles.drawerHeaderContainer}>
             <NavLogo />
-            <button
-              onClick={() => setOpen(false)}
-              className={styles.closeButton}
-            >
+            <button onClick={() => setOpen(false)} className={styles.closeButton}>
               &#x2715;
             </button>
           </div>

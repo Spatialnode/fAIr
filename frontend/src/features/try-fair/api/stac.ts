@@ -18,6 +18,15 @@ type StacAsset = {
   [k: string]: unknown;
 };
 
+export type FairPreview = {
+  center: [number, number];
+  bbox?: BBOX;
+  zoom: { recommended: number; min?: number; max?: number };
+  imagery: { url: string; type?: string; name?: string; attribution?: string };
+  thumbnail_href?: string;
+  place?: { name?: string; country?: string; country_code?: string };
+};
+
 export type BaseModelStacItem = {
   id: string;
   bbox?: BBOX;
@@ -33,11 +42,7 @@ export type BaseModelStacItem = {
     "fair:pinned": boolean;
     "mlm:hyperparameters": Record<string, string | number | boolean>;
     "fair:hyperparameters_spec": HyperParamSpec[];
-    "fair:source_imagery"?: string;
-    "fair:preview_location"?: { type: "Point"; coordinates: [number, number] };
-    "fair:preview_place"?: string;
-    "fair:preview_country"?: string;
-    "fair:coverage"?: string;
+    "fair:preview"?: FairPreview;
     "fair:base_model_title"?: string;
     keywords: string[];
     providers: Array<{ name: string; description?: string; url?: string }>;
@@ -63,9 +68,7 @@ export type InferenceParam = {
  * Reads keys prefixed with "inference." from mlm:hyperparameters, then pairs
  * each with its entry in fair:hyperparameters_spec for min / max / default.
  */
-export const getInferenceParams = (
-  item: BaseModelStacItem,
-): InferenceParam[] => {
+export const getInferenceParams = (item: BaseModelStacItem): InferenceParam[] => {
   const hyper = item.properties["mlm:hyperparameters"];
   const specs = item.properties["fair:hyperparameters_spec"] ?? [];
 
@@ -75,9 +78,7 @@ export const getInferenceParams = (
       const paramKey = k.replace("inference.", "");
       const spec = specs.find((s) => s.key === paramKey);
       if (!spec) return [];
-      return [
-        { key: paramKey, value: value as number | string | boolean, spec },
-      ];
+      return [{ key: paramKey, value: value as number | string | boolean, spec }];
     });
 };
 
