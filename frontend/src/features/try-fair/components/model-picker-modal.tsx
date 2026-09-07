@@ -196,7 +196,9 @@ export const ModelPickerContent = ({
   );
   const effectiveFeatureSlug = stagedFeature ?? feature;
   const selectedFeature =
-    featureList.find((f) => f.slug === effectiveFeatureSlug) ?? featureList[0] ?? null;
+    featureList.find((f) => f.slug === effectiveFeatureSlug) ??
+    featureList[0] ??
+    null;
 
   // Key helpers
   const keyOf = (choice: StagedChoice): string =>
@@ -353,7 +355,6 @@ export const ModelPickerContent = ({
                   />
                 );
               })}
-
             </div>
           </div>
 

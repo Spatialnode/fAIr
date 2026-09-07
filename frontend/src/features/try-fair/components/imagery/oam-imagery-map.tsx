@@ -136,10 +136,11 @@ export const OamImageryMap = ({
         <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
           <div className="bg-white/80 backdrop-blur-sm rounded-lg px-4 py-3 flex items-center gap-2.5 shadow-md pointer-events-auto">
             <Spinner
-              style={{
-                fontSize: "1.5rem",
-             
-              } as Record<string, string>}
+              style={
+                {
+                  fontSize: "1.5rem",
+                } as Record<string, string>
+              }
             />
             <span className="text-dark text-base font-medium">
               Loading imagery coverage…
@@ -150,4 +151,3 @@ export const OamImageryMap = ({
     </div>
   );
 };
-

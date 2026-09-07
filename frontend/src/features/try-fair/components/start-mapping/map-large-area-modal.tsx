@@ -217,9 +217,7 @@ const MapLargeAreaContent = ({
         />
 
         {/* Character counter */}
-        <p className="text-grey text-xs">
-          {description.length}/20
-        </p>
+        <p className="text-grey text-xs">{description.length}/20</p>
 
         {/* Submit button */}
         <div className="flex justify-end">
