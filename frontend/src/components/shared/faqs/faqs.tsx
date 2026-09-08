@@ -4,6 +4,7 @@ import { APPLICATION_ROUTES, SHARED_CONTENT } from "@/constants";
 import { ChevronDownIcon } from "@/components/ui/icons";
 import { Link } from "@/components/ui/link";
 import { TFAQs } from "@/types";
+import { MarkdownRenderer } from "../markdown-renderer";
 
 export const FAQs = ({
   faqs = SHARED_CONTENT.homepage.faqs.content,
@@ -14,15 +15,18 @@ export const FAQs = ({
 }) => {
   return (
     <section className={styles.FAQS}>
-      <h1 className={styles.heading}>
-        {SHARED_CONTENT.homepage.faqs.sectionTitle}
-      </h1>
+      <h1 className={styles.heading}>{SHARED_CONTENT.homepage.faqs.sectionTitle}</h1>
       <div className={styles.FAQContentContainer}>
         <div>
           {faqs.map((faq, id) => (
             <Accordion
               summary={faq.question}
-              content={faq.answer}
+              content={
+                <MarkdownRenderer
+                  content={faq.answer}
+                  className="markdown-prose text-body-2base text-dark font-semibold"
+                />
+              }
               key={`faq-item-${id}`}
             />
           ))}
