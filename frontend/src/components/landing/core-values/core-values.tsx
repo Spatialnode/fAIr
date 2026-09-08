@@ -11,12 +11,7 @@ export const Corevalues = () => {
         <h1>{SHARED_CONTENT.homepage.coreValues.sectionTitle.firstSegment}</h1>
 
         <span className={styles.svgContainer}>
-          <svg
-            className={styles.svgIcon}
-            viewBox="0 0 232 84"
-            preserveAspectRatio="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg className={styles.svgIcon} viewBox="0 0 232 84" xmlns="http://www.w3.org/2000/svg">
             <path
               d="M0.900024 83.0566L37.5904 9.37025L83.4256 0.433594L61.0515 66.0872L0.900024 83.0566Z"
               fill="#D33132"
@@ -34,23 +29,20 @@ export const Corevalues = () => {
               fill="#D63F40"
             />
           </svg>
+
           <h1 className={styles.svgText}>
             {SHARED_CONTENT.homepage.coreValues.sectionTitle.secondSegment}
           </h1>
         </span>
 
         <h1>
-          <strong>
-            {SHARED_CONTENT.homepage.coreValues.sectionTitle.thirdSegment}
-          </strong>
+          <strong>{SHARED_CONTENT.homepage.coreValues.sectionTitle.thirdSegment}</strong>
         </h1>
         <h1 className={`${styles.stretch}`}>
           {SHARED_CONTENT.homepage.coreValues.sectionTitle.fourthSegment}
         </h1>
         <h1>
-          <strong>
-            {SHARED_CONTENT.homepage.coreValues.sectionTitle.fifthSegment}
-          </strong>
+          <strong>{SHARED_CONTENT.homepage.coreValues.sectionTitle.fifthSegment}</strong>
         </h1>
       </div>
       <div className={`${styles.container} relative`}>
@@ -67,12 +59,8 @@ export const Corevalues = () => {
               className={styles.image}
             />
             {/* The rectangles */}
-            <div
-              className={`${styles.primaryRectangle} ${styles.rightDirection}`}
-            ></div>
-            <div
-              className={`${styles.lightGrayRectangle} ${styles.lightGrayLeft}`}
-            ></div>
+            <div className={`${styles.primaryRectangle} ${styles.rightDirection}`}></div>
+            <div className={`${styles.lightGrayRectangle} ${styles.lightGrayLeft}`}></div>
           </div>
         </div>
 
@@ -84,12 +72,8 @@ export const Corevalues = () => {
         {/* Humans not replaced */}
         <div className={`${styles.section} ${styles.humans}`}>
           <div className={styles.textBlock}>
-            <h2>
-              {SHARED_CONTENT.homepage.coreValues.humansNotReplaced.title}
-            </h2>
-            <p>
-              {SHARED_CONTENT.homepage.coreValues.humansNotReplaced.description}
-            </p>
+            <h2>{SHARED_CONTENT.homepage.coreValues.humansNotReplaced.title}</h2>
+            <p>{SHARED_CONTENT.homepage.coreValues.humansNotReplaced.description}</p>
           </div>
           <div className={styles.imageBlock}>
             <Image
@@ -98,12 +82,8 @@ export const Corevalues = () => {
               className={styles.image}
             />
             {/* The rectangles */}
-            <div
-              className={`${styles.primaryRectangle} ${styles.leftDirection}`}
-            ></div>
-            <div
-              className={`${styles.lightGrayRectangle} ${styles.lightGrayRight}`}
-            ></div>
+            <div className={`${styles.primaryRectangle} ${styles.leftDirection}`}></div>
+            <div className={`${styles.lightGrayRectangle} ${styles.lightGrayRight}`}></div>
           </div>
         </div>
       </div>

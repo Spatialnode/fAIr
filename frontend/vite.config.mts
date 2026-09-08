@@ -2,9 +2,7 @@ import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-
 /// <reference types="vitest/config" />
-
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,8 +14,19 @@ export default defineConfig({
     port: 3500,
   },
 
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // keep WebAwesome cached independently of app deploys
+          if (id.includes("@awesome.me/webawesome")) return "webawesome";
+        },
+      },
+    },
+  },
+
   test: {
-    environment: 'jsdom',
-    setupFiles: ['./test-setup.ts'],
-  }
+    environment: "jsdom",
+    setupFiles: ["./test-setup.ts"],
+  },
 });

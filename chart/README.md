@@ -47,6 +47,7 @@ backend:
 | `backend.djangoQ.enabled` | Run Django-Q sidecar for async tasks | `true` |
 | `backend.migrate.enabled` | Run migrations on install/upgrade | `true` |
 | `ingress.enabled` | Create Ingress resource | `false` |
+| `serviceAccount.knativeRbac` | Role/RoleBinding to manage Knative Services in the release namespace | `true` |
 | `frontend.mode` | `"bundleWithBackend"` or `"cloudfront"` | `"bundleWithBackend"` |
 
 ## Frontend
@@ -71,3 +72,48 @@ as [hotosm/drone-tm](https://github.com/hotosm/drone-tm). For CloudFront
 deployments, set `frontend.runtimeEnv.VITE_BASE_API_URL` to the absolute backend
 API URL. The default build-time value remains `/api/v1/` for same-origin
 deployments.
+
+### CloudFront mode
+
+The post-install/upgrade Job:
+
+1. Syncs the frontend to a versioned S3 path.
+2. Finds or creates the CloudFront distribution and Origin Access Control.
+3. Updates the distribution to the new version and invalidates its cache.
+
+`403`/`404` return `/index.html` with a `200`, so client-side routes work.
+
+#### Configuration
+
+| Parameter | Description | Default |
+|---|---|---|
+| `frontend.cloudfront.roleArn` | IAM role ARN for IRSA (**required**) | `""` |
+| `frontend.cloudfront.s3Bucket` | S3 bucket name (**required**) | `""` |
+| `frontend.cloudfront.region` | AWS region | `"us-east-1"` |
+| `frontend.cloudfront.version` | S3 path prefix; defaults to `appVersion` | `""` |
+| `frontend.cloudfront.aliases` | Custom domain aliases | `[]` |
+| `frontend.cloudfront.acmCertificateArn` | ACM certificate ARN (required with `aliases`) | `""` |
+| `frontend.cloudfront.priceClass` | CloudFront price class | `"PriceClass_All"` |
+
+Each release remains in S3. To roll back, set `frontend.cloudfront.version` to a
+previous app version and re-sync.
+
+#### Setup
+
+Before the first deployment:
+
+1. Create an S3 bucket.
+2. For a custom domain, create and validate an ACM certificate in `us-east-1`.
+3. Create an IRSA role trusted by the chart's service account, with permission
+   to manage the bucket, distribution, Origin Access Control, and invalidations.
+4. Set the CloudFront values and deploy. The Job creates the distribution.
+5. Point the frontend domain to the distribution with a Route53 alias.
+
+The Job uses IRSA and does not accept static AWS keys. If
+`serviceAccount.create` is `false`, annotate the existing service account with
+the role ARN yourself.
+
+#### HOT deployment
+
+We set up the S3 bucket and AWS stuff using the k8s-infra
+repo, via OpenTofu in production.
