@@ -44,7 +44,7 @@ export const ShareProjectModal: React.FC<ShareProjectModalProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-gray-border">
           <div className="flex items-center gap-2">
             <LinkIcon className="size-4 text-dark" />
-            <h3 className="text-sm font-semibold text-dark">Share</h3>
+            <h3 className="text-xs font-semibold text-dark">Share</h3>
           </div>
           <button
             type="button"
