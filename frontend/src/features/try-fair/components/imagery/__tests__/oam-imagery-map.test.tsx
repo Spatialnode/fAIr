@@ -46,6 +46,7 @@ describe("OamImageryMap", () => {
         if (event === "click") mockClickCallback = cb;
       }),
       off: vi.fn(),
+      areTilesLoaded: vi.fn(() => true),
     };
   });
 
