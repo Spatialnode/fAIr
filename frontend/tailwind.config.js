@@ -21,7 +21,8 @@ export default {
         "secondary-yellow": "var(--hot-fair-color-yellow-secondary)",
       },
       fontFamily: {
-        sans: "var(--hot-font-sans)",
+        archivo: "var(--sl-font-sans)",
+        barlow: "var(--sl-font-sans-variant)",
       },
       fontSize: {
         "extra-large": "var(--hot-fair-font-size-extra-large)",
