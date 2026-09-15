@@ -57,12 +57,12 @@ export const ModelPicker: React.FC<ModelPickerProps> = ({
   const trigger = (
     <div className="flex justify-between items-center">
       <div className="w-full text-left flex-1 min-w-0">
-        {loading ? (
-          <p className="text-grey text-xs animate-pulse">Loading models…</p>
-        ) : showImagery ? (
+        {showImagery ? (
           <p className="font-semibold text-dark text-xs leading-tight capitalize truncate">
             {imageryName}
           </p>
+        ) : loading ? (
+          <p className="text-grey text-xs animate-pulse">Loading models…</p>
         ) : selectedModel ? (
           <>
             <p className="font-semibold text-dark text-xs leading-tight">
@@ -153,9 +153,13 @@ export const ModelPickerContent = ({
   // Staged choice (committed only on Apply)
   const [staged, setStaged] = useState<StagedChoice | null>(null);
 
+  // Staged feature (committed only on Apply)
+  const [stagedFeature, setStagedFeature] = useState<string | null>(null);
+
   // Drop staged choice when committed selection changes.
   useEffect(() => {
     setStaged(null);
+    setStagedFeature(null);
   }, [selectedModel, currentModelType]);
 
   // Active imagery choice (staged selection or committed imagery)
@@ -174,8 +178,14 @@ export const ModelPickerContent = ({
 
   // Feature list from API
   const { data: featuresData } = useGetFeaturesToMap();
-  const featureList = (featuresData?.results ?? []).filter((f) => f.slug !== "other");
-  const selectedFeature = featureList.find((f) => f.slug === feature) ?? featureList[0] ?? null;
+  const featureList = (featuresData?.results ?? []).filter(
+    (f) => f.slug !== "other",
+  );
+  const effectiveFeatureSlug = stagedFeature ?? feature;
+  const selectedFeature =
+    featureList.find((f) => f.slug === effectiveFeatureSlug) ??
+    featureList[0] ??
+    null;
 
   // Key helpers
   const keyOf = (choice: StagedChoice): string =>
@@ -187,20 +197,28 @@ export const ModelPickerContent = ({
       : (selectedModel?.id ?? null);
   const stagedKey = staged ? keyOf(staged) : null;
   const activeKey = stagedKey ?? committedKey;
-  const hasChange = stagedKey !== null && stagedKey !== committedKey;
+  const hasFeatureChange = stagedFeature !== null && stagedFeature !== feature;
+  const hasChange =
+    (stagedKey !== null && stagedKey !== committedKey) || hasFeatureChange;
 
   const handleApply = () => {
-    if (!staged) return;
-    if (staged.type === "model") {
-      onSelect(staged.model);
-    } else {
-      if (staged.entry) {
-        onApplyRecentImagery?.(staged.entry);
+    if (!staged && !hasFeatureChange) return;
+    if (staged) {
+      if (staged.type === "model") {
+        onSelect(staged.model);
       } else {
-        setCurrentModelType(ModelType.IMAGERY);
+        if (staged.entry) {
+          onApplyRecentImagery?.(staged.entry);
+        } else {
+          setCurrentModelType(ModelType.IMAGERY);
+        }
       }
     }
+    if (hasFeatureChange && stagedFeature) {
+      onFeatureChange?.(stagedFeature);
+    }
     setStaged(null);
+    setStagedFeature(null);
     onClose?.();
   };
 
@@ -305,15 +323,18 @@ export const ModelPickerContent = ({
           <div className="w-[180px] shrink-0  overflow-hidden flex flex-col">
             <p className="text-xs pb-2">Feature to map</p>
             <div className="flex flex-col bg-frosted-blue border  rounded-lg flex-1 px-1  overflow-y-auto">
-              {featureList.map((f) => (
-                <FeatureListItem
-                  key={f.slug}
-                  feature={f}
-                  isSelected={selectedFeature?.slug === f.slug}
-                  disabled={false}
-                  onSelect={(slug) => onFeatureChange?.(slug)}
-                />
-              ))}
+              {featureList.map((f) => {
+                const effectiveFeature = stagedFeature ?? feature;
+                return (
+                  <FeatureListItem
+                    key={f.slug}
+                    feature={f}
+                    isSelected={effectiveFeature === f.slug}
+                    disabled={false}
+                    onSelect={(slug) => setStagedFeature(slug)}
+                  />
+                );
+              })}
             </div>
           </div>
 

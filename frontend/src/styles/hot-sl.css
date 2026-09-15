@@ -185,6 +185,7 @@
    * Typography
    */
   /* Fonts */
-  --sl-font-sans: var(--hot-font-sans);
-  --sl-font-sans-variant: var(--sl-font-sans);
+  --sl-font-sans: Archivo, -apple-system, Roboto, Helvetica, Arial, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --sl-font-sans-variant: "Barlow";
 }

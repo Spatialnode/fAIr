@@ -181,38 +181,55 @@ const MapLargeAreaContent = ({
       </div>
 
       {/* Footer Controls */}
-      <div className="flex items-center justify-between gap-3 pt-1">
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Input
-            value={description}
-            handleInput={(e) => setDescription(e.target.value)}
-            placeholder="Provide a description"
-            size={SHOELACE_SIZES.MEDIUM}
-            className="w-full"
-            showBorder
-          />
-          <ToolTip content="Provide a description for your prediction request">
+      <div className="flex flex-col gap-2 pt-1">
+        {/* Label row */}
+        <div className="flex items-center gap-1.5">
+          <label className="text-dark text-sm font-semibold">
+            Map Request Name
+          </label>
+          <ToolTip content="Enter map request name for your prediction request">
             <button
               type="button"
-              className="text-dark hover:text-primary transition-colors p-1 shrink-0"
-              aria-label="Request description info"
+              className="text-grey hover:text-primary transition-colors"
+              aria-label="Request name info"
             >
-              <InfoIcon className="size-5 text-dark" />
+              <InfoIcon className="size-4" />
             </button>
           </ToolTip>
         </div>
 
-        <Button
-          className="!w-fit shrink-0"
-          fontSize="14px"
-          size="medium"
-          disabled={!selectedAOI || !description.trim() || isSubmittingMapLargeArea}
-          spinner={isSubmittingMapLargeArea}
-          onClick={handleSubmit}
-          rounded
-        >
-          Submit
-        </Button>
+        {/* Input */}
+        <Input
+          value={description}
+          handleInput={(e) => {
+            if (e.target.value.length <= 20) setDescription(e.target.value);
+          }}
+          placeholder="Enter map request name"
+          size={SHOELACE_SIZES.MEDIUM}
+          className="w-full"
+          showBorder
+          maxLength={20}
+        />
+
+        {/* Character counter */}
+        <p className="text-grey text-xs">{description.length}/20</p>
+
+        {/* Submit button */}
+        <div className="flex justify-end">
+          <Button
+            className="!w-fit shrink-0"
+            fontSize="14px"
+            size="medium"
+            disabled={
+              !selectedAOI || !description.trim() || isSubmittingMapLargeArea
+            }
+            spinner={isSubmittingMapLargeArea}
+            onClick={handleSubmit}
+            rounded
+          >
+            Submit
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -191,6 +191,12 @@ export const useMapLargeArea = ({
   // Handle Tab Switch
   const handleTabChange = useCallback(
     (tab: AOITab) => {
+      // For upload tab, open the file picker immediately (within the user
+      // gesture) so the browser doesn't block it. Cleanup runs after.
+      if (tab === "upload") {
+        triggerFileSelect();
+      }
+
       setActiveTab(tab);
       setSelectedAOI(null);
       setUploadedFileName(null);
@@ -225,8 +231,6 @@ export const useMapLargeArea = ({
           clearTerraDraw();
           setDrawingMode(DrawingModes.POLYGON);
         }, 50);
-      } else if (tab === "upload") {
-        triggerFileSelect();
       }
     },
     [activeImageryBounds, clearTerraDraw, map, setDrawingMode, terraDraw],

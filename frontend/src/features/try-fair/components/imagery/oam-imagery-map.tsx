@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Map as MapLibreMap, MapMouseEvent } from "maplibre-gl";
 import { MapComponent } from "@/components/map";
 import { OAMImageryItem } from "@/features/try-fair/api/hot-imagery";
@@ -13,6 +13,7 @@ import {
 } from "./imagery-modal-map.layers";
 import { SearchIcon } from "@/components/ui/icons";
 import { ToolTip } from "@/components/ui/tooltip";
+import Spinner from "@/components/ui/spinner/spinner";
 
 export type { SelectedCell };
 
@@ -48,6 +49,7 @@ export const OamImageryMap = ({
   searchIconTooltipContent,
 }: Props) => {
   const { map, mapContainerRef } = useImageryModalMap();
+  const [tilesLoading, setTilesLoading] = useState(true);
 
   const onCellSelectRef = useRef(onCellSelect);
   onCellSelectRef.current = onCellSelect;
@@ -66,6 +68,35 @@ export const OamImageryMap = ({
       map.off("click", handleClick);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [map]);
+
+  // Track density tile loading via MapLibre's sourcedata / idle events.
+  useEffect(() => {
+    if (!map) return;
+
+    const handleSourceData = () => {
+      if (typeof map.areTilesLoaded === "function" && !map.areTilesLoaded()) {
+        setTilesLoading(true);
+      }
+    };
+    const handleIdle = () => {
+      setTilesLoading(false);
+    };
+
+    map.on("sourcedata", handleSourceData);
+    map.on("idle", handleIdle);
+
+    // If the map is already idle when this effect runs, clear loading.
+    if (
+      typeof map.areTilesLoaded === "function" ? map.areTilesLoaded() : true
+    ) {
+      setTilesLoading(false);
+    }
+
+    return () => {
+      map.off("sourcedata", handleSourceData);
+      map.off("idle", handleIdle);
+    };
   }, [map]);
 
   // Red highlight follows the dialog's selection.
@@ -96,6 +127,24 @@ export const OamImageryMap = ({
           </ToolTip>
         </div>
       </MapComponent>
+
+      {/* Loading overlay for density tiles */}
+      {tilesLoading && (
+        <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none">
+          <div className="bg-white/80 backdrop-blur-sm rounded-lg px-4 py-3 flex items-center gap-2.5 shadow-md pointer-events-auto">
+            <Spinner
+              style={
+                {
+                  fontSize: "1.5rem",
+                } as Record<string, string>
+              }
+            />
+            <span className="text-dark text-base font-medium">
+              Loading imagery coverage…
+            </span>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

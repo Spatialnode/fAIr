@@ -56,3 +56,8 @@ repos:
         entry: uv run --project backend cz --config backend/pyproject.toml check --commit-msg-file
         language: system
         stages: [commit-msg]
+
+  - repo: https://github.com/betterleaks/betterleaks
+    rev: v1.8.1
+    hooks:
+      - id: betterleaks

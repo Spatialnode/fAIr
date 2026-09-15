@@ -41,7 +41,7 @@ export const IS_PROD = NODE_ENV === "production";
  * Default: false.
  */
 export const DISABLE_AUTH_ON_TRY_FAIR: boolean =
-  parseStringEnv(ENVS.DISABLE_AUTH_ON_TRY_FAIR, "true") === "true";
+  parseStringEnv(ENVS.DISABLE_AUTH_ON_TRY_FAIR, "false") === "true";
 
 // ==============================================================================================================================
 // API Endpoints

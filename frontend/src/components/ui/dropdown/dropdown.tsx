@@ -26,6 +26,10 @@ type TDropdownMenuItem = {
   Icon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   /** Image URL icon (e.g. imported SVG asset) */
   imgSrc?: string;
+  /** Suffix icon component (e.g. checkmark icon) */
+  SuffixIcon?: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  /** Suffix React node */
+  suffix?: React.ReactNode;
 };
 export type DropdownMenuItem = TDropdownMenuItem & {
   subMenuItems?: TDropdownMenuItem[];
@@ -181,6 +185,18 @@ const DropDown = forwardRef<SlDropdownType, DropDownProps>((props, ref) => {
                     ></SlCheckbox>
                   )}
                   {menuItem.label ?? menuItem.value}
+                  {(menuItem.SuffixIcon || menuItem.suffix) && (
+                    <span
+                      slot="suffix"
+                      className="flex items-center justify-center"
+                    >
+                      {menuItem.SuffixIcon ? (
+                        <menuItem.SuffixIcon className="size-4" />
+                      ) : (
+                        menuItem.suffix
+                      )}
+                    </span>
+                  )}
                   {menuItem?.subMenuItems ? (
                     <SlMenu slot="submenu">
                       {menuItem.subMenuItems?.map((subMenuItem, id) => (

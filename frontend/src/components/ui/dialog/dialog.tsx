@@ -61,11 +61,11 @@ const Dialog: React.FC<DialogProps> = ({
 
         "--width":
           size_ === SHOELACE_SIZES.SMALL
-            ? "25vw"
+            ? "clamp(320px, 25vw, 25vw)"
             : size_ === SHOELACE_SIZES.MEDIUM
-              ? "50vw"
+              ? "clamp(400px, 50vw, 50vw)"
               : size_ === SHOELACE_SIZES.MEDIUM_LARGE
-                ? "40vw"
+                ? "clamp(380px, 40vw, 40vw)"
                 : size_ === SHOELACE_SIZES.EXTRA_LARGE
                   ? "100vw"
                   : "75vw",
