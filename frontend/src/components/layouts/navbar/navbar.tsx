@@ -63,6 +63,7 @@ export const NavBar = () => {
 
   const location = useLocation();
   const isTryFairPage = location.pathname.includes(APPLICATION_ROUTES.TRY_FAIR);
+  const isProfilePage = location.pathname.includes(APPLICATION_ROUTES.PROFILE_BASE)
   const isHankoAuth = AUTH_PROVIDER === "hanko";
   const returnTo = `${FRONTEND_URL}${location.pathname}${location.search}${location.hash}`;
   return (
@@ -171,7 +172,7 @@ export const NavBar = () => {
         </div>
 
         <div className="flex-1 hidden sm:flex items-center justify-center">
-          {!isTryFairPage && <NavBarLinks className={styles.webNavLinks} />}
+          {!isTryFairPage && !isProfilePage && <NavBarLinks className={styles.webNavLinks} />}
           {isTryFairPage && isAuthenticated && <MappingMode />}
         </div>
 
@@ -187,6 +188,10 @@ export const NavBar = () => {
           ) : isAuthenticated ? (
             <div className="flex items-center gap-x-2">
               {isTryFairPage && <StartMappingNavlinks />}
+              {isProfilePage && isAuthenticated && <MappingMode />}
+
+              {isAuthenticated && !isTryFairPage && <UserNotifications />}
+
               <div className={styles.headerHankoAuth}>
                 <HankoAuthComponent redirectAfterLogin={returnTo} />
               </div>
@@ -201,40 +206,14 @@ export const NavBar = () => {
               }
             >
               {isTryFairPage && <StartMappingNavlinks />}
-                 {
-                  !isTryFairPage && (
-                     <div className={styles.headerHankoAuth}>
-                <HankoAuthComponent redirectAfterLogin={returnTo} />
-              </div>
-                  )
-                 }
-              {/* {!isTryFairPage && (
-                <ToolTip
-                  content={
-                    isTryFairPage
-                      ? "Sign in to access full mapping tools and features"
-                      : undefined
-                  }
-                >
-                  <Button
-                    className={styles.loginButton}
-                    variant={
-                      isTryFairPage
-                        ? ButtonVariant.TERTIARY
-                        : ButtonVariant.PRIMARY
-                    }
-                    size={isTryFairPage ? "medium" : "large"}
-                    rounded={isTryFairPage}
-                    onClick={() => {
-                      navigate(location, {
-                        state: { backgroundLocation: location },
-                      });
-                    }}
-                  >
-                    {SHARED_CONTENT.navbar.loginButton}
-                  </Button>
-                </ToolTip>
-              )} */}
+              {
+                !isTryFairPage && (
+                  <div className={styles.headerHankoAuth}>
+                    <HankoAuthComponent redirectAfterLogin={returnTo} />
+                  </div>
+                )
+              }
+
             </div>
           )}
           {isHankoAuth && <hotosm-tool-menu></hotosm-tool-menu>}
